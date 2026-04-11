@@ -1,0 +1,73 @@
+spring:
+  config:
+    activate:
+      on-profile: prd
+  
+  # Production Database Configuration
+  datasource:
+    url: jdbc:mysql://${DB_HOST:localhost}:${DB_PORT:3306}/${DB_NAME:elder_system}?useUnicode=true&characterEncoding=utf8&zeroDateTimeBehavior=convertToNull&useSSL=true&serverTimezone=GMT%2B8
+    username: ${DB_USERNAME}
+    password: ${DB_PASSWORD}
+    hikari:
+      minimum-idle: 10
+      maximum-pool-size: 50
+      idle-timeout: 60000
+      max-lifetime: 1800000
+      connection-timeout: 30000
+  
+  # Production Redis Configuration
+  data:
+    redis:
+      host: ${REDIS_HOST}
+      port: ${REDIS_PORT}
+      password: ${REDIS_PASSWORD}
+      database: ${REDIS_DATABASE:0}
+      timeout: 10000
+      lettuce:
+        pool:
+          max-active: 50
+          max-idle: 20
+          min-idle: 10
+          max-wait: 10000
+
+  # Production JPA Configuration
+  jpa:
+    hibernate:
+      ddl-auto: none
+    show-sql: false
+
+# Production Logging
+logging:
+  level:
+    root: WARN
+    org.smart_elder_system.user: INFO
+    org.springframework.security: WARN
+  file:
+    name: /var/log/user-service/user-service.log
+    max-size: 100MB
+    max-history: 30
+
+# Production Management Endpoints
+management:
+  endpoints:
+    web:
+      exposure:
+        include: health,info,metrics,prometheus
+  endpoint:
+    health:
+      show-details: never
+  metrics:
+    export:
+      prometheus:
+        enabled: true
+
+# Production Security Configuration
+app:
+  user:
+    auth:
+      # Enable real third-party services
+      use-mock-services: false
+      # Enable all verification methods
+      enable-id-card-verify: true
+      enable-face-verify: true
+      enable-police-verify: true

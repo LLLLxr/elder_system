@@ -1,0 +1,18 @@
+# ======================================================
+# API Gateway - Development Environment Configuration
+# ======================================================
+
+server:
+  port: 8080
+
+jwt:
+  secret: mySecureSecretKeyForJWTTokenGenerationMustBeAtLeast256BitsLong
+
+services:
+  auth:
+    url: http://localhost:8082
+  business:
+    url: http://localhost:8083
+  user:
+    url: http://localhost:8084
+

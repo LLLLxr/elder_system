@@ -1,0 +1,187 @@
+package org.smart_elder_system.common.util;
+
+import org.junit.jupiter.api.Test;
+import org.mockito.Mock;
+
+import jakarta.servlet.http.Cookie;
+import jakarta.servlet.http.HttpServletRequest;
+import static org.junit.jupiter.api.Assertions.*;
+import static org.mockito.Mockito.*;
+
+public class CookieUtilTest {
+
+    @Mock
+    private HttpServletRequest request;
+
+    @Test
+    public void testGetFrmSsoTokenWithNoCookies() {
+        // Mock行为
+        when(request.getCookies()).thenReturn(null);
+
+        // 执行测试
+        String token = CookieUtil.getFrmSsoToken(request);
+
+        // 验证结果
+        assertNull(token);
+    }
+
+    @Test
+    public void testGetFrmSsoTokenWithValidCookie() {
+        // 准备测试数据
+        Cookie[] cookies = new Cookie[]{
+            new Cookie("X-Auth-Token", "test-jwt-token"),
+            new Cookie("other-cookie", "other-value")
+        };
+
+        // Mock行为
+        when(request.getCookies()).thenReturn(cookies);
+
+        // 执行测试
+        String token = CookieUtil.getFrmSsoToken(request);
+
+        // 验证结果
+        assertEquals("test-jwt-token", token);
+    }
+
+    @Test
+    public void testGetFrmSsoTokenWithEmptyCookie() {
+        // 准备测试数据
+        Cookie[] cookies = new Cookie[]{
+            new Cookie("X-Auth-Token", ""),
+            new Cookie("other-cookie", "other-value")
+        };
+
+        // Mock行为
+        when(request.getCookies()).thenReturn(cookies);
+
+        // 执行测试
+        String token = CookieUtil.getFrmSsoToken(request);
+
+        // 验证结果
+        assertNull(token);
+    }
+
+    @Test
+    public void testGetBearerTokenWithValidHeader() {
+        // Mock行为
+        when(request.getHeader("Authorization")).thenReturn("Bearer test-jwt-token");
+
+        // 执行测试
+        String token = CookieUtil.getBearerToken(request);
+
+        // 验证结果
+        assertEquals("test-jwt-token", token);
+    }
+
+    @Test
+    public void testGetBearerTokenWithInvalidHeader() {
+        // Mock行为
+        when(request.getHeader("Authorization")).thenReturn("InvalidHeader test-jwt-token");
+
+        // 执行测试
+        String token = CookieUtil.getBearerToken(request);
+
+        // 验证结果
+        assertNull(token);
+    }
+
+    @Test
+    public void testGetBearerTokenWithNoHeader() {
+        // Mock行为
+        when(request.getHeader("Authorization")).thenReturn(null);
+
+        // 执行测试
+        String token = CookieUtil.getBearerToken(request);
+
+        // 验证结果
+        assertNull(token);
+    }
+
+    @Test
+    public void testGetAccessTokenFromCookie() {
+        // 准备测试数据
+        Cookie[] cookies = new Cookie[]{
+            new Cookie("X-Auth-Token", "cookie-jwt-token")
+        };
+
+        // Mock行为
+        when(request.getCookies()).thenReturn(cookies);
+        when(request.getHeader("Authorization")).thenReturn(null);
+
+        // 执行测试
+        String token = CookieUtil.getAccessToken(request);
+
+        // 验证结果
+        assertEquals("cookie-jwt-token", token);
+    }
+
+    @Test
+    public void testGetAccessTokenFromHeader() {
+        // Mock行为
+        when(request.getCookies()).thenReturn(null);
+        when(request.getHeader("Authorization")).thenReturn("Bearer header-jwt-token");
+
+        // 执行测试
+        String token = CookieUtil.getAccessToken(request);
+
+        // 验证结果
+        assertEquals("header-jwt-token", token);
+    }
+
+    @Test
+    public void testHasValidTokenWithValidToken() {
+        // 准备测试数据
+        Cookie[] cookies = new Cookie[]{
+            new Cookie("X-Auth-Token", "valid-token")
+        };
+
+        // Mock行为
+        when(request.getCookies()).thenReturn(cookies);
+
+        // 执行测试
+        boolean hasValidToken = CookieUtil.hasValidToken(request);
+
+        // 验证结果
+        assertTrue(hasValidToken);
+    }
+
+    @Test
+    public void testHasValidTokenWithInvalidToken() {
+        // Mock行为
+        when(request.getCookies()).thenReturn(null);
+        when(request.getHeader("Authorization")).thenReturn(null);
+
+        // 执行测试
+        boolean hasValidToken = CookieUtil.hasValidToken(request);
+
+        // 验证结果
+        assertFalse(hasValidToken);
+    }
+
+    @Test
+    public void testCreateAuthCookie() {
+        // 执行测试
+        Cookie cookie = CookieUtil.createAuthCookie("test-token", 3600, false, true);
+
+        // 验证结果
+        assertEquals("X-Auth-Token", cookie.getName());
+        assertEquals("test-token", cookie.getValue());
+        assertEquals("/", cookie.getPath());
+        assertEquals(3600, cookie.getMaxAge());
+        assertFalse(cookie.getSecure());
+        assertTrue(cookie.isHttpOnly());
+    }
+
+    @Test
+    public void testCreateClearAuthCookie() {
+        // 执行测试
+        Cookie cookie = CookieUtil.createClearAuthCookie();
+
+        // 验证结果
+        assertEquals("X-Auth-Token", cookie.getName());
+        assertEquals("", cookie.getValue());
+        assertEquals("/", cookie.getPath());
+        assertEquals(0, cookie.getMaxAge());
+        assertTrue(cookie.isHttpOnly());
+    }
+}

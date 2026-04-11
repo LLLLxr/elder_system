@@ -1,0 +1,65 @@
+# ======================================================
+# Docker Compose - Production Environment
+# Usage:
+#   1. cp .env.example .env.prd  (fill in real values)
+#   2. docker-compose -f docker-compose.prd.yml --env-file .env.prd up -d
+#
+# Required variables (see .env.example):
+#   DOCKER_REGISTRY, IMAGE_TAG,
+#   JWT_SECRET, APP_ADMIN_PASSWORD, APP_USER_PASSWORD
+# ======================================================
+services:
+  auth:
+    image: ${DOCKER_REGISTRY:-localhost}/auth:${IMAGE_TAG:-latest}
+    ports:
+      - "${AUTH_HOST_PORT:-8082}:8082"
+    environment:
+      SPRING_PROFILES_ACTIVE: prd
+      SERVER_PORT: 8082
+      JWT_SECRET: ${JWT_SECRET}
+      JWT_EXPIRATION: ${JWT_EXPIRATION:-86400}
+      APP_ADMIN_PASSWORD: ${APP_ADMIN_PASSWORD}
+      APP_USER_PASSWORD: ${APP_USER_PASSWORD}
+    restart: unless-stopped
+    healthcheck:
+      test: ["CMD", "wget", "-qO-", "http://localhost:8082/actuator/health"]
+      interval: 15s
+      timeout: 5s
+      retries: 5
+
+  business:
+    image: ${DOCKER_REGISTRY:-localhost}/business:${IMAGE_TAG:-latest}
+    ports:
+      - "${BUSINESS_HOST_PORT:-8083}:8083"
+    environment:
+      SPRING_PROFILES_ACTIVE: prd
+      SERVER_PORT: 8083
+      # 容器网络内使用服务名通信
+      AUTH_SERVICE_URL: http://auth:8082
+    depends_on:
+      auth:
+        condition: service_healthy
+    restart: unless-stopped
+    healthcheck:
+      test: ["CMD", "wget", "-qO-", "http://localhost:8083/actuator/health"]
+      interval: 15s
+      timeout: 5s
+      retries: 5
+
+  api-gateway:
+    image: ${DOCKER_REGISTRY:-localhost}/api-gateway:${IMAGE_TAG:-latest}
+    ports:
+      - "${GATEWAY_HOST_PORT:-8080}:8080"
+    environment:
+      SPRING_PROFILES_ACTIVE: prd
+      SERVER_PORT: 8080
+      JWT_SECRET: ${JWT_SECRET}
+      AUTH_SERVICE_URL: http://auth:8082
+      BUSINESS_SERVICE_URL: http://business:8083
+    depends_on:
+      auth:
+        condition: service_healthy
+      business:
+        condition: service_healthy
+    restart: unless-stopped
+

@@ -1,0 +1,11 @@
+# ======================================================
+# Business Service - Development Environment Configuration
+# ======================================================
+
+server:
+  port: 8083
+
+services:
+  auth:
+    url: http://localhost:8082
+

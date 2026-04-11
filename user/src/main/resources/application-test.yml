@@ -1,0 +1,87 @@
+server:
+  port: 8084
+  servlet:
+    context-path: /user-service
+
+spring:
+  config:
+    activate:
+      on-profile: test
+  application:
+    name: user-service
+  main:
+    allow-circular-references: true
+  
+  # H2 Database Configuration
+  datasource:
+    url: jdbc:h2:mem:testdb;DB_CLOSE_DELAY=-1;DB_CLOSE_ON_EXIT=FALSE
+    driver-class-name: org.h2.Driver
+    username: sa
+    password: 
+  h2:
+    console:
+      enabled: true
+      path: /h2-console
+  sql:
+    init:
+      mode: always
+      schema-locations: classpath:sql/schema-h2.sql
+      data-locations: classpath:data-h2.sql
+  jpa:
+    database-platform: org.hibernate.dialect.H2Dialect
+    hibernate:
+      ddl-auto: create-drop
+    show-sql: true
+  
+  # Disable Redis for testing
+  # data:
+  #   redis:
+  #     host: localhost
+  #     port: 6379
+  #     password: 
+  #     database: 0
+  #     timeout: 30000
+  #     lettuce:
+  #       pool:
+  #         max-active: 1
+  #         max-idle: 1
+  #         min-idle: 1
+  #         max-wait: 30000
+
+# JWT Configuration
+jwt:
+  secret: test-secret-key-for-jwt-token-generation-in-test-environment
+  expiration: 3600
+
+# Test Logging
+logging:
+  level:
+    org.smart_elder_system.user: DEBUG
+    org.springframework.security: DEBUG
+    org.springframework.web: DEBUG
+    org.hibernate.SQL: DEBUG
+    org.hibernate.type.descriptor.sql.BasicBinder: TRACE
+  pattern:
+    console: "%d{yyyy-MM-dd HH:mm:ss} [%thread] %-5level %logger{36} - %msg%n"
+
+# Security Configuration for Testing
+security:
+  basic:
+    enabled: false
+
+# Management Endpoints
+management:
+  endpoints:
+    web:
+      exposure:
+        include: health,info,metrics,env,beans
+  endpoint:
+    health:
+      show-details: always
+
+# OpenAPI Configuration
+springdoc:
+  api-docs:
+    path: /v3/api-docs
+  swagger-ui:
+    path: /swagger-ui.html

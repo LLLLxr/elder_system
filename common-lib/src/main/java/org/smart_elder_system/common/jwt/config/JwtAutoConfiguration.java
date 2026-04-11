@@ -1,0 +1,25 @@
+package org.smart_elder_system.common.jwt.config;
+
+import org.springframework.boot.context.properties.EnableConfigurationProperties;
+import org.springframework.context.annotation.Bean;
+import org.springframework.context.annotation.Configuration;
+import org.smart_elder_system.common.jwt.JwtProperties;
+import org.smart_elder_system.common.jwt.JwtTokenUtil;
+
+/**
+ * JWT自动配置类
+ */
+@Configuration
+@EnableConfigurationProperties(JwtProperties.class)
+public class JwtAutoConfiguration {
+
+    @Bean
+    public JwtTokenUtil jwtTokenUtil(JwtProperties jwtProperties) {
+        return new JwtTokenUtil(jwtProperties);
+    }
+
+    @Bean
+    public JwtProperties jwtProperties() {
+        return new JwtProperties();
+    }
+}

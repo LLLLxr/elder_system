@@ -1,0 +1,21 @@
+# ======================================================
+# Auth Service - Development Environment Configuration
+# ======================================================
+
+server:
+  port: 8082
+
+jwt:
+  secret: mySecureSecretKeyForJWTTokenGenerationMustBeAtLeast256BitsLong
+  expiration: 86400  # 24小时，单位秒
+
+app:
+  users:
+    admin:
+      password: admin123
+    user:
+      password: user123
+
+services:
+  user:
+    url: http://localhost:8084

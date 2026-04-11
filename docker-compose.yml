@@ -1,0 +1,60 @@
+# ======================================================
+# Docker Compose - Development Environment
+# Usage: docker-compose up --build
+# ======================================================
+services:
+  auth:
+    build:
+      context: ./auth
+      dockerfile: Dockerfile
+      args:
+        JAR_FILE: target/*.jar
+    ports:
+      - "8082:8082"
+    environment:
+      SPRING_PROFILES_ACTIVE: dev
+    healthcheck:
+      test: ["CMD", "wget", "-qO-", "http://localhost:8082/actuator/health"]
+      interval: 15s
+      timeout: 5s
+      retries: 5
+
+  business:
+    build:
+      context: ./business
+      dockerfile: Dockerfile
+      args:
+        JAR_FILE: target/*.jar
+    ports:
+      - "8083:8083"
+    environment:
+      SPRING_PROFILES_ACTIVE: dev
+      # 在 Docker 网络中使用服务名替代 localhost
+      AUTH_SERVICE_URL: http://auth:8082
+    depends_on:
+      auth:
+        condition: service_healthy
+    healthcheck:
+      test: ["CMD", "wget", "-qO-", "http://localhost:8083/actuator/health"]
+      interval: 15s
+      timeout: 5s
+      retries: 5
+
+  api-gateway:
+    build:
+      context: ./api-gateway
+      dockerfile: Dockerfile
+      args:
+        JAR_FILE: target/*.jar
+    ports:
+      - "8080:8080"
+    environment:
+      SPRING_PROFILES_ACTIVE: dev
+      AUTH_SERVICE_URL: http://auth:8082
+      BUSINESS_SERVICE_URL: http://business:8083
+    depends_on:
+      auth:
+        condition: service_healthy
+      business:
+        condition: service_healthy
+

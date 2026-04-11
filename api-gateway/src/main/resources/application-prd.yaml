@@ -1,0 +1,24 @@
+# ======================================================
+# API Gateway - Production Environment Configuration
+# All values MUST be injected via OS environment variables
+# Never commit real secrets to version control
+# ======================================================
+# Required environment variables:
+#   SERVER_PORT           - Server port (e.g. 8080)
+#   JWT_SECRET            - JWT signing secret (>= 32 chars)
+#   AUTH_SERVICE_URL      - Auth service base URL (e.g. http://auth-svc:8082)
+#   BUSINESS_SERVICE_URL  - Business service base URL (e.g. http://business-svc:8083)
+# ======================================================
+
+server:
+  port: ${SERVER_PORT}
+
+jwt:
+  secret: ${JWT_SECRET}
+
+services:
+  auth:
+    url: ${AUTH_SERVICE_URL}
+  business:
+    url: ${BUSINESS_SERVICE_URL}
+

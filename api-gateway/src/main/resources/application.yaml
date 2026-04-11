@@ -1,0 +1,44 @@
+spring:
+  application:
+    name: api-gateway
+  profiles:
+    active: ${SPRING_PROFILES_ACTIVE:dev}
+  cloud:
+    nacos:
+      config:
+        import-check:
+          enabled: false
+    gateway:
+      routes:
+        - id: auth-route
+          uri: ${services.auth.url}
+          predicates:
+            - Path=/auth/**
+        - id: user-route
+          uri: ${services.user.url}
+          predicates:
+            - Path=/user-service/**
+        - id: business-route
+          uri: ${services.business.url}
+          predicates:
+            - Path=/business/**
+
+server:
+  port: ${SERVER_PORT:8080}
+
+jwt:
+  secret: ${JWT_SECRET}
+
+services:
+  auth:
+    url: ${AUTH_SERVICE_URL:http://localhost:8082}
+  business:
+    url: ${BUSINESS_SERVICE_URL:http://localhost:8083}
+  user:
+    url: ${USER_SERVICE_URL:http://localhost:8084}
+
+management:
+  endpoints:
+    web:
+      exposure:
+        include: health,info,metrics
