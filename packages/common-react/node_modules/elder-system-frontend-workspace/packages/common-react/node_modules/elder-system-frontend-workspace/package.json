@@ -1,0 +1,10 @@
+{
+  "name": "elder-system-frontend-workspace",
+  "version": "0.0.1",
+  "private": true,
+  "workspaces": [
+    "smart-nursing-home-demo",
+    "smart-nursing-home-service-portal",
+    "packages/common-react"
+  ]
+}

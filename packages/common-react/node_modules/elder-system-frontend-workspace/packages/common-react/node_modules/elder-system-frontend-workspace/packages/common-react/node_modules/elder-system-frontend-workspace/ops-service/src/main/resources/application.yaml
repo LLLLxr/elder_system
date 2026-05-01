@@ -1,0 +1,25 @@
+spring:
+  application:
+    name: ops-service
+  profiles:
+    active: ${SPRING_PROFILES_ACTIVE:dev}
+  cloud:
+    nacos:
+      config:
+        import-check:
+          enabled: false
+
+server:
+  port: ${SERVER_PORT:8083}
+
+services:
+  iam:
+    url: ${IAM_SERVICE_URL:http://localhost:8082}
+  auth:
+    url: ${services.iam.url}
+
+management:
+  endpoints:
+    web:
+      exposure:
+        include: health,info,metrics

@@ -1,0 +1,118 @@
+server:
+  port: ${SERVER_PORT:8082}
+
+spring:
+  application:
+    name: iam-service
+  profiles:
+    active: ${SPRING_PROFILES_ACTIVE:dev}
+  main:
+    allow-circular-references: true
+  cloud:
+    nacos:
+      config:
+        import-check:
+          enabled: false
+
+  datasource:
+    driver-class-name: ${DB_DRIVER:org.h2.Driver}
+    url: ${DB_URL:jdbc:h2:mem:iam_db;MODE=MySQL;DB_CLOSE_DELAY=-1;DB_CLOSE_ON_EXIT=FALSE}
+    username: ${DB_USERNAME:sa}
+    password: ${DB_PASSWORD:}
+    hikari:
+      minimum-idle: 5
+      maximum-pool-size: 20
+      idle-timeout: 30000
+      pool-name: UserHikariCP
+      max-lifetime: 1800000
+      connection-timeout: 30000
+      connection-test-query: SELECT 1
+
+  sql:
+    init:
+      mode: ${SQL_INIT_MODE:embedded}
+      schema-locations: classpath:sql/schema-h2.sql
+      data-locations: classpath:data-h2-user.sql
+
+  h2:
+    console:
+      enabled: ${H2_CONSOLE_ENABLED:true}
+      path: /h2-console
+
+  data:
+    redis:
+      host: ${REDIS_HOST:localhost}
+      port: ${REDIS_PORT:6379}
+      password: ${REDIS_PASSWORD:}
+      database: ${REDIS_DATABASE:0}
+      timeout: 30000
+      lettuce:
+        pool:
+          max-active: 20
+          max-idle: 10
+          min-idle: 5
+          max-wait: 30000
+
+  jpa:
+    hibernate:
+      ddl-auto: update
+    show-sql: false
+    properties:
+      hibernate:
+        format_sql: true
+        use_sql_comments: true
+
+jwt:
+  secret: ${JWT_SECRET:mySecureSecretKeyForJWTTokenGenerationMustBeAtLeast256BitsLong}
+  expiration: ${JWT_EXPIRATION:1800}
+
+app:
+  redis:
+    enabled: ${APP_REDIS_ENABLED:false}
+  users:
+    admin:
+      password: ${APP_ADMIN_PASSWORD:admin123}
+    user:
+      password: ${APP_USER_PASSWORD:user123}
+  user:
+    admin:
+      username: ${APP_ADMIN_USERNAME:admin}
+      password: ${APP_ADMIN_PASSWORD:admin123}
+      email: ${APP_ADMIN_EMAIL:admin@example.com}
+    auth:
+      enable-id-card-verify: true
+      enable-face-verify: true
+      face-threshold: 70.0
+      liveness-threshold: 80.0
+
+
+services:
+  user:
+    url: ${IAM_SERVICE_URL:http://localhost:8082}
+    login-path: ${USER_LOGIN_PATH:/api/auth/login}
+
+management:
+  endpoints:
+    web:
+      exposure:
+        include: health,info,metrics,prometheus
+  endpoint:
+    health:
+      show-details: always
+  health:
+    redis:
+      enabled: ${APP_REDIS_ENABLED:false}
+
+springdoc:
+  api-docs:
+    path: /v3/api-docs
+  swagger-ui:
+    path: /swagger-ui.html
+
+logging:
+  level:
+    org.smart_elder_system.user: DEBUG
+    org.springframework.security: DEBUG
+  pattern:
+    console: "%d{yyyy-MM-dd HH:mm:ss} - %msg%n"
+    file: "%d{yyyy-MM-dd HH:mm:ss} [%thread] %-5level %logger{36} - %msg%n"

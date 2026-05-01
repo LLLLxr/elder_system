@@ -1,0 +1,16 @@
+package org.smart_elder_system.careorchestration.journey;
+
+public enum ServiceJourneyEvent {
+    APPLICATION_SUBMITTED,
+    ADMISSION_APPROVED,
+    ADMISSION_REJECTED,
+    RETURN_TO_ASSESSMENT,
+    JOURNEY_WITHDRAWN,
+    HEALTH_APPROVED,
+    HEALTH_REJECTED,
+    RETURN_TO_HEALTH_ASSESSMENT,
+    AGREEMENT_SIGNED,
+    REVIEW_IMPROVE,
+    REVIEW_RENEW,
+    REVIEW_TERMINATE
+}

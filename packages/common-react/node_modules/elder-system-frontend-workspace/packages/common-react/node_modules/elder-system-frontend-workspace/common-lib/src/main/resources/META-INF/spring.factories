@@ -1,0 +1,2 @@
+org.springframework.boot.autoconfigure.EnableAutoConfiguration=\
+org.smart_elder_system.common.jwt.config.JwtAutoConfiguration
