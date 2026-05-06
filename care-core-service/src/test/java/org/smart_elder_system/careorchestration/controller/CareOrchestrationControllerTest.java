@@ -22,6 +22,7 @@ import org.smart_elder_system.careorchestration.dto.ServiceJourneyTransitionLogI
 import org.smart_elder_system.careorchestration.journey.ServiceJourneyState;
 import org.smart_elder_system.careorchestration.service.CareOrchestrationService;
 import org.smart_elder_system.common.dto.care.IntakeRecordDTO;
+import org.smart_elder_system.common.dto.care.RenewalContextDTO;
 import org.smart_elder_system.common.dto.care.ServiceJourneyResultDTO;
 
 import java.time.LocalDateTime;
@@ -379,6 +380,96 @@ class CareOrchestrationControllerTest {
                 .andExpect(jsonPath("$.applicationId").value(1001))
                 .andExpect(jsonPath("$.agreementId").value(2002))
                 .andExpect(jsonPath("$.finalStatus").value("IN_SERVICE"));
+    }
+
+    @Test
+    void shouldGetLatestRenewalContextByApplicant() throws Exception {
+        RenewalContextDTO result = RenewalContextDTO.builder()
+                .agreementId(2002L)
+                .applicationId(1001L)
+                .elderId(3003L)
+                .renewalStage("UPCOMING_EXPIRY")
+                .daysUntilExpiry(5L)
+                .message("协议将于5天内到期，可先提交满意度评价")
+                .build();
+
+        when(careOrchestrationService.getLatestRenewalContextByApplicant("张三")).thenReturn(result);
+
+        mockMvc.perform(get("/care-orchestration/renewal-context/latest/by-applicant")
+                        .param("applicantName", "张三")
+                        .accept(MediaType.APPLICATION_JSON))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.agreementId").value(2002))
+                .andExpect(jsonPath("$.renewalStage").value("UPCOMING_EXPIRY"));
+    }
+
+    @Test
+    void shouldSubmitRenewalReview() throws Exception {
+        RenewalContextDTO result = RenewalContextDTO.builder()
+                .agreementId(2002L)
+                .elderId(3003L)
+                .latestReviewScore(85)
+                .latestReviewConclusion("RENEW")
+                .renewalStage("PENDING_RENEWAL")
+                .build();
+
+        when(careOrchestrationService.submitRenewalReview(2002L, 3003L, 85, "满意，愿意续约"))
+                .thenReturn(result);
+
+        mockMvc.perform(post("/care-orchestration/renewals/review")
+                        .param("agreementId", "2002")
+                        .param("elderId", "3003")
+                        .param("satisfactionScore", "85")
+                        .param("reviewComment", "满意，愿意续约")
+                        .accept(MediaType.APPLICATION_JSON))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.agreementId").value(2002))
+                .andExpect(jsonPath("$.latestReviewConclusion").value("RENEW"));
+    }
+
+    @Test
+    void shouldConfirmRenewal() throws Exception {
+        RenewalContextDTO result = RenewalContextDTO.builder()
+                .agreementId(2002L)
+                .renewalStage("RENEWED")
+                .message("已续约3个月，新的服务周期已生效")
+                .build();
+
+        when(careOrchestrationService.confirmRenewal(2002L, 3)).thenReturn(result);
+
+        mockMvc.perform(post("/care-orchestration/renewals/2002/confirm")
+                        .param("renewMonths", "3")
+                        .accept(MediaType.APPLICATION_JSON))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.agreementId").value(2002))
+                .andExpect(jsonPath("$.renewalStage").value("RENEWED"));
+    }
+
+    @Test
+    void shouldRejectInvalidRenewMonths() throws Exception {
+        mockMvc.perform(post("/care-orchestration/renewals/2002/confirm")
+                        .param("renewMonths", "0")
+                        .accept(MediaType.APPLICATION_JSON))
+                .andExpect(status().isBadRequest())
+                .andExpect(jsonPath("$.code").value(400));
+    }
+
+    @Test
+    void shouldDeclineRenewal() throws Exception {
+        RenewalContextDTO result = RenewalContextDTO.builder()
+                .agreementId(2002L)
+                .renewalStage("TERMINATED")
+                .message("家属选择暂不续约")
+                .build();
+
+        when(careOrchestrationService.declineRenewal(2002L, "家属选择暂不续约")).thenReturn(result);
+
+        mockMvc.perform(post("/care-orchestration/renewals/2002/decline")
+                        .param("reason", "家属选择暂不续约")
+                        .accept(MediaType.APPLICATION_JSON))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.agreementId").value(2002))
+                .andExpect(jsonPath("$.renewalStage").value("TERMINATED"));
     }
 
     @Test

@@ -1,6 +1,7 @@
 import apiClient, { unwrapApiData } from './client';
 import type {
   ContinueJourneyRequest,
+  DeclineRenewalRequest,
   IntakeRecord,
   JourneyTaskItem,
   JourneyTaskOverview,
@@ -8,10 +9,12 @@ import type {
   JourneyTransitionLogItem,
   ListJourneyTasksParams,
   PagedResult,
+  RenewalContext,
   ReturnJourneyStepRequest,
   ReviewAndFinalizeRequest,
   ServiceJourneyResult,
   StartServiceJourneyRequest,
+  SubmitRenewalReviewRequest,
 } from '../types/care';
 import {
   CARE_JOURNEY_CONTINUE_PATH,
@@ -27,6 +30,10 @@ import {
   CARE_JOURNEY_TASKS_PATH,
   CARE_JOURNEY_TRANSITION_LOGS_BY_AGREEMENT_PATH,
   CARE_JOURNEY_TRANSITION_LOGS_BY_APPLICATION_PATH,
+  CARE_RENEWAL_CONFIRM_PATH,
+  CARE_RENEWAL_CONTEXT_LATEST_BY_APPLICANT_PATH,
+  CARE_RENEWAL_DECLINE_PATH,
+  CARE_RENEWAL_REVIEW_PATH,
 } from './endpoints';
 import { buildPostUrl } from '../utils/postWithQueryParams';
 
@@ -199,4 +206,40 @@ export async function getLatestJourneyResultByApplicant(applicantName: string): 
     params: { applicantName },
   });
   return unwrapApiData<ServiceJourneyResult>(response.data);
+}
+
+export async function getLatestRenewalContextByApplicant(applicantName: string): Promise<RenewalContext> {
+  const response = await apiClient.get(CARE_RENEWAL_CONTEXT_LATEST_BY_APPLICANT_PATH, {
+    params: { applicantName },
+  });
+  return unwrapApiData<RenewalContext>(response.data);
+}
+
+export async function submitRenewalReview(
+  request: SubmitRenewalReviewRequest,
+): Promise<RenewalContext> {
+  const url = buildPostUrl(CARE_RENEWAL_REVIEW_PATH, {
+    agreementId: request.agreementId,
+    elderId: request.elderId,
+    satisfactionScore: request.satisfactionScore,
+    reviewComment: request.reviewComment,
+  });
+  const response = await apiClient.post(url, null);
+  return unwrapApiData<RenewalContext>(response.data);
+}
+
+export async function confirmRenewal(agreementId: number, renewMonths: number): Promise<RenewalContext> {
+  const url = buildPostUrl(CARE_RENEWAL_CONFIRM_PATH(agreementId), {
+    renewMonths,
+  });
+  const response = await apiClient.post(url, null);
+  return unwrapApiData<RenewalContext>(response.data);
+}
+
+export async function declineRenewal(request: DeclineRenewalRequest): Promise<RenewalContext> {
+  const url = buildPostUrl(CARE_RENEWAL_DECLINE_PATH(request.agreementId), {
+    reason: request.reason,
+  });
+  const response = await apiClient.post(url, null);
+  return unwrapApiData<RenewalContext>(response.data);
 }

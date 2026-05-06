@@ -42,3 +42,7 @@ build/
 .env
 .env.local
 .env.*.local
+
+### Node dependencies ###
+node_modules/
+packages/common-react/node_modules/

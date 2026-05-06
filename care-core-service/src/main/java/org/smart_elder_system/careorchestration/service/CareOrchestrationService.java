@@ -34,6 +34,7 @@ import org.smart_elder_system.common.dto.care.HealthAssessmentRequestDTO;
 import org.smart_elder_system.common.dto.care.HealthAssessmentSubmitDTO;
 import org.smart_elder_system.common.dto.care.HealthProfileDTO;
 import org.smart_elder_system.common.dto.care.IntakeRecordDTO;
+import org.smart_elder_system.common.dto.care.RenewalContextDTO;
 import org.smart_elder_system.common.dto.care.ServiceAgreementDTO;
 import org.smart_elder_system.common.dto.care.ServiceApplicationDTO;
 import org.smart_elder_system.common.dto.care.ServiceJourneyResultDTO;
@@ -60,6 +61,7 @@ import org.springframework.data.domain.Page;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
+import java.time.temporal.ChronoUnit;
 import java.util.ArrayList;
 import java.util.LinkedHashMap;
 import java.util.List;
@@ -167,11 +169,13 @@ public class CareOrchestrationService {
                     context.application(),
                     context.agreement(),
                     context.healthAssessmentStatus());
-            case PENDING_AGREEMENT, IN_SERVICE -> continueToInService(
+            case PENDING_AGREEMENT -> continueToPendingAgreement(
                     context.application(),
                     context.agreement(),
-                    context.preSignAssessment(),
-                    context.currentState());
+                    context.preSignAssessment());
+            case IN_SERVICE -> continueToInService(
+                    context.application(),
+                    context.agreement());
             default -> throw new IllegalStateException("当前旅程状态不允许继续推进");
         };
     }
@@ -417,6 +421,90 @@ public class CareOrchestrationService {
         }
         result.setFinalStatus(summary.externalState().name());
         result.setMessage(summary.journeyMessage());
+        return result;
+    }
+
+    public RenewalContextDTO getLatestRenewalContextByApplicant(String applicantName) {
+        Optional<ServiceApplicationPo> latestApplication = serviceApplicationRepository
+                .findTopByApplicantNameOrderBySubmittedAtDescIdDesc(applicantName);
+        if (latestApplication.isEmpty()) {
+            return RenewalContextDTO.builder()
+                    .message("当前登录用户名下暂无申请记录")
+                    .build();
+        }
+
+        ServiceApplicationPo application = latestApplication.get();
+        ServiceAgreementPo agreement = serviceAgreementRepository
+                .findTopByApplicationIdOrderByIdDesc(application.getId())
+                .orElse(null);
+        if (agreement == null) {
+            return RenewalContextDTO.builder()
+                    .applicationId(application.getId())
+                    .elderId(application.getElderId())
+                    .message("当前申请暂无服务协议")
+                    .build();
+        }
+
+        ServiceReviewPo latestReview = serviceReviewRepository
+                .findTopByAgreementIdOrderByReviewedAtDescIdDesc(agreement.getId())
+                .orElse(null);
+        return buildRenewalContext(agreement, latestReview);
+    }
+
+    @Transactional(rollbackFor = Exception.class)
+    public RenewalContextDTO submitRenewalReview(Long agreementId, Long elderId, Integer satisfactionScore, String reviewComment) {
+        RenewalOperationContext context = loadRenewalOperationContextForUpdate(agreementId);
+        validateRenewalAgreement(context.agreement());
+        if (hasCurrentCycleReview(context.agreement(), context.latestReview())) {
+            return buildRenewalContext(context.agreement(), context.latestReview());
+        }
+
+        ServiceReviewDTO review = new ServiceReviewDTO();
+        review.setAgreementId(agreementId);
+        review.setElderId(elderId);
+        review.setSatisfactionScore(satisfactionScore);
+        review.setReviewComment(reviewComment);
+
+        ServiceReviewDTO savedReview = qualityService.reviewService(review);
+        return buildRenewalContext(context.agreement(), ServiceReview.fromDTO(savedReview).toPo());
+    }
+
+    @Transactional(rollbackFor = Exception.class)
+    public RenewalContextDTO confirmRenewal(Long agreementId, Integer renewMonths) {
+        RenewalOperationContext context = loadRenewalOperationContextForUpdate(agreementId);
+        validateRenewalAgreement(context.agreement());
+        if (renewMonths == null || renewMonths < 1 || renewMonths > 12) {
+            throw new IllegalArgumentException("续约月数必须在1到12个月之间");
+        }
+
+        serviceJourneyTransitionPolicy.requireAuthority("journey:review:renew");
+        ServiceAgreementDTO renewalRequest = new ServiceAgreementDTO();
+        renewalRequest.setExpiryDate(context.agreement().getExpiryDate().plusMonths(renewMonths));
+        ServiceAgreementDTO renewedAgreement = contractService.renewAgreement(agreementId, renewalRequest);
+        RenewalContextDTO result = buildRenewalContext(ServiceAgreement.fromDTO(renewedAgreement).toPo(), context.latestReview());
+        result.setRenewalStage("RENEWED");
+        result.setReviewSubmitted(false);
+        result.setCanReview(false);
+        result.setCanRenew(false);
+        result.setCanTerminate(false);
+        result.setMessage("已续约" + renewMonths + "个月，新的服务周期已生效");
+        return result;
+    }
+
+    @Transactional(rollbackFor = Exception.class)
+    public RenewalContextDTO declineRenewal(Long agreementId, String reason) {
+        RenewalOperationContext context = loadRenewalOperationContextForUpdate(agreementId);
+        validateRenewalAgreement(context.agreement());
+
+        serviceJourneyTransitionPolicy.requireAuthority("journey:review:terminate");
+        ServiceAgreementDTO terminatedAgreement = contractService.terminateAgreement(agreementId);
+        RenewalContextDTO result = buildRenewalContext(ServiceAgreement.fromDTO(terminatedAgreement).toPo(), context.latestReview());
+        result.setRenewalStage("TERMINATED");
+        result.setReviewSubmitted(true);
+        result.setCanReview(false);
+        result.setCanRenew(false);
+        result.setCanTerminate(false);
+        result.setMessage(reason == null || reason.isBlank() ? "已结束本期服务，不再续约" : reason);
         return result;
     }
 
@@ -736,33 +824,43 @@ public class CareOrchestrationService {
                 message);
     }
 
-    private ServiceJourneyResultDTO continueToInService(
+    private ServiceJourneyResultDTO continueToPendingAgreement(
             ServiceApplicationPo application,
             ServiceAgreementPo agreement,
-            HealthAssessmentRecordPo preSignAssessment,
-            ServiceJourneyState currentState) {
-        if (currentState == ServiceJourneyState.PENDING_AGREEMENT) {
-            ServiceJourneyTransitionResult healthApprovedTransition = transition(
-                    ServiceJourneyState.PENDING_HEALTH_ASSESSMENT,
-                    ServiceJourneyEvent.HEALTH_APPROVED,
-                    null);
-            serviceJourneyTransitionPolicy.requireAuthority(healthApprovedTransition.requiredAuthority());
-            if (!serviceJourneyTransitionLogService.hasTransition(application.getId(), ServiceJourneyEvent.HEALTH_APPROVED, ServiceJourneyState.PENDING_AGREEMENT)) {
-                serviceJourneyTransitionLogService.logTransition(
-                        application.getId(),
-                        agreement == null ? null : agreement.getId(),
-                        application.getElderId(),
-                        healthApprovedTransition.fromState(),
-                        healthApprovedTransition.event(),
-                        healthApprovedTransition.toState(),
-                        "健康评估通过，进入待签约阶段",
-                        preSignAssessment);
-            }
-        }
+            HealthAssessmentRecordPo preSignAssessment) {
+        ServiceJourneyTransitionResult transition = transition(
+                ServiceJourneyState.PENDING_HEALTH_ASSESSMENT,
+                ServiceJourneyEvent.HEALTH_APPROVED,
+                null);
+        serviceJourneyTransitionPolicy.requireAuthority(transition.requiredAuthority());
         serviceJourneyTaskService.completeOpenTask(
                 application.getId(),
                 ServiceJourneyTaskService.TASK_TYPE_HEALTH_ASSESSMENT);
 
+        ServiceAgreementDTO draftAgreement = ensureDraftAgreement(application, agreement);
+        if (!serviceJourneyTransitionLogService.hasTransition(application.getId(), transition.event(), transition.toState())) {
+            serviceJourneyTransitionLogService.logTransition(
+                    application.getId(),
+                    draftAgreement.getAgreementId(),
+                    application.getElderId(),
+                    transition.fromState(),
+                    transition.event(),
+                    transition.toState(),
+                    "健康评估通过，进入待签约阶段",
+                    preSignAssessment);
+        }
+
+        return buildJourneyResult(
+                application.getId(),
+                application.getElderId(),
+                draftAgreement.getAgreementId(),
+                ServiceJourneyState.PENDING_AGREEMENT,
+                serviceJourneyStateMachine.getDefaultMessage(ServiceJourneyState.PENDING_AGREEMENT));
+    }
+
+    private ServiceJourneyResultDTO continueToInService(
+            ServiceApplicationPo application,
+            ServiceAgreementPo agreement) {
         ServiceAgreementDTO activeAgreement = ensureActiveAgreement(application, agreement);
         CarePlanDTO createdCarePlan = ensureCarePlan(activeAgreement);
         HealthProfileDTO createdHealthProfile = ensureHealthProfile(activeAgreement);
@@ -792,22 +890,24 @@ public class CareOrchestrationService {
         return result;
     }
 
+    private ServiceAgreementDTO ensureDraftAgreement(ServiceApplicationPo application, ServiceAgreementPo agreement) {
+        if (agreement != null) {
+            return ServiceAgreement.fromPo(agreement).toDTO();
+        }
+
+        ServiceAgreementDTO draftAgreement = new ServiceAgreementDTO();
+        draftAgreement.setApplicationId(application.getId());
+        draftAgreement.setElderId(application.getElderId());
+        draftAgreement.setServiceScene(application.getServiceScene());
+        return contractService.createDraftAgreement(draftAgreement);
+    }
+
     private ServiceAgreementDTO ensureActiveAgreement(ServiceApplicationPo application, ServiceAgreementPo agreement) {
         if (agreement != null && ServiceAgreement.STATUS_ACTIVE.equals(agreement.getStatus())) {
             return ServiceAgreement.fromPo(agreement).toDTO();
         }
 
-        ServiceAgreementDTO agreementToSign;
-        if (agreement == null) {
-            ServiceAgreementDTO draftAgreement = new ServiceAgreementDTO();
-            draftAgreement.setApplicationId(application.getId());
-            draftAgreement.setElderId(application.getElderId());
-            draftAgreement.setServiceScene(application.getServiceScene());
-            agreementToSign = contractService.createDraftAgreement(draftAgreement);
-        } else {
-            agreementToSign = ServiceAgreement.fromPo(agreement).toDTO();
-        }
-
+        ServiceAgreementDTO agreementToSign = ensureDraftAgreement(application, agreement);
         ServiceAgreementDTO signAgreement = new ServiceAgreementDTO();
         signAgreement.setAgreementId(agreementToSign.getAgreementId());
         signAgreement.setSignedBy(application.getApplicantName());
@@ -1071,6 +1171,103 @@ public class CareOrchestrationService {
                 .orElse(null);
     }
 
+    private RenewalOperationContext loadRenewalOperationContextForUpdate(Long agreementId) {
+        ServiceAgreementPo agreement = serviceAgreementRepository.findByIdForUpdate(agreementId)
+                .orElseThrow(() -> new IllegalArgumentException("当前服务协议不存在"));
+        ServiceReviewPo latestReview = serviceReviewRepository.findLatestByAgreementIdForUpdate(agreementId)
+                .orElse(null);
+        return new RenewalOperationContext(agreement, latestReview);
+    }
+
+    private void validateRenewalAgreement(ServiceAgreementPo agreement) {
+        if (agreement == null) {
+            throw new IllegalArgumentException("当前服务协议不存在");
+        }
+        if (!ServiceAgreement.STATUS_ACTIVE.equals(agreement.getStatus())) {
+            throw new IllegalStateException("当前协议状态不支持续约操作");
+        }
+        if (agreement.getExpiryDate() == null) {
+            throw new IllegalStateException("当前协议缺少到期日，无法办理续约");
+        }
+    }
+
+    private ServiceReviewPo requireCurrentCycleReview(ServiceAgreementPo agreement, ServiceReviewPo latestReview) {
+        if (!hasCurrentCycleReview(agreement, latestReview)) {
+            throw new IllegalStateException("当前周期尚未提交满意度评价");
+        }
+        return latestReview;
+    }
+
+    private boolean hasCurrentCycleReview(ServiceAgreementPo agreement, ServiceReviewPo latestReview) {
+        if (agreement == null || agreement.getExpiryDate() == null || latestReview == null || latestReview.getReviewedAt() == null) {
+            return false;
+        }
+        LocalDate reviewDate = latestReview.getReviewedAt().toLocalDate();
+        return !reviewDate.isAfter(agreement.getExpiryDate())
+                && !reviewDate.isBefore(agreement.getExpiryDate().minusMonths(1));
+    }
+
+    private RenewalContextDTO buildRenewalContext(ServiceAgreementPo agreement, ServiceReviewPo latestReview) {
+        LocalDate today = LocalDate.now();
+        LocalDate expiryDate = agreement.getExpiryDate();
+        long daysUntilExpiry = expiryDate == null ? 0L : ChronoUnit.DAYS.between(today, expiryDate);
+        boolean reviewSubmitted = hasCurrentCycleReview(agreement, latestReview);
+        String reviewConclusion = latestReview == null ? null : latestReview.getReviewConclusion();
+        String renewalStage = resolveRenewalStage(agreement, latestReview, reviewSubmitted, daysUntilExpiry);
+
+        return RenewalContextDTO.builder()
+                .agreementId(agreement.getId())
+                .applicationId(agreement.getApplicationId())
+                .elderId(agreement.getElderId())
+                .agreementStatus(agreement.getStatus())
+                .effectiveDate(agreement.getEffectiveDate())
+                .expiryDate(expiryDate)
+                .daysUntilExpiry(daysUntilExpiry)
+                .renewalStage(renewalStage)
+                .latestReviewScore(latestReview == null ? null : latestReview.getSatisfactionScore())
+                .latestReviewConclusion(reviewConclusion)
+                .reviewSubmitted(reviewSubmitted)
+                .canReview(ServiceAgreement.STATUS_ACTIVE.equals(agreement.getStatus()) && !reviewSubmitted)
+                .canRenew(ServiceAgreement.STATUS_ACTIVE.equals(agreement.getStatus()))
+                .canTerminate(ServiceAgreement.STATUS_ACTIVE.equals(agreement.getStatus()))
+                .suggestedNextExpiryDate(expiryDate == null ? null : expiryDate.plusMonths(1))
+                .message(resolveRenewalMessage(renewalStage, reviewConclusion, daysUntilExpiry))
+                .build();
+    }
+
+    private String resolveRenewalStage(
+            ServiceAgreementPo agreement,
+            ServiceReviewPo latestReview,
+            boolean reviewSubmitted,
+            long daysUntilExpiry) {
+        if (agreement == null) {
+            return "NO_AGREEMENT";
+        }
+        if (ServiceAgreement.STATUS_TERMINATED.equals(agreement.getStatus())) {
+            return "TERMINATED";
+        }
+        if (!ServiceAgreement.STATUS_ACTIVE.equals(agreement.getStatus())) {
+            return "IN_SERVICE";
+        }
+        if (reviewSubmitted && latestReview != null) {
+            return "PENDING_RENEWAL";
+        }
+        if (daysUntilExpiry <= 7) {
+            return "UPCOMING_EXPIRY";
+        }
+        return "IN_SERVICE";
+    }
+
+    private String resolveRenewalMessage(String renewalStage, String reviewConclusion, long daysUntilExpiry) {
+        return switch (renewalStage) {
+            case "UPCOMING_EXPIRY" -> "协议将于" + daysUntilExpiry + "天内到期，可直接续约、结束本期服务，或先提交满意度评价";
+            case "PENDING_RENEWAL" -> "当前可直接选择续约月数并办理下一服务周期、结束本期服务，或补充查看本周期评价";
+            case "PENDING_REVIEW" -> "当前周期已完成评价，仍可直接续约或结束本期服务";
+            case "TERMINATED" -> "当前服务已结束";
+            default -> "当前服务执行中";
+        };
+    }
+
     private CareAnalyticsOverviewDTO.StagePoint stage(String name, int value) {
         CareAnalyticsOverviewDTO.StagePoint point = new CareAnalyticsOverviewDTO.StagePoint();
         point.setName(name);
@@ -1123,6 +1320,11 @@ public class CareOrchestrationService {
             ServiceAgreementPo agreement,
             String latestReviewConclusion,
             ServiceJourneyState currentState) {
+    }
+
+    private record RenewalOperationContext(
+            ServiceAgreementPo agreement,
+            ServiceReviewPo latestReview) {
     }
 
     private record ReviewDecision(

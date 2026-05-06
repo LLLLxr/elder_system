@@ -1,5 +1,6 @@
 package org.smart_elder_system.careorchestration.controller;
 
+import jakarta.validation.constraints.Max;
 import jakarta.validation.constraints.Min;
 import jakarta.validation.constraints.NotBlank;
 import lombok.RequiredArgsConstructor;
@@ -15,6 +16,7 @@ import org.smart_elder_system.careorchestration.dto.ServiceJourneyTransitionLogI
 import org.smart_elder_system.careorchestration.journey.ServiceJourneyState;
 import org.smart_elder_system.careorchestration.service.CareOrchestrationService;
 import org.smart_elder_system.common.dto.care.IntakeRecordDTO;
+import org.smart_elder_system.common.dto.care.RenewalContextDTO;
 import org.smart_elder_system.common.dto.care.ServiceJourneyResultDTO;
 
 import java.util.List;
@@ -102,6 +104,42 @@ public class CareOrchestrationController {
                 reviewComment);
 
         return ResponseEntity.ok(result);
+    }
+
+    @GetMapping("/renewal-context/latest/by-applicant")
+    public ResponseEntity<RenewalContextDTO> getLatestRenewalContextByApplicant(
+            @RequestParam @NotBlank String applicantName) {
+        return ResponseEntity.ok(careOrchestrationService.getLatestRenewalContextByApplicant(applicantName));
+    }
+
+    @PostMapping("/renewals/review")
+    public ResponseEntity<RenewalContextDTO> submitRenewalReview(
+            @RequestParam @Min(1) Long agreementId,
+            @RequestParam @Min(1) Long elderId,
+            @RequestParam @Min(0) Integer satisfactionScore,
+            @RequestParam(required = false) String reviewComment) {
+        return ResponseEntity.ok(careOrchestrationService.submitRenewalReview(
+                agreementId,
+                elderId,
+                satisfactionScore,
+                reviewComment));
+    }
+
+    @PostMapping("/renewals/{agreementId}/confirm")
+    public ResponseEntity<RenewalContextDTO> confirmRenewal(
+            @PathVariable @Min(1) Long agreementId,
+            @RequestParam @Min(1) @Max(12) Integer renewMonths) {
+        if (renewMonths == null || renewMonths < 1 || renewMonths > 12) {
+            throw new IllegalArgumentException("续约月数必须在1到12个月之间");
+        }
+        return ResponseEntity.ok(careOrchestrationService.confirmRenewal(agreementId, renewMonths));
+    }
+
+    @PostMapping("/renewals/{agreementId}/decline")
+    public ResponseEntity<RenewalContextDTO> declineRenewal(
+            @PathVariable @Min(1) Long agreementId,
+            @RequestParam(required = false) String reason) {
+        return ResponseEntity.ok(careOrchestrationService.declineRenewal(agreementId, reason));
     }
 
     @GetMapping("/journeys/intake-records")

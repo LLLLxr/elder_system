@@ -38,6 +38,7 @@ import org.smart_elder_system.quality.po.ServiceReviewPo;
 import org.smart_elder_system.quality.repository.ServiceReviewRepository;
 import org.smart_elder_system.quality.service.QualityService;
 
+import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.Optional;
 
@@ -45,6 +46,7 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyLong;
+import static org.mockito.ArgumentMatchers.argThat;
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.ArgumentMatchers.isNull;
 import static org.mockito.Mockito.doThrow;
@@ -204,7 +206,7 @@ class CareOrchestrationServiceTest {
     }
 
     @Test
-    void shouldContinueToInServiceAfterHealthApproval() {
+    void shouldContinueToPendingAgreementAfterHealthApproval() {
         ServiceApplicationPo application = applicationPo(1001L, 3003L,
                 org.smart_elder_system.admission.model.ServiceApplication.STATUS_PASSED);
         application.setApplicantName("张三");
@@ -224,45 +226,19 @@ class CareOrchestrationServiceTest {
         assessment.setAssessmentType("PRE_SIGN_PASS");
         assessment.setAssessedAt(LocalDateTime.now());
 
-        ServiceAgreementDTO signedAgreement = new ServiceAgreementDTO();
-        signedAgreement.setAgreementId(2002L);
-        signedAgreement.setApplicationId(1001L);
-        signedAgreement.setElderId(3003L);
-        signedAgreement.setServiceScene("HOME");
-        signedAgreement.setStatus(org.smart_elder_system.contract.model.ServiceAgreement.STATUS_ACTIVE);
-
         when(serviceApplicationRepository.findByIdForUpdate(1001L)).thenReturn(Optional.of(application));
         when(serviceAgreementRepository.findLatestByApplicationIdForUpdate(1001L)).thenReturn(Optional.of(agreement));
         when(healthAssessmentRecordRepository.findTopByApplicationIdAndAssessmentTypeInOrderByAssessedAtDescIdDesc(eq(1001L), any()))
                 .thenReturn(Optional.of(assessment));
-        when(contractService.signAgreement(any())).thenReturn(signedAgreement);
-        when(carePlanRepository.findTopByAgreementIdOrderByPlanDateDescIdDesc(2002L)).thenReturn(Optional.empty());
-        when(healthProfileRepository.findTopByElderIdAndAgreementIdOrderByProfileDateDescIdDesc(3003L, 2002L)).thenReturn(Optional.empty());
-        when(healthAssessmentRecordRepository.findTopByAgreementIdAndAssessmentTypeOrderByAssessedAtDescIdDesc(2002L, "INTAKE"))
-                .thenReturn(Optional.empty());
-
-        CarePlanDTO carePlan = new CarePlanDTO();
-        carePlan.setPlanId(5001L);
-        when(careDeliveryService.createCarePlan(any())).thenReturn(carePlan);
-
-        HealthProfileDTO healthProfile = new HealthProfileDTO();
-        healthProfile.setProfileId(6001L);
-        when(healthService.createHealthProfile(any())).thenReturn(healthProfile);
-
-        HealthAssessmentDTO intakeAssessment = new HealthAssessmentDTO();
-        intakeAssessment.setAssessmentId(7001L);
-        when(healthService.performAssessment(any())).thenReturn(intakeAssessment);
 
         CareOrchestrationService service = newService();
         ServiceJourneyResultDTO result = service.continueAfterAssessment(1001L);
 
-        assertEquals("IN_SERVICE", result.getFinalStatus());
-        assertEquals("需求评估与健康评估均已通过，已签订协议并进入在服状态", result.getMessage());
+        assertEquals("PENDING_AGREEMENT", result.getFinalStatus());
+        assertEquals("健康评估已通过，待签订服务协议", result.getMessage());
         assertEquals(2002L, result.getAgreementId());
-        assertEquals(5001L, result.getCarePlanId());
-        assertEquals(6001L, result.getHealthProfileId());
-        assertEquals(7001L, result.getHealthAssessmentId());
         verify(serviceJourneyTransitionPolicy).requireAuthority("journey:health:approve");
+        verify(serviceJourneyTaskService).completeOpenTask(1001L, ServiceJourneyTaskService.TASK_TYPE_HEALTH_ASSESSMENT);
         verify(serviceJourneyTransitionLogService).logTransition(
                 eq(1001L),
                 eq(2002L),
@@ -273,16 +249,10 @@ class CareOrchestrationServiceTest {
                 eq("健康评估通过，进入待签约阶段"),
                 eq(assessment)
         );
-        verify(serviceJourneyTransitionLogService).logTransition(
-                eq(1001L),
-                eq(2002L),
-                eq(3003L),
-                eq(ServiceJourneyState.PENDING_AGREEMENT),
-                eq(ServiceJourneyEvent.AGREEMENT_SIGNED),
-                eq(ServiceJourneyState.IN_SERVICE),
-                eq("需求评估与健康评估均已通过，已签订协议并进入在服状态"),
-                eq(signedAgreement)
-        );
+        verify(contractService, never()).signAgreement(any());
+        verify(careDeliveryService, never()).createCarePlan(any());
+        verify(healthService, never()).createHealthProfile(any());
+        verify(healthService, never()).performAssessment(any());
     }
 
     @Test
@@ -569,6 +539,60 @@ class CareOrchestrationServiceTest {
         verify(qualityService, never()).reviewService(any());
         verify(contractService, never()).renewAgreement(anyLong(), any());
         verify(contractService, never()).terminateAgreement(anyLong());
+    }
+
+    @Test
+    void shouldConfirmRenewalWithSelectedMonths() {
+        ServiceAgreementPo agreement = new ServiceAgreementPo();
+        agreement.setId(2002L);
+        agreement.setApplicationId(1001L);
+        agreement.setElderId(3003L);
+        agreement.setStatus(org.smart_elder_system.contract.model.ServiceAgreement.STATUS_ACTIVE);
+        agreement.setEffectiveDate(LocalDate.of(2026, 4, 26));
+        agreement.setExpiryDate(LocalDate.of(2026, 5, 26));
+
+        ServiceAgreementDTO renewedAgreement = new ServiceAgreementDTO();
+        renewedAgreement.setAgreementId(2002L);
+        renewedAgreement.setApplicationId(1001L);
+        renewedAgreement.setElderId(3003L);
+        renewedAgreement.setStatus(org.smart_elder_system.contract.model.ServiceAgreement.STATUS_ACTIVE);
+        renewedAgreement.setEffectiveDate(LocalDate.of(2026, 4, 26));
+        renewedAgreement.setExpiryDate(LocalDate.of(2026, 8, 26));
+
+        when(serviceAgreementRepository.findByIdForUpdate(2002L)).thenReturn(Optional.of(agreement));
+        when(serviceReviewRepository.findLatestByAgreementIdForUpdate(2002L)).thenReturn(Optional.empty());
+        when(contractService.renewAgreement(eq(2002L), any(ServiceAgreementDTO.class))).thenReturn(renewedAgreement);
+
+        CareOrchestrationService service = newService();
+        var result = service.confirmRenewal(2002L, 3);
+
+        assertEquals("RENEWED", result.getRenewalStage());
+        assertEquals("已续约3个月，新的服务周期已生效", result.getMessage());
+        assertEquals(LocalDate.of(2026, 8, 26), result.getExpiryDate());
+        verify(serviceJourneyTransitionPolicy).requireAuthority("journey:review:renew");
+        verify(contractService).renewAgreement(eq(2002L), argThat(request ->
+                LocalDate.of(2026, 8, 26).equals(request.getExpiryDate())));
+    }
+
+    @Test
+    void shouldRejectInvalidRenewMonthsWhenConfirmingRenewal() {
+        ServiceAgreementPo agreement = new ServiceAgreementPo();
+        agreement.setId(2002L);
+        agreement.setApplicationId(1001L);
+        agreement.setElderId(3003L);
+        agreement.setStatus(org.smart_elder_system.contract.model.ServiceAgreement.STATUS_ACTIVE);
+        agreement.setEffectiveDate(LocalDate.of(2026, 4, 26));
+        agreement.setExpiryDate(LocalDate.of(2026, 5, 26));
+
+        when(serviceAgreementRepository.findByIdForUpdate(2002L)).thenReturn(Optional.of(agreement));
+        when(serviceReviewRepository.findLatestByAgreementIdForUpdate(2002L)).thenReturn(Optional.empty());
+
+        CareOrchestrationService service = newService();
+
+        IllegalArgumentException exception = assertThrows(IllegalArgumentException.class,
+                () -> service.confirmRenewal(2002L, 0));
+        assertEquals("续约月数必须在1到12个月之间", exception.getMessage());
+        verify(contractService, never()).renewAgreement(anyLong(), any());
     }
 
     @Test

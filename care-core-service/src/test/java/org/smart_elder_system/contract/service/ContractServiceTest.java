@@ -30,6 +30,29 @@ class ContractServiceTest {
     private ContractService contractService;
 
     @Test
+    void shouldGetAgreementById() {
+        ServiceAgreementPo po = agreementPo(1L, ServiceAgreement.STATUS_ACTIVE, "签约员", LocalDate.of(2026, 4, 26), LocalDate.of(2027, 4, 26));
+        when(serviceAgreementRepository.findById(1L)).thenReturn(Optional.of(po));
+
+        ServiceAgreementDTO result = contractService.getAgreement(1L);
+
+        assertEquals(1L, result.getAgreementId());
+        assertEquals(ServiceAgreement.STATUS_ACTIVE, result.getStatus());
+        assertEquals("签约员", result.getSignedBy());
+    }
+
+    @Test
+    void shouldGetLatestAgreementByApplicationId() {
+        ServiceAgreementPo po = agreementPo(2L, ServiceAgreement.STATUS_DRAFT, null, null, null);
+        when(serviceAgreementRepository.findTopByApplicationIdOrderByIdDesc(1L)).thenReturn(Optional.of(po));
+
+        ServiceAgreementDTO result = contractService.getLatestAgreementByApplicationId(1L);
+
+        assertEquals(2L, result.getAgreementId());
+        assertEquals(ServiceAgreement.STATUS_DRAFT, result.getStatus());
+    }
+
+    @Test
     void shouldCreateDraftAgreementUsingModelConversion() {
         ServiceAgreementDTO request = new ServiceAgreementDTO();
         request.setApplicationId(1L);
@@ -66,14 +89,60 @@ class ContractServiceTest {
         request.setAgreementId(1L);
         request.setSignedBy("签约员");
         request.setEffectiveDate(LocalDate.of(2026, 4, 26));
-        request.setExpiryDate(LocalDate.of(2027, 4, 26));
+        request.setExpiryDate(LocalDate.of(2026, 5, 26));
 
         ServiceAgreementDTO result = contractService.signAgreement(request);
 
         assertEquals(ServiceAgreement.STATUS_ACTIVE, result.getStatus());
         assertEquals("签约员", po.getSignedBy());
         assertEquals(LocalDate.of(2026, 4, 26), po.getEffectiveDate());
-        assertEquals(LocalDate.of(2027, 4, 26), po.getExpiryDate());
+        assertEquals(LocalDate.of(2026, 5, 26), po.getExpiryDate());
+    }
+
+    @Test
+    void shouldDefaultExpiryDateToOneMonthWhenSigning() {
+        ServiceAgreementPo po = agreementPo(1L, ServiceAgreement.STATUS_DRAFT, null, null, null);
+        when(serviceAgreementRepository.findByIdForUpdate(1L)).thenReturn(Optional.of(po));
+        when(serviceAgreementRepository.save(any())).thenAnswer(invocation -> invocation.getArgument(0));
+
+        ServiceAgreementDTO request = new ServiceAgreementDTO();
+        request.setAgreementId(1L);
+        request.setSignedBy("签约员");
+        request.setEffectiveDate(LocalDate.of(2026, 4, 26));
+
+        ServiceAgreementDTO result = contractService.signAgreement(request);
+
+        assertEquals(LocalDate.of(2026, 5, 26), result.getExpiryDate());
+        assertEquals(LocalDate.of(2026, 5, 26), po.getExpiryDate());
+    }
+
+    @Test
+    void shouldDefaultRenewalFromCurrentExpiryDate() {
+        ServiceAgreementPo po = agreementPo(1L, ServiceAgreement.STATUS_ACTIVE, "签约员", LocalDate.of(2026, 4, 26), LocalDate.of(2026, 5, 26));
+        when(serviceAgreementRepository.findByIdForUpdate(1L)).thenReturn(Optional.of(po));
+        when(serviceAgreementRepository.save(any())).thenAnswer(invocation -> invocation.getArgument(0));
+
+        ServiceAgreementDTO result = contractService.renewAgreement(1L, new ServiceAgreementDTO());
+
+        assertEquals(ServiceAgreement.STATUS_ACTIVE, result.getStatus());
+        assertEquals(LocalDate.of(2026, 6, 26), result.getExpiryDate());
+        assertEquals(LocalDate.of(2026, 6, 26), po.getExpiryDate());
+    }
+
+    @Test
+    void shouldUseExplicitExpiryDateWhenRenewing() {
+        ServiceAgreementPo po = agreementPo(1L, ServiceAgreement.STATUS_ACTIVE, "签约员", LocalDate.of(2026, 4, 26), LocalDate.of(2026, 5, 26));
+        when(serviceAgreementRepository.findByIdForUpdate(1L)).thenReturn(Optional.of(po));
+        when(serviceAgreementRepository.save(any())).thenAnswer(invocation -> invocation.getArgument(0));
+
+        ServiceAgreementDTO request = new ServiceAgreementDTO();
+        request.setExpiryDate(LocalDate.of(2026, 8, 26));
+
+        ServiceAgreementDTO result = contractService.renewAgreement(1L, request);
+
+        assertEquals(ServiceAgreement.STATUS_ACTIVE, result.getStatus());
+        assertEquals(LocalDate.of(2026, 8, 26), result.getExpiryDate());
+        assertEquals(LocalDate.of(2026, 8, 26), po.getExpiryDate());
     }
 
     @Test
