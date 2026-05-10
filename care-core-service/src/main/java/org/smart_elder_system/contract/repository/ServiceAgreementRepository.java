@@ -25,6 +25,8 @@ public interface ServiceAgreementRepository extends JpaRepository<ServiceAgreeme
 
     Optional<ServiceAgreementPo> findTopByApplicationIdOrderByIdDesc(Long applicationId);
 
+    Optional<ServiceAgreementPo> findTopByElderIdOrderByEffectiveDateDescIdDesc(Long elderId);
+
     @Lock(LockModeType.PESSIMISTIC_WRITE)
     @Query("SELECT a FROM ServiceAgreementPo a WHERE a.id = :agreementId")
     Optional<ServiceAgreementPo> findByIdForUpdate(@Param("agreementId") Long agreementId);

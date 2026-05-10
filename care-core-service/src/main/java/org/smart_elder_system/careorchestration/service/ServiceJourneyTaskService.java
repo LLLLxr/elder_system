@@ -1,9 +1,9 @@
 package org.smart_elder_system.careorchestration.service;
 
 import lombok.RequiredArgsConstructor;
-import org.smart_elder_system.careorchestration.dto.CareAnalyticsOverviewDTO;
-import org.smart_elder_system.careorchestration.dto.ServiceJourneyTaskItemDTO;
-import org.smart_elder_system.careorchestration.dto.ServiceJourneyTaskOverviewDTO;
+import org.smart_elder_system.careorchestration.dto.CareAnalyticsOverviewDto;
+import org.smart_elder_system.careorchestration.dto.ServiceJourneyTaskItemDto;
+import org.smart_elder_system.careorchestration.dto.ServiceJourneyTaskOverviewDto;
 import org.smart_elder_system.careorchestration.journey.ServiceJourneyState;
 import org.smart_elder_system.careorchestration.po.ServiceJourneyTaskPo;
 import org.smart_elder_system.careorchestration.repository.ServiceJourneyTaskRepository;
@@ -26,26 +26,67 @@ public class ServiceJourneyTaskService {
 
     public static final String TASK_TYPE_ADMISSION_ASSESSMENT = "ADMISSION_ASSESSMENT";
     public static final String TASK_TYPE_HEALTH_ASSESSMENT = "HEALTH_ASSESSMENT";
+    public static final String TASK_TYPE_FAMILY_VISIT_REVIEW = "FAMILY_VISIT_REVIEW";
+    public static final String TASK_TYPE_CAREGIVER_QUALIFICATION_REVIEW = "CAREGIVER_QUALIFICATION_REVIEW";
+    public static final String TASK_TYPE_DAILY_CARE_TASK_EXECUTION = "DAILY_CARE_TASK_EXECUTION";
+    public static final String TASK_TYPE_NURSE_CARE_RECORD = "NURSE_CARE_RECORD";
+    public static final String TASK_TYPE_DOCTOR_ROUND_RECORD = "DOCTOR_ROUND_RECORD";
     private static final String ROLE_CUSTOMER_SERVICE = "CUSTOMER_SERVICE";
+    private static final String ROLE_MEDICAL_STAFF = "MEDICAL_STAFF";
     private static final long ADMISSION_TASK_HOURS = 24L;
     private static final long HEALTH_TASK_HOURS = 24L;
+    private static final long FAMILY_VISIT_REVIEW_TASK_HOURS = 24L;
+    private static final long CAREGIVER_QUALIFICATION_REVIEW_TASK_HOURS = 24L;
+    private static final long DAILY_CARE_TASK_HOURS = 24L;
+    private static final long NURSE_CARE_RECORD_TASK_HOURS = 24L;
+    private static final long DOCTOR_ROUND_RECORD_TASK_HOURS = 24L;
 
     private final ServiceJourneyTaskRepository serviceJourneyTaskRepository;
 
     @Transactional
     public void createAdmissionAssessmentTask(Long applicationId, Long elderId) {
         createTask(applicationId, null, elderId, TASK_TYPE_ADMISSION_ASSESSMENT,
-                ServiceJourneyState.PENDING_ASSESSMENT, ROLE_CUSTOMER_SERVICE, LocalDateTime.now().plusHours(ADMISSION_TASK_HOURS));
+                ServiceJourneyState.PENDING_ASSESSMENT.name(), ROLE_CUSTOMER_SERVICE, LocalDateTime.now().plusHours(ADMISSION_TASK_HOURS));
     }
 
     @Transactional
     public void createHealthAssessmentTask(Long applicationId, Long elderId) {
         createTask(applicationId, null, elderId, TASK_TYPE_HEALTH_ASSESSMENT,
-                ServiceJourneyState.PENDING_HEALTH_ASSESSMENT, ROLE_CUSTOMER_SERVICE, LocalDateTime.now().plusHours(HEALTH_TASK_HOURS));
+                ServiceJourneyState.PENDING_HEALTH_ASSESSMENT.name(), ROLE_CUSTOMER_SERVICE, LocalDateTime.now().plusHours(HEALTH_TASK_HOURS));
+    }
+
+    @Transactional
+    public void createFamilyVisitReviewTask(Long reservationId, Long elderId) {
+        createTask(reservationId, null, elderId, TASK_TYPE_FAMILY_VISIT_REVIEW,
+                "FAMILY_VISIT_PENDING_REVIEW", ROLE_MEDICAL_STAFF, LocalDateTime.now().plusHours(FAMILY_VISIT_REVIEW_TASK_HOURS));
+    }
+
+    @Transactional
+    public void createCaregiverQualificationReviewTask(Long applicationId, Long caregiverUserId) {
+        createTask(applicationId, null, caregiverUserId, TASK_TYPE_CAREGIVER_QUALIFICATION_REVIEW,
+                "CAREGIVER_QUALIFICATION_PENDING_REVIEW", ROLE_MEDICAL_STAFF, LocalDateTime.now().plusHours(CAREGIVER_QUALIFICATION_REVIEW_TASK_HOURS));
+    }
+
+    @Transactional
+    public void createDailyCareTask(Long applicationId, Long agreementId, Long elderId) {
+        createTask(applicationId, agreementId, elderId, TASK_TYPE_DAILY_CARE_TASK_EXECUTION,
+                "DAILY_CARE_TASK_PENDING", ROLE_MEDICAL_STAFF, LocalDateTime.now().plusHours(DAILY_CARE_TASK_HOURS));
+    }
+
+    @Transactional
+    public void createNurseCareRecordTask(Long applicationId, Long agreementId, Long elderId) {
+        createTask(applicationId, agreementId, elderId, TASK_TYPE_NURSE_CARE_RECORD,
+                "NURSE_CARE_RECORD_PENDING", ROLE_MEDICAL_STAFF, LocalDateTime.now().plusHours(NURSE_CARE_RECORD_TASK_HOURS));
+    }
+
+    @Transactional
+    public void createDoctorRoundRecordTask(Long applicationId, Long agreementId, Long elderId) {
+        createTask(applicationId, agreementId, elderId, TASK_TYPE_DOCTOR_ROUND_RECORD,
+                "DOCTOR_ROUND_RECORD_PENDING", ROLE_MEDICAL_STAFF, LocalDateTime.now().plusHours(DOCTOR_ROUND_RECORD_TASK_HOURS));
     }
 
     @Transactional(readOnly = true)
-    public Page<ServiceJourneyTaskItemDTO> listTasks(
+    public Page<ServiceJourneyTaskItemDto> listTasks(
             Long applicationId,
             Long elderId,
             Long agreementId,
@@ -68,18 +109,18 @@ public class ServiceJourneyTaskService {
                         assigneeRole,
                         normalizeStatuses(statuses),
                         pageable)
-                .map(this::toItemDTO);
+                .map(this::toItemDto);
     }
 
     @Transactional(readOnly = true)
-    public List<ServiceJourneyTaskItemDTO> listTaskTimeline(Long applicationId) {
+    public List<ServiceJourneyTaskItemDto> listTaskTimeline(Long applicationId) {
         return serviceJourneyTaskRepository.findByApplicationIdOrderByCreatedDateTimeUtcAsc(applicationId).stream()
-                .map(this::toItemDTO)
+                .map(this::toItemDto)
                 .toList();
     }
 
     @Transactional(readOnly = true)
-    public ServiceJourneyTaskOverviewDTO getTaskOverview(
+    public ServiceJourneyTaskOverviewDto getTaskOverview(
             Long applicationId,
             Long elderId,
             Long agreementId,
@@ -102,7 +143,7 @@ public class ServiceJourneyTaskService {
                 assigneeRole,
                 normalizedStatuses);
 
-        ServiceJourneyTaskOverviewDTO dto = new ServiceJourneyTaskOverviewDTO();
+        ServiceJourneyTaskOverviewDto dto = new ServiceJourneyTaskOverviewDto();
         dto.setPendingCount(resolveCount(statusRows, ServiceJourneyTaskPo.STATUS_PENDING));
         dto.setOverdueCount(resolveCount(statusRows, ServiceJourneyTaskPo.STATUS_OVERDUE));
         dto.setCompletedCount(resolveCount(statusRows, ServiceJourneyTaskPo.STATUS_COMPLETED));
@@ -151,7 +192,7 @@ public class ServiceJourneyTaskService {
             Long agreementId,
             Long elderId,
             String taskType,
-            ServiceJourneyState currentState,
+            String currentState,
             String assigneeRole,
             LocalDateTime dueAt) {
         Optional<ServiceJourneyTaskPo> existingOpenTask = serviceJourneyTaskRepository.findLatestOpenTaskForUpdate(
@@ -160,7 +201,7 @@ public class ServiceJourneyTaskService {
                 Set.of(ServiceJourneyTaskPo.STATUS_PENDING, ServiceJourneyTaskPo.STATUS_OVERDUE));
         if (existingOpenTask.isPresent()) {
             ServiceJourneyTaskPo task = existingOpenTask.get();
-            if (currentState.name().equals(task.getCurrentState())
+            if (currentState.equals(task.getCurrentState())
                     && java.util.Objects.equals(agreementId, task.getAgreementId())
                     && java.util.Objects.equals(elderId, task.getElderId())
                     && java.util.Objects.equals(assigneeRole, task.getAssigneeRole())) {
@@ -183,7 +224,7 @@ public class ServiceJourneyTaskService {
         task.setAgreementId(agreementId);
         task.setElderId(elderId);
         task.setTaskType(taskType);
-        task.setCurrentState(currentState.name());
+        task.setCurrentState(currentState);
         task.setAssigneeRole(assigneeRole);
         task.setStatus(ServiceJourneyTaskPo.STATUS_PENDING);
         task.setOpenFlag(1);
@@ -191,8 +232,8 @@ public class ServiceJourneyTaskService {
         serviceJourneyTaskRepository.save(task);
     }
 
-    private ServiceJourneyTaskItemDTO toItemDTO(ServiceJourneyTaskPo po) {
-        ServiceJourneyTaskItemDTO dto = new ServiceJourneyTaskItemDTO();
+    private ServiceJourneyTaskItemDto toItemDto(ServiceJourneyTaskPo po) {
+        ServiceJourneyTaskItemDto dto = new ServiceJourneyTaskItemDto();
         dto.setTaskId(po.getId());
         dto.setApplicationId(po.getApplicationId());
         dto.setAgreementId(po.getAgreementId());
@@ -207,9 +248,9 @@ public class ServiceJourneyTaskService {
         return dto;
     }
 
-    private List<CareAnalyticsOverviewDTO.StagePoint> toStagePoints(List<Object[]> rows) {
+    private List<CareAnalyticsOverviewDto.StagePoint> toStagePoints(List<Object[]> rows) {
         return rows.stream().map(row -> {
-            CareAnalyticsOverviewDTO.StagePoint point = new CareAnalyticsOverviewDTO.StagePoint();
+            CareAnalyticsOverviewDto.StagePoint point = new CareAnalyticsOverviewDto.StagePoint();
             point.setName(String.valueOf(row[0]));
             point.setValue(((Number) row[1]).intValue());
             return point;

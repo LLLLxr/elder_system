@@ -46,3 +46,6 @@ build/
 ### Node dependencies ###
 node_modules/
 packages/common-react/node_modules/
+
+### Claude skills (local only) ###
+.claude/skills/

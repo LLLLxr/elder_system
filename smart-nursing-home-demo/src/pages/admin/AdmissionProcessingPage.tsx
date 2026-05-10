@@ -75,7 +75,7 @@ export default function AdmissionProcessingPage() {
 
       <Card title="1) 申请受理登记">
         <Form<ServiceApplication> form={applicationForm} layout="vertical" onFinish={handleSubmitApplication}>
-          <Form.Item label="老人ID" name="elderId" rules={[{ required: true, message: '请输入老人ID' }]}>
+          <Form.Item label="老人ID" name="elderId" rules={[{ required: true, message: '请输入老人编号' }]}>
             <InputNumber min={1} style={{ width: '100%' }} />
           </Form.Item>
 
@@ -132,7 +132,7 @@ export default function AdmissionProcessingPage() {
           <Form.Item
             label="申请单ID"
             name="applicationId"
-            rules={[{ required: true, message: '请输入申请单ID' }]}
+            rules={[{ required: true, message: '请输入申请单编号' }]}
           >
             <InputNumber min={1} style={{ width: '100%' }} />
           </Form.Item>

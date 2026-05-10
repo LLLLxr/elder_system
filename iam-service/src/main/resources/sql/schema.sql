@@ -132,6 +132,47 @@ CREATE TABLE IF NOT EXISTS `face_verify_record` (
     CONSTRAINT `fk_face_verify_user` FOREIGN KEY (`user_id`) REFERENCES `sys_user` (`id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COMMENT='人脸验证记录表';
 
+CREATE TABLE IF NOT EXISTS `user_elder_binding_request` (
+    `id` BIGINT NOT NULL AUTO_INCREMENT COMMENT '绑定申请ID',
+    `applicant_user_id` BIGINT NOT NULL COMMENT '申请人用户ID',
+    `elder_id` BIGINT DEFAULT NULL COMMENT '审核通过后的老人ID',
+    `elder_name` VARCHAR(100) NOT NULL COMMENT '老人姓名',
+    `elder_id_card` VARCHAR(32) NOT NULL COMMENT '老人身份证号',
+    `elder_phone` VARCHAR(32) DEFAULT NULL COMMENT '老人联系电话',
+    `relation_to_elder` VARCHAR(64) NOT NULL COMMENT '与老人关系',
+    `status` VARCHAR(32) NOT NULL COMMENT '申请状态',
+    `reviewed_by` VARCHAR(100) DEFAULT NULL COMMENT '审核人',
+    `review_comment` VARCHAR(500) DEFAULT NULL COMMENT '审核意见',
+    `reviewed_at` DATETIME DEFAULT NULL COMMENT '审核时间',
+    `created_by` VARCHAR(64) NOT NULL DEFAULT 'system' COMMENT '审计创建人',
+    `last_modified_by` VARCHAR(64) NOT NULL DEFAULT 'system' COMMENT '审计更新人',
+    `created_date_time_utc` DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP COMMENT '审计创建时间',
+    `last_modified_date_time_utc` DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP COMMENT '审计更新时间',
+    `version` BIGINT NOT NULL DEFAULT 1 COMMENT '乐观锁版本',
+    PRIMARY KEY (`id`),
+    KEY `idx_user_elder_binding_request_applicant_user_id` (`applicant_user_id`),
+    KEY `idx_user_elder_binding_request_status` (`status`),
+    KEY `idx_user_elder_binding_request_elder_id_card` (`elder_id_card`),
+    CONSTRAINT `fk_user_elder_binding_request_user` FOREIGN KEY (`applicant_user_id`) REFERENCES `sys_user` (`id`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COMMENT='用户老人绑定申请表';
+
+CREATE TABLE IF NOT EXISTS `user_elder_binding` (
+    `id` BIGINT NOT NULL AUTO_INCREMENT COMMENT '绑定关系ID',
+    `user_id` BIGINT NOT NULL COMMENT '用户ID',
+    `elder_id` BIGINT NOT NULL COMMENT '老人ID',
+    `binding_type` VARCHAR(32) NOT NULL COMMENT '绑定类型',
+    `relation_to_elder` VARCHAR(64) DEFAULT NULL COMMENT '与老人关系',
+    `created_by` VARCHAR(64) NOT NULL DEFAULT 'system' COMMENT '审计创建人',
+    `last_modified_by` VARCHAR(64) NOT NULL DEFAULT 'system' COMMENT '审计更新人',
+    `created_date_time_utc` DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP COMMENT '审计创建时间',
+    `last_modified_date_time_utc` DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP COMMENT '审计更新时间',
+    `version` BIGINT NOT NULL DEFAULT 1 COMMENT '乐观锁版本',
+    PRIMARY KEY (`id`),
+    UNIQUE KEY `uk_user_elder_binding_user_elder_type` (`user_id`, `elder_id`, `binding_type`),
+    KEY `idx_user_elder_binding_elder_id` (`elder_id`),
+    CONSTRAINT `fk_user_elder_binding_user` FOREIGN KEY (`user_id`) REFERENCES `sys_user` (`id`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COMMENT='用户老人绑定关系表';
+
 CREATE TABLE IF NOT EXISTS `user_operation_log` (
     `id` BIGINT NOT NULL AUTO_INCREMENT COMMENT 'ID',
     `user_id` BIGINT DEFAULT NULL COMMENT '用户ID',

@@ -2,15 +2,12 @@ import { useEffect, useState } from 'react';
 import {
   Alert,
   Button,
-  Card,
   Collapse,
   Form,
   Input,
   Select,
-  Space,
   Table,
   Tag,
-  Typography,
 } from 'antd';
 import type { ColumnsType } from 'antd/es/table';
 import {
@@ -20,6 +17,7 @@ import {
 } from '../../api/admissionApi';
 import { getCurrentAdminUsername } from '../../api/authApi';
 import { extractApiErrorMessage } from '../../api/client';
+import AdminPageScaffold from '../../components/AdminPageScaffold';
 import type {
   EligibilityAssessmentRequest,
   ServiceApplication,
@@ -160,16 +158,10 @@ export default function NeedsAssessmentPage() {
   };
 
   return (
-    <Space direction="vertical" size="large" style={{ width: '100%' }}>
-      <Typography.Title level={4} style={{ margin: 0 }}>
-        需求评估
-      </Typography.Title>
-
-      <Alert
-        type="info"
-        showIcon
-        message="本页仅处理用户端已提交申请的需求评估，不提供申请受理登记。"
-      />
+    <AdminPageScaffold
+      title="需求评估"
+      description="处理用户端已提交的需求评估申请，选择待评估记录后提交评估结论。"
+    >
       <Alert
         type="info"
         showIcon
@@ -222,51 +214,55 @@ export default function NeedsAssessmentPage() {
               />
             ),
           },
+          {
+            key: 'submit-assessment',
+            label: '提交需求评估',
+            children: (
+              <Form<AssessmentFormValues> form={form} layout="vertical" onFinish={handleSubmit}>
+                <Alert
+                  type={selectedApplicationId ? 'success' : 'warning'}
+                  showIcon
+                  message={selectedApplicationId ? `当前选中申请：${selectedApplicationId}` : '请先在上方待评估列表选择申请单'}
+                  style={{ marginBottom: 16 }}
+                />
+
+                <Form.Item
+                  label="评估结论"
+                  name="eligible"
+                  rules={[{ required: true, message: '请选择评估结论' }]}
+                >
+                  <Select
+                    options={[
+                      { label: '通过（允许继续签订服务协议）', value: true },
+                      { label: '不通过（终止服务）', value: false },
+                    ]}
+                  />
+                </Form.Item>
+
+                <Form.Item
+                  label="评估说明"
+                  name="assessmentConclusion"
+                  rules={[{ required: true, message: '请输入评估说明' }]}
+                >
+                  <Input.TextArea rows={4} placeholder="记录评估依据与结论" />
+                </Form.Item>
+
+                <Form.Item
+                  label="评估人"
+                  name="assessor"
+                  rules={[{ required: true, message: '未获取到当前登录用户' }]}
+                >
+                  <Input disabled />
+                </Form.Item>
+
+                <Button type="primary" htmlType="submit" loading={submitting}>
+                  完成需求评估
+                </Button>
+              </Form>
+            ),
+          },
         ]}
       />
-
-      <Card title="提交需求评估">
-        <Form<AssessmentFormValues> form={form} layout="vertical" onFinish={handleSubmit}>
-          <Form.Item
-            label="当前选中申请"
-          >
-            <Input value={selectedApplicationId ?? ''} disabled placeholder="请先在上方待评估列表选择申请单" />
-          </Form.Item>
-
-          <Form.Item
-            label="评估结论"
-            name="eligible"
-            rules={[{ required: true, message: '请选择评估结论' }]}
-          >
-            <Select
-              options={[
-                { label: '通过（允许继续签订服务协议）', value: true },
-                { label: '不通过（终止服务）', value: false },
-              ]}
-            />
-          </Form.Item>
-
-          <Form.Item
-            label="评估说明"
-            name="assessmentConclusion"
-            rules={[{ required: true, message: '请输入评估说明' }]}
-          >
-            <Input.TextArea rows={4} placeholder="记录评估依据与结论" />
-          </Form.Item>
-
-          <Form.Item
-            label="评估人"
-            name="assessor"
-            rules={[{ required: true, message: '未获取到当前登录用户' }]}
-          >
-            <Input disabled />
-          </Form.Item>
-
-          <Button type="primary" htmlType="submit" loading={submitting}>
-            完成需求评估
-          </Button>
-        </Form>
-      </Card>
-    </Space>
+    </AdminPageScaffold>
   );
 }

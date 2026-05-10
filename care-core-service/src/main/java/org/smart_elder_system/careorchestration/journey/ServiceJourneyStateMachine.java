@@ -1,8 +1,8 @@
 package org.smart_elder_system.careorchestration.journey;
 
-import org.smart_elder_system.admission.model.ServiceApplication;
-import org.smart_elder_system.contract.model.ServiceAgreement;
-import org.smart_elder_system.quality.model.ServiceReview;
+import org.smart_elder_system.admission.vo.ServiceApplication;
+import org.smart_elder_system.contract.vo.ServiceAgreement;
+import org.smart_elder_system.quality.vo.ServiceReview;
 import org.springframework.stereotype.Component;
 
 import java.util.EnumMap;
@@ -159,8 +159,7 @@ public class ServiceJourneyStateMachine {
             return ServiceJourneyState.TERMINATED;
         }
 
-        if (ServiceAgreement.STATUS_RENEWED.equals(facts.getAgreementStatus())
-                || ServiceReview.REVIEW_CONCLUSION_RENEW.equals(facts.getReviewConclusion())) {
+        if (ServiceAgreement.STATUS_RENEWED.equals(facts.getAgreementStatus())) {
             return ServiceJourneyState.RENEWED;
         }
 
@@ -209,9 +208,6 @@ public class ServiceJourneyStateMachine {
     }
 
     public ServiceJourneyState toExternalState(ServiceJourneyState state) {
-        if (state == ServiceJourneyState.PENDING_AGREEMENT) {
-            return ServiceJourneyState.PENDING_HEALTH_ASSESSMENT;
-        }
         return state;
     }
 

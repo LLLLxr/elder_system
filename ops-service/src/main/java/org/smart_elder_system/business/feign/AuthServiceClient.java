@@ -1,7 +1,7 @@
 package org.smart_elder_system.business.feign;
 
-import org.smart_elder_system.business.dto.AuthValidationResultDTO;
-import org.smart_elder_system.business.dto.BusinessUserInfoDTO;
+import org.smart_elder_system.business.dto.AuthValidationResultDto;
+import org.smart_elder_system.business.dto.BusinessUserInfoDto;
 import org.springframework.cloud.openfeign.FeignClient;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestParam;
@@ -10,8 +10,8 @@ import org.springframework.web.bind.annotation.RequestParam;
 public interface AuthServiceClient {
 
     @GetMapping("/validate")
-    AuthValidationResultDTO validateToken(@RequestParam("token") String token);
+    AuthValidationResultDto validateToken(@RequestParam("token") String token);
 
     @GetMapping("/user-info")
-    BusinessUserInfoDTO getUserInfo(@RequestParam("token") String token);
+    BusinessUserInfoDto getUserInfo(@RequestParam("token") String token);
 }

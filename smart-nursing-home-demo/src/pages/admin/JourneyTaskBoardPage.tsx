@@ -4,6 +4,7 @@ import {
   Button,
   Card,
   Col,
+  Collapse,
   Drawer,
   Form,
   Input,
@@ -31,6 +32,7 @@ import {
   returnJourneyStep,
 } from '../../api/careOrchestrationApi';
 import { extractApiErrorMessage } from '../../api/client';
+import AdminPageScaffold from '../../components/AdminPageScaffold';
 import type {
   JourneyTaskItem,
   JourneyTaskOverview,
@@ -210,7 +212,7 @@ export default function JourneyTaskBoardPage() {
       setTimeline([]);
       setApplicationLogs([]);
       setAgreementLogs([]);
-      setDetailError('当前任务缺少申请ID，无法查看详情');
+      setDetailError('当前任务缺少申请编号，无法查看详情');
       setDetailLoading(false);
       return;
     }
@@ -304,7 +306,7 @@ export default function JourneyTaskBoardPage() {
 
   const handleOpenReturn = (task: JourneyTaskItem) => {
     if (!task.applicationId) {
-      message.error('当前任务缺少申请ID，无法回退');
+      message.error('当前任务缺少申请编号，无法回退');
       return;
     }
     setSelectedTask(task);
@@ -560,16 +562,11 @@ export default function JourneyTaskBoardPage() {
   );
 
   return (
-    <Space direction="vertical" size="large" style={{ width: '100%' }}>
-      <Space style={{ width: '100%', justifyContent: 'space-between' }} align="start">
-        <div>
-          <Typography.Title level={4} style={{ margin: 0 }}>
-            服务旅程任务看板
-          </Typography.Title>
-          <Typography.Text type="secondary">后台管理端可按申请、协议、角色与状态筛选全部旅程任务，并支持查看详情与回退。</Typography.Text>
-        </div>
-        <Button onClick={handleRefresh}>刷新</Button>
-      </Space>
+    <AdminPageScaffold
+      title="服务旅程任务看板"
+      description="后台管理端可按申请、协议、角色与状态筛选全部旅程任务，并支持查看详情与回退。"
+      extra={<Button onClick={handleRefresh}>刷新</Button>}
+    >
 
       {overviewError ? <Alert type="error" message={overviewError} showIcon /> : null}
       {listError ? <Alert type="error" message={listError} showIcon /> : null}
@@ -584,71 +581,82 @@ export default function JourneyTaskBoardPage() {
         ))}
       </Row>
 
-      <Card title="筛选条件">
-        <Form<FilterFormValues>
-          form={filterForm}
-          layout="vertical"
-          initialValues={{ statuses: DEFAULT_STATUSES }}
-        >
-          <Row gutter={16}>
-            <Col xs={24} md={8} lg={6}>
-              <Form.Item name="applicationId" label="申请ID">
-                <InputNumber min={1} style={{ width: '100%' }} placeholder="输入申请ID" />
-              </Form.Item>
-            </Col>
-            <Col xs={24} md={8} lg={6}>
-              <Form.Item name="agreementId" label="协议ID">
-                <InputNumber min={1} style={{ width: '100%' }} placeholder="输入协议ID" />
-              </Form.Item>
-            </Col>
-            <Col xs={24} md={8} lg={6}>
-              <Form.Item name="elderId" label="老人ID">
-                <InputNumber min={1} style={{ width: '100%' }} placeholder="输入老人ID" />
-              </Form.Item>
-            </Col>
-            <Col xs={24} md={8} lg={6}>
-              <Form.Item name="taskType" label="任务类型">
-                <Select allowClear options={taskTypeOptions} placeholder="选择任务类型" />
-              </Form.Item>
-            </Col>
-            <Col xs={24} md={8} lg={6}>
-              <Form.Item name="assigneeRole" label="处理角色">
-                <Select allowClear options={assigneeRoleOptions} placeholder="选择处理角色" />
-              </Form.Item>
-            </Col>
-            <Col xs={24} md={16} lg={12}>
-              <Form.Item name="statuses" label="任务状态">
-                <Select mode="multiple" options={statusOptions} placeholder="选择任务状态" />
-              </Form.Item>
-            </Col>
-          </Row>
-          <Space>
-            <Button type="primary" onClick={() => void handleSearch()}>
-              查询
-            </Button>
-            <Button onClick={handleReset}>重置</Button>
-          </Space>
-        </Form>
-      </Card>
-
-      <Card title="任务列表">
-        <Table<JourneyTaskItem>
-          rowKey={(record) => String(record.taskId ?? `${record.applicationId ?? 'app'}-${record.createdAt ?? 'created'}`)}
-          loading={listLoading}
-          columns={columns}
-          dataSource={tasks}
-          onChange={handleTableChange}
-          pagination={{
-            current: query.page + 1,
-            pageSize: query.size,
-            total,
-            showSizeChanger: true,
-            showTotal: (currentTotal) => `共 ${currentTotal} 条`,
-          }}
-          scroll={{ x: 1800 }}
-          locale={{ emptyText: listLoading ? '正在加载任务列表...' : '暂无任务数据' }}
-        />
-      </Card>
+      <Collapse
+        items={[
+          {
+            key: 'filters',
+            label: '筛选条件',
+            children: (
+              <Form<FilterFormValues>
+                form={filterForm}
+                layout="vertical"
+                initialValues={{ statuses: DEFAULT_STATUSES }}
+              >
+                <Row gutter={16}>
+                  <Col xs={24} md={8} lg={6}>
+                    <Form.Item name="applicationId" label="申请ID">
+                      <InputNumber min={1} style={{ width: '100%' }} placeholder="输入申请编号" />
+                    </Form.Item>
+                  </Col>
+                  <Col xs={24} md={8} lg={6}>
+                    <Form.Item name="agreementId" label="协议ID">
+                      <InputNumber min={1} style={{ width: '100%' }} placeholder="输入协议编号" />
+                    </Form.Item>
+                  </Col>
+                  <Col xs={24} md={8} lg={6}>
+                    <Form.Item name="elderId" label="老人ID">
+                      <InputNumber min={1} style={{ width: '100%' }} placeholder="输入老人编号" />
+                    </Form.Item>
+                  </Col>
+                  <Col xs={24} md={8} lg={6}>
+                    <Form.Item name="taskType" label="任务类型">
+                      <Select allowClear options={taskTypeOptions} placeholder="选择任务类型" />
+                    </Form.Item>
+                  </Col>
+                  <Col xs={24} md={8} lg={6}>
+                    <Form.Item name="assigneeRole" label="处理角色">
+                      <Select allowClear options={assigneeRoleOptions} placeholder="选择处理角色" />
+                    </Form.Item>
+                  </Col>
+                  <Col xs={24} md={16} lg={12}>
+                    <Form.Item name="statuses" label="任务状态">
+                      <Select mode="multiple" options={statusOptions} placeholder="选择任务状态" />
+                    </Form.Item>
+                  </Col>
+                </Row>
+                <Space>
+                  <Button type="primary" onClick={() => void handleSearch()}>
+                    查询
+                  </Button>
+                  <Button onClick={handleReset}>重置</Button>
+                </Space>
+              </Form>
+            ),
+          },
+          {
+            key: 'tasks',
+            label: `任务列表（${total}）`,
+            children: (
+              <Table<JourneyTaskItem>
+                rowKey={(record) => String(record.taskId ?? `${record.applicationId ?? 'app'}-${record.createdAt ?? 'created'}`)}
+                loading={listLoading}
+                columns={columns}
+                dataSource={tasks}
+                onChange={handleTableChange}
+                pagination={{
+                  current: query.page + 1,
+                  pageSize: query.size,
+                  total,
+                  showSizeChanger: true,
+                  showTotal: (currentTotal) => `共 ${currentTotal} 条`,
+                }}
+                scroll={{ x: 1800 }}
+                locale={{ emptyText: listLoading ? '正在加载任务列表...' : '暂无任务数据' }}
+              />
+            ),
+          },
+        ]}
+      />
 
       <Drawer
         title={selectedTask?.taskId ? `任务详情 #${selectedTask.taskId}` : '任务详情'}
@@ -756,6 +764,6 @@ export default function JourneyTaskBoardPage() {
           </Form>
         </Space>
       </Modal>
-    </Space>
+    </AdminPageScaffold>
   );
 }

@@ -1,9 +1,9 @@
 package org.smart_elder_system.careorchestration.journey;
 
 import org.junit.jupiter.api.Test;
-import org.smart_elder_system.admission.model.ServiceApplication;
-import org.smart_elder_system.contract.model.ServiceAgreement;
-import org.smart_elder_system.quality.model.ServiceReview;
+import org.smart_elder_system.admission.vo.ServiceApplication;
+import org.smart_elder_system.contract.vo.ServiceAgreement;
+import org.smart_elder_system.quality.vo.ServiceReview;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
@@ -182,9 +182,9 @@ class ServiceJourneyStateMachineTest {
     }
 
     @Test
-    void shouldMapPendingAgreementToExternalPendingHealthAssessment() {
+    void shouldKeepPendingAgreementAsExternalPendingAgreement() {
         assertEquals(
-                ServiceJourneyState.PENDING_HEALTH_ASSESSMENT,
+                ServiceJourneyState.PENDING_AGREEMENT,
                 stateMachine.toExternalState(ServiceJourneyState.PENDING_AGREEMENT)
         );
     }

@@ -1,3 +1,23 @@
+export interface ElderBindingRequestItem {
+  requestId?: number;
+  applicantUserId?: number;
+  elderId?: number;
+  elderName: string;
+  elderIdCard: string;
+  elderPhone?: string;
+  bindingType?: string;
+  relationToElder?: string;
+  status?: string;
+  reviewedBy?: string;
+  reviewComment?: string;
+  reviewedAt?: string;
+  createdAt?: string;
+}
+
+export interface ElderBindingReviewPayload {
+  reviewComment?: string;
+}
+
 export interface UserItem {
   id: number;
   username: string;

@@ -1,10 +1,11 @@
 import apiClient, { clearToken, setToken, unwrapApiData } from './client';
+import type { ApiResponse } from '../types';
 import type { LoginRequest, LoginResponse } from '../types/auth';
 import { AUTH_LOGIN_PATH, AUTH_LOGOUT_PATH } from './endpoints';
 import { clearCurrentUser, getCurrentUsername, setCurrentUser } from '../stores/userStore';
 
 export async function login(request: LoginRequest): Promise<LoginResponse> {
-  const response = await apiClient.post(AUTH_LOGIN_PATH, request);
+  const response = await apiClient.post<ApiResponse<LoginResponse>>(AUTH_LOGIN_PATH, request);
   const data = unwrapApiData<LoginResponse>(response.data);
 
   if (data?.token) {

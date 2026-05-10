@@ -1,7 +1,7 @@
 package org.smart_elder_system.user.config;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
-import org.smart_elder_system.auth.dto.ErrorResponseDTO;
+import org.smart_elder_system.user.dto.ErrorResponseDto;
 import org.springframework.security.core.AuthenticationException;
 import org.springframework.security.web.AuthenticationEntryPoint;
 import org.springframework.stereotype.Component;
@@ -28,7 +28,7 @@ public class JwtAuthenticationEntryPoint implements AuthenticationEntryPoint {
         response.setContentType("application/json;charset=UTF-8");
         response.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
         
-        ErrorResponseDTO body = new ErrorResponseDTO(
+        ErrorResponseDto body = new ErrorResponseDto(
                 System.currentTimeMillis(),
                 HttpServletResponse.SC_UNAUTHORIZED,
                 "Unauthorized",

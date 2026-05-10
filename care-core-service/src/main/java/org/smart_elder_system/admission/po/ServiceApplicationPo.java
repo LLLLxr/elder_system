@@ -16,7 +16,12 @@ import java.time.LocalDateTime;
 @AllArgsConstructor
 @EqualsAndHashCode(callSuper = true)
 @Entity
-@Table(name = "care_service_application")
+@Table(name = "care_service_application", indexes = {
+    @Index(name = "idx_elder_id", columnList = "elder_id"),
+    @Index(name = "idx_status", columnList = "status"),
+    @Index(name = "idx_submitted_at", columnList = "submitted_at"),
+    @Index(name = "idx_applicant_name", columnList = "applicant_name")
+})
 public class ServiceApplicationPo extends JpaUserAuditablePo {
 
     @Id

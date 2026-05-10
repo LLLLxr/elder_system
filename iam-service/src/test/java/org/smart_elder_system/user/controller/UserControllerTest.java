@@ -5,7 +5,7 @@ import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
-import org.smart_elder_system.user.dto.UserDTO;
+import org.smart_elder_system.user.dto.UserDto;
 import org.smart_elder_system.user.po.UserPo;
 import org.smart_elder_system.user.service.UserService;
 import org.smart_elder_system.user.vo.User;
@@ -26,7 +26,7 @@ class UserControllerTest {
 
     @Test
     void shouldReturnUserViewAfterCreateUser() {
-        UserDTO request = new UserDTO();
+        UserDto request = new UserDto();
         request.setUsername("user01");
 
         UserPo savedUser = new UserPo();
@@ -49,7 +49,7 @@ class UserControllerTest {
 
     @Test
     void shouldReturnUserViewAfterUpdateUser() {
-        UserDTO request = new UserDTO();
+        UserDto request = new UserDto();
         request.setRealName("新姓名");
 
         UserPo savedUser = new UserPo();

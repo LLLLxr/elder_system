@@ -14,16 +14,16 @@ import org.springframework.http.converter.json.MappingJackson2HttpMessageConvert
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.setup.MockMvcBuilders;
 import org.springframework.validation.beanvalidation.LocalValidatorFactoryBean;
-import org.smart_elder_system.careorchestration.dto.CareAnalyticsOverviewDTO;
+import org.smart_elder_system.careorchestration.dto.CareAnalyticsOverviewDto;
 import org.smart_elder_system.exception.GlobalExceptionHandler;
-import org.smart_elder_system.careorchestration.dto.ServiceJourneyTaskItemDTO;
-import org.smart_elder_system.careorchestration.dto.ServiceJourneyTaskOverviewDTO;
-import org.smart_elder_system.careorchestration.dto.ServiceJourneyTransitionLogItemDTO;
+import org.smart_elder_system.careorchestration.dto.ServiceJourneyTaskItemDto;
+import org.smart_elder_system.careorchestration.dto.ServiceJourneyTaskOverviewDto;
+import org.smart_elder_system.careorchestration.dto.ServiceJourneyTransitionLogItemDto;
 import org.smart_elder_system.careorchestration.journey.ServiceJourneyState;
 import org.smart_elder_system.careorchestration.service.CareOrchestrationService;
-import org.smart_elder_system.common.dto.care.IntakeRecordDTO;
-import org.smart_elder_system.common.dto.care.RenewalContextDTO;
-import org.smart_elder_system.common.dto.care.ServiceJourneyResultDTO;
+import org.smart_elder_system.common.dto.admission.IntakeRecordDto;
+import org.smart_elder_system.common.dto.contract.RenewalContextDto;
+import org.smart_elder_system.common.dto.careorchestration.ServiceJourneyResultDto;
 
 import java.time.LocalDateTime;
 import java.util.List;
@@ -60,7 +60,7 @@ class CareOrchestrationControllerTest {
 
     @Test
     void shouldListJourneyTasks() throws Exception {
-        ServiceJourneyTaskItemDTO item = new ServiceJourneyTaskItemDTO();
+        ServiceJourneyTaskItemDto item = new ServiceJourneyTaskItemDto();
         item.setTaskId(9L);
         item.setApplicationId(1001L);
         item.setTaskType("ADMISSION_ASSESSMENT");
@@ -96,7 +96,7 @@ class CareOrchestrationControllerTest {
 
     @Test
     void shouldListJourneyTaskTimeline() throws Exception {
-        ServiceJourneyTaskItemDTO item = new ServiceJourneyTaskItemDTO();
+        ServiceJourneyTaskItemDto item = new ServiceJourneyTaskItemDto();
         item.setTaskId(9L);
         item.setApplicationId(1001L);
         item.setTaskType("ADMISSION_ASSESSMENT");
@@ -116,13 +116,13 @@ class CareOrchestrationControllerTest {
 
     @Test
     void shouldReturnTaskOverview() throws Exception {
-        ServiceJourneyTaskOverviewDTO overview = new ServiceJourneyTaskOverviewDTO();
+        ServiceJourneyTaskOverviewDto overview = new ServiceJourneyTaskOverviewDto();
         overview.setPendingCount(3);
         overview.setOverdueCount(1);
         overview.setCompletedCount(4);
         overview.setCancelledCount(0);
 
-        CareAnalyticsOverviewDTO.StagePoint point = new CareAnalyticsOverviewDTO.StagePoint();
+        CareAnalyticsOverviewDto.StagePoint point = new CareAnalyticsOverviewDto.StagePoint();
         point.setName("PENDING");
         point.setValue(3);
         overview.setStatusDistribution(List.of(point));
@@ -146,7 +146,7 @@ class CareOrchestrationControllerTest {
 
     @Test
     void shouldListTransitionLogsByApplication() throws Exception {
-        ServiceJourneyTransitionLogItemDTO item = new ServiceJourneyTransitionLogItemDTO();
+        ServiceJourneyTransitionLogItemDto item = new ServiceJourneyTransitionLogItemDto();
         item.setLogId(1L);
         item.setApplicationId(1001L);
         item.setJourneyEvent("RETURN_TO_ASSESSMENT");
@@ -167,7 +167,7 @@ class CareOrchestrationControllerTest {
 
     @Test
     void shouldListTransitionLogsByAgreement() throws Exception {
-        ServiceJourneyTransitionLogItemDTO item = new ServiceJourneyTransitionLogItemDTO();
+        ServiceJourneyTransitionLogItemDto item = new ServiceJourneyTransitionLogItemDto();
         item.setLogId(2L);
         item.setAgreementId(2002L);
         item.setJourneyEvent("RETURN_TO_HEALTH_ASSESSMENT");
@@ -188,7 +188,7 @@ class CareOrchestrationControllerTest {
 
     @Test
     void shouldReturnJourneyStep() throws Exception {
-        ServiceJourneyResultDTO result = new ServiceJourneyResultDTO();
+        ServiceJourneyResultDto result = new ServiceJourneyResultDto();
         result.setApplicationId(1001L);
         result.setFinalStatus("PENDING_ASSESSMENT");
         result.setMessage("申请已提交，待管理端完成需求评估");
@@ -213,7 +213,7 @@ class CareOrchestrationControllerTest {
 
     @Test
     void shouldStartServiceJourney() throws Exception {
-        ServiceJourneyResultDTO result = new ServiceJourneyResultDTO();
+        ServiceJourneyResultDto result = new ServiceJourneyResultDto();
         result.setApplicationId(1001L);
         result.setElderId(3003L);
         result.setFinalStatus("PENDING_ASSESSMENT");
@@ -243,7 +243,7 @@ class CareOrchestrationControllerTest {
 
     @Test
     void shouldContinueJourneyAfterAssessment() throws Exception {
-        ServiceJourneyResultDTO result = new ServiceJourneyResultDTO();
+        ServiceJourneyResultDto result = new ServiceJourneyResultDto();
         result.setApplicationId(1001L);
         result.setElderId(3003L);
         result.setFinalStatus("PENDING_HEALTH_ASSESSMENT");
@@ -261,7 +261,7 @@ class CareOrchestrationControllerTest {
 
     @Test
     void shouldRejectAdmissionJourney() throws Exception {
-        ServiceJourneyResultDTO result = new ServiceJourneyResultDTO();
+        ServiceJourneyResultDto result = new ServiceJourneyResultDto();
         result.setApplicationId(1001L);
         result.setFinalStatus("TERMINATED");
         result.setMessage("需求评估未通过，服务终止");
@@ -281,7 +281,7 @@ class CareOrchestrationControllerTest {
 
     @Test
     void shouldRejectHealthJourney() throws Exception {
-        ServiceJourneyResultDTO result = new ServiceJourneyResultDTO();
+        ServiceJourneyResultDto result = new ServiceJourneyResultDto();
         result.setApplicationId(1001L);
         result.setFinalStatus("TERMINATED");
         result.setMessage("健康评估未通过，服务终止");
@@ -303,7 +303,7 @@ class CareOrchestrationControllerTest {
 
     @Test
     void shouldWithdrawJourney() throws Exception {
-        ServiceJourneyResultDTO result = new ServiceJourneyResultDTO();
+        ServiceJourneyResultDto result = new ServiceJourneyResultDto();
         result.setApplicationId(1001L);
         result.setFinalStatus("TERMINATED");
         result.setMessage("申请已撤回");
@@ -322,7 +322,7 @@ class CareOrchestrationControllerTest {
 
     @Test
     void shouldReviewAndFinalizeJourney() throws Exception {
-        ServiceJourneyResultDTO result = new ServiceJourneyResultDTO();
+        ServiceJourneyResultDto result = new ServiceJourneyResultDto();
         result.setApplicationId(1001L);
         result.setAgreementId(2002L);
         result.setFinalStatus("RENEWED");
@@ -344,7 +344,7 @@ class CareOrchestrationControllerTest {
 
     @Test
     void shouldListIntakeRecords() throws Exception {
-        IntakeRecordDTO record = new IntakeRecordDTO();
+        IntakeRecordDto record = new IntakeRecordDto();
         record.setApplicationId(1001L);
         record.setElderId(3003L);
         record.setApplicantName("张三");
@@ -364,7 +364,7 @@ class CareOrchestrationControllerTest {
 
     @Test
     void shouldGetLatestJourneyResultByApplicant() throws Exception {
-        ServiceJourneyResultDTO result = new ServiceJourneyResultDTO();
+        ServiceJourneyResultDto result = new ServiceJourneyResultDto();
         result.setApplicationId(1001L);
         result.setElderId(3003L);
         result.setAgreementId(2002L);
@@ -384,7 +384,7 @@ class CareOrchestrationControllerTest {
 
     @Test
     void shouldGetLatestRenewalContextByApplicant() throws Exception {
-        RenewalContextDTO result = RenewalContextDTO.builder()
+        RenewalContextDto result = RenewalContextDto.builder()
                 .agreementId(2002L)
                 .applicationId(1001L)
                 .elderId(3003L)
@@ -405,7 +405,7 @@ class CareOrchestrationControllerTest {
 
     @Test
     void shouldSubmitRenewalReview() throws Exception {
-        RenewalContextDTO result = RenewalContextDTO.builder()
+        RenewalContextDto result = RenewalContextDto.builder()
                 .agreementId(2002L)
                 .elderId(3003L)
                 .latestReviewScore(85)
@@ -429,7 +429,7 @@ class CareOrchestrationControllerTest {
 
     @Test
     void shouldConfirmRenewal() throws Exception {
-        RenewalContextDTO result = RenewalContextDTO.builder()
+        RenewalContextDto result = RenewalContextDto.builder()
                 .agreementId(2002L)
                 .renewalStage("RENEWED")
                 .message("已续约3个月，新的服务周期已生效")
@@ -456,7 +456,7 @@ class CareOrchestrationControllerTest {
 
     @Test
     void shouldDeclineRenewal() throws Exception {
-        RenewalContextDTO result = RenewalContextDTO.builder()
+        RenewalContextDto result = RenewalContextDto.builder()
                 .agreementId(2002L)
                 .renewalStage("TERMINATED")
                 .message("家属选择暂不续约")

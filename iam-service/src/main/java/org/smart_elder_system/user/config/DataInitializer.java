@@ -75,6 +75,9 @@ public class DataInitializer implements CommandLineRunner {
         createRoleIfNotExists("CUSTOMER_SERVICE", "客服人员", "客服人员，拥有处理客户服务的权限");
         createRoleIfNotExists("NURSE", "护士", "护士，拥有健康体检表录入与查看权限");
         createRoleIfNotExists("DOCTOR", "责任医生", "责任医生，拥有健康体检表录入与查看权限");
+        createRoleIfNotExists("FAMILY", "家属用户", "家属端预约参观与查看我的预约权限");
+        createRoleIfNotExists("CAREGIVER", "护理员", "护理员资质申请与查看状态权限");
+        createRoleIfNotExists("MEDICAL_STAFF", "医护人员", "医护审核家属预约与护理员资质权限");
     }
 
     /**
@@ -130,9 +133,47 @@ public class DataInitializer implements CommandLineRunner {
         createPermissionIfNotExists("journey:review:renew", "旅程评价续约", "服务旅程评价续约权限");
         createPermissionIfNotExists("journey:review:terminate", "旅程评价终止", "服务旅程评价终止权限");
         createPermissionIfNotExists("journey:withdraw", "旅程申请撤回", "服务旅程申请撤回权限");
+        createPermissionIfNotExists("journey:task:list", "旅程待办列表", "查看服务旅程待办列表权限");
+        createPermissionIfNotExists("journey:log:list", "旅程日志列表", "查看服务旅程日志列表权限");
         createPermissionIfNotExists("health:check-form:create", "健康体检表创建", "健康体检表创建权限");
         createPermissionIfNotExists("health:check-form:read", "健康体检表查看", "健康体检表查看权限");
         createPermissionIfNotExists("health:check-form:list", "健康体检表列表", "健康体检表列表权限");
+        createPermissionIfNotExists("admission:family-visit-slot:read", "家属预约时段查看", "查看家属预约参观时段权限");
+        createPermissionIfNotExists("admission:family-visit-reservation:create", "家属预约提交", "提交家属预约参观权限");
+        createPermissionIfNotExists("admission:family-visit-reservation:my:list", "家属预约我的列表", "查看我的家属预约参观记录权限");
+        createPermissionIfNotExists("admission:family-visit-reservation:list", "家属预约审核列表", "查看家属预约参观审核列表权限");
+        createPermissionIfNotExists("admission:family-visit-reservation:detail", "家属预约详情", "查看家属预约参观详情权限");
+        createPermissionIfNotExists("admission:family-visit-reservation:approve", "家属预约审核通过", "审核通过家属预约参观权限");
+        createPermissionIfNotExists("admission:family-visit-reservation:reject", "家属预约审核驳回", "审核驳回家属预约参观权限");
+        createPermissionIfNotExists("quality:caregiver-qualification:create", "护理员资质申请提交", "提交护理员资质申请权限");
+        createPermissionIfNotExists("quality:caregiver-qualification:my:list", "护理员资质我的列表", "查看我的护理员资质申请记录权限");
+        createPermissionIfNotExists("quality:caregiver-qualification:list", "护理员资质审核列表", "查看护理员资质审核列表权限");
+        createPermissionIfNotExists("quality:caregiver-qualification:detail", "护理员资质详情", "查看护理员资质申请详情权限");
+        createPermissionIfNotExists("quality:caregiver-qualification:approve", "护理员资质审核通过", "审核通过护理员资质申请权限");
+        createPermissionIfNotExists("quality:caregiver-qualification:reject", "护理员资质审核驳回", "审核驳回护理员资质申请权限");
+        createPermissionIfNotExists("care-delivery:daily-task:list", "护理员我的任务列表", "查看护理员每日任务列表权限");
+        createPermissionIfNotExists("care-delivery:daily-task:check-in", "护理员打卡提交", "提交护理员打卡权限");
+        createPermissionIfNotExists("care-delivery:check-in:my:list", "护理员打卡我的列表", "查看护理员我的打卡记录权限");
+        createPermissionIfNotExists("care-delivery:nurse-care-record:list", "护士护理记录列表", "查看护士护理记录列表权限");
+        createPermissionIfNotExists("care-delivery:nurse-care-record:read", "护士护理记录详情", "查看护士护理记录详情权限");
+        createPermissionIfNotExists("care-delivery:nurse-care-record:create", "护士护理记录创建", "创建护士护理记录权限");
+        createPermissionIfNotExists("care-delivery:nurse-care-record:update", "护士护理记录更新", "更新护士护理记录权限");
+        createPermissionIfNotExists("care-delivery:family-service-plan:list", "家属服务清单列表", "查看家属服务清单权限");
+        createPermissionIfNotExists("care-delivery:family-check-in:list", "家属打卡记录列表", "查看家属打卡记录权限");
+        createPermissionIfNotExists("care-delivery:family-nurse-care-record:list", "家属护理记录列表", "查看家属护理记录权限");
+        createPermissionIfNotExists("health:doctor-round-record:list", "医生查房记录列表", "查看医生查房记录列表权限");
+        createPermissionIfNotExists("health:doctor-round-record:read", "医生查房记录详情", "查看医生查房记录详情权限");
+        createPermissionIfNotExists("health:doctor-round-record:create", "医生查房记录创建", "创建医生查房记录权限");
+        createPermissionIfNotExists("health:doctor-round-record:update", "医生查房记录更新", "更新医生查房记录权限");
+        createPermissionIfNotExists("health:family-doctor-round-record:list", "家属查房记录列表", "查看家属查房记录权限");
+        createPermissionIfNotExists("elder-binding:request:create", "老人绑定申请提交", "提交老人绑定申请权限");
+        createPermissionIfNotExists("elder-binding:request:my:list", "老人绑定申请我的列表", "查看我的老人绑定申请权限");
+        createPermissionIfNotExists("elder-binding:request:list", "老人绑定申请列表", "查看老人绑定申请列表权限");
+        createPermissionIfNotExists("elder-binding:request:detail", "老人绑定申请详情", "查看老人绑定申请详情权限");
+        createPermissionIfNotExists("elder-binding:request:approve", "老人绑定申请审核通过", "审核通过老人绑定申请权限");
+        createPermissionIfNotExists("elder-binding:request:reject", "老人绑定申请审核驳回", "审核驳回老人绑定申请权限");
+        createPermissionIfNotExists("elder-binding:list", "老人绑定列表", "查看老人绑定列表权限");
+        createPermissionIfNotExists("elder-binding:self:bind", "老人本人绑定", "老人本人绑定自己的老人档案权限");
     }
 
     /**
@@ -184,9 +225,47 @@ public class DataInitializer implements CommandLineRunner {
                 "journey:review:renew",
                 "journey:review:terminate",
                 "journey:withdraw",
+                "journey:task:list",
+                "journey:log:list",
                 "health:check-form:create",
                 "health:check-form:read",
-                "health:check-form:list"
+                "health:check-form:list",
+                "admission:family-visit-slot:read",
+                "admission:family-visit-reservation:create",
+                "admission:family-visit-reservation:my:list",
+                "admission:family-visit-reservation:list",
+                "admission:family-visit-reservation:detail",
+                "admission:family-visit-reservation:approve",
+                "admission:family-visit-reservation:reject",
+                "quality:caregiver-qualification:create",
+                "quality:caregiver-qualification:my:list",
+                "quality:caregiver-qualification:list",
+                "quality:caregiver-qualification:detail",
+                "quality:caregiver-qualification:approve",
+                "quality:caregiver-qualification:reject",
+                "care-delivery:daily-task:list",
+                "care-delivery:daily-task:check-in",
+                "care-delivery:check-in:my:list",
+                "care-delivery:nurse-care-record:list",
+                "care-delivery:nurse-care-record:read",
+                "care-delivery:nurse-care-record:create",
+                "care-delivery:nurse-care-record:update",
+                "care-delivery:family-service-plan:list",
+                "care-delivery:family-check-in:list",
+                "care-delivery:family-nurse-care-record:list",
+                "health:doctor-round-record:list",
+                "health:doctor-round-record:read",
+                "health:doctor-round-record:create",
+                "health:doctor-round-record:update",
+                "health:family-doctor-round-record:list",
+                "elder-binding:request:create",
+                "elder-binding:request:my:list",
+                "elder-binding:request:list",
+                "elder-binding:request:detail",
+                "elder-binding:request:approve",
+                "elder-binding:request:reject",
+                "elder-binding:list",
+                "elder-binding:self:bind"
         ));
         grantPermissionsToRole("CUSTOMER_SERVICE", List.of(
                 "journey:assessment:approve",
@@ -201,18 +280,84 @@ public class DataInitializer implements CommandLineRunner {
                 "journey:review:terminate",
                 "journey:withdraw"
         ));
-        grantPermissionsToRole("USER", List.of("journey:withdraw"));
-        grantPermissionsToRole("ELDER", List.of("journey:withdraw"));
-        grantPermissionsToRole("CHILD", List.of("journey:withdraw"));
+        grantPermissionsToRole("USER", List.of(
+                "journey:withdraw",
+                "elder-binding:request:create",
+                "elder-binding:request:my:list",
+                "elder-binding:self:bind"
+        ));
+        grantPermissionsToRole("ELDER", List.of(
+                "journey:withdraw",
+                "elder-binding:request:create",
+                "elder-binding:request:my:list",
+                "elder-binding:self:bind"
+        ));
+        grantPermissionsToRole("CHILD", List.of(
+                "journey:withdraw",
+                "elder-binding:request:create",
+                "elder-binding:request:my:list",
+                "elder-binding:self:bind"
+        ));
         grantPermissionsToRole("NURSE", List.of(
                 "health:check-form:create",
                 "health:check-form:read",
-                "health:check-form:list"
+                "health:check-form:list",
+                "care-delivery:nurse-care-record:list",
+                "care-delivery:nurse-care-record:read",
+                "care-delivery:nurse-care-record:create",
+                "care-delivery:nurse-care-record:update"
         ));
         grantPermissionsToRole("DOCTOR", List.of(
                 "health:check-form:create",
                 "health:check-form:read",
-                "health:check-form:list"
+                "health:check-form:list",
+                "health:doctor-round-record:list",
+                "health:doctor-round-record:read",
+                "health:doctor-round-record:create",
+                "health:doctor-round-record:update"
+        ));
+        grantPermissionsToRole("FAMILY", List.of(
+                "admission:family-visit-slot:read",
+                "admission:family-visit-reservation:create",
+                "admission:family-visit-reservation:my:list",
+                "care-delivery:family-service-plan:list",
+                "care-delivery:family-check-in:list",
+                "care-delivery:family-nurse-care-record:list",
+                "health:family-doctor-round-record:list",
+                "elder-binding:request:create",
+                "elder-binding:request:my:list",
+                "elder-binding:self:bind"
+        ));
+        grantPermissionsToRole("CAREGIVER", List.of(
+                "quality:caregiver-qualification:create",
+                "quality:caregiver-qualification:my:list",
+                "care-delivery:daily-task:list",
+                "care-delivery:daily-task:check-in",
+                "care-delivery:check-in:my:list"
+        ));
+        grantPermissionsToRole("MEDICAL_STAFF", List.of(
+                "admission:family-visit-reservation:list",
+                "admission:family-visit-reservation:detail",
+                "admission:family-visit-reservation:approve",
+                "admission:family-visit-reservation:reject",
+                "quality:caregiver-qualification:list",
+                "quality:caregiver-qualification:detail",
+                "quality:caregiver-qualification:approve",
+                "quality:caregiver-qualification:reject",
+                "journey:task:list",
+                "journey:log:list",
+                "care-delivery:nurse-care-record:list",
+                "care-delivery:nurse-care-record:read",
+                "care-delivery:nurse-care-record:create",
+                "care-delivery:nurse-care-record:update",
+                "health:doctor-round-record:list",
+                "health:doctor-round-record:read",
+                "health:doctor-round-record:create",
+                "health:doctor-round-record:update",
+                "elder-binding:request:list",
+                "elder-binding:request:detail",
+                "elder-binding:request:approve",
+                "elder-binding:request:reject"
         ));
     }
 

@@ -226,6 +226,79 @@ export interface FamilyVisitReservation {
   createdAt?: string;
 }
 
+export interface CareTaskItem {
+  itemCode: string;
+  itemName: string;
+  completed?: boolean;
+}
+
+export interface DailyCareTask {
+  elderId: number;
+  elderName?: string;
+  servicePlanId: number;
+  taskDate: string;
+  taskItems: CareTaskItem[];
+}
+
+export interface CaregiverCheckInRecord {
+  checkInRecordId?: number;
+  elderId?: number;
+  elderName?: string;
+  caregiverId?: number;
+  caregiverName?: string;
+  servicePlanId?: number;
+  taskDate?: string;
+  taskItems?: CareTaskItem[];
+  completionStatus?: string;
+  completionTime?: string;
+  createdAt?: string;
+  updatedAt?: string;
+}
+
+export interface CaregiverCheckInSubmitRequest {
+  elderId: number;
+  taskDate: string;
+  taskItems: CareTaskItem[];
+}
+
+export interface FamilyServicePlan {
+  servicePlanId?: number;
+  elderId?: number;
+  planName?: string;
+  planItems?: CareTaskItem[];
+  effectiveDate?: string;
+  expireDate?: string;
+  status?: string;
+  assignedCaregiverId?: number;
+  assignedCaregiverName?: string;
+}
+
+export interface NurseCareRecord {
+  recordId?: number;
+  elderId?: number;
+  elderName?: string;
+  nurseId?: number;
+  nurseName?: string;
+  servicePlanId?: number;
+  recordDate?: string;
+  recordFormData?: Record<string, unknown>;
+  createdAt?: string;
+  updatedAt?: string;
+}
+
+export interface DoctorRoundRecord {
+  roundRecordId?: number;
+  elderId?: number;
+  elderName?: string;
+  doctorId?: number;
+  doctorName?: string;
+  content?: string;
+  riskFlag?: boolean;
+  roundTime?: string;
+  createdAt?: string;
+  updatedAt?: string;
+}
+
 export interface CaregiverQualificationApplication {
   applicationId?: number;
   caregiverUserId?: number;

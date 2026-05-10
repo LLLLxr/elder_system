@@ -7,17 +7,17 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
-import org.smart_elder_system.careorchestration.dto.CareAnalyticsOverviewDTO;
-import org.smart_elder_system.careorchestration.dto.CareAnalyticsTrendsDTO;
-import org.smart_elder_system.careorchestration.dto.PagedResponseDTO;
-import org.smart_elder_system.careorchestration.dto.ServiceJourneyTaskItemDTO;
-import org.smart_elder_system.careorchestration.dto.ServiceJourneyTaskOverviewDTO;
-import org.smart_elder_system.careorchestration.dto.ServiceJourneyTransitionLogItemDTO;
+import org.smart_elder_system.careorchestration.dto.CareAnalyticsOverviewDto;
+import org.smart_elder_system.careorchestration.dto.CareAnalyticsTrendsDto;
+import org.smart_elder_system.careorchestration.dto.PagedResponseDto;
+import org.smart_elder_system.careorchestration.dto.ServiceJourneyTaskItemDto;
+import org.smart_elder_system.careorchestration.dto.ServiceJourneyTaskOverviewDto;
+import org.smart_elder_system.careorchestration.dto.ServiceJourneyTransitionLogItemDto;
 import org.smart_elder_system.careorchestration.journey.ServiceJourneyState;
 import org.smart_elder_system.careorchestration.service.CareOrchestrationService;
-import org.smart_elder_system.common.dto.care.IntakeRecordDTO;
-import org.smart_elder_system.common.dto.care.RenewalContextDTO;
-import org.smart_elder_system.common.dto.care.ServiceJourneyResultDTO;
+import org.smart_elder_system.common.dto.admission.IntakeRecordDto;
+import org.smart_elder_system.common.dto.contract.RenewalContextDto;
+import org.smart_elder_system.common.dto.careorchestration.ServiceJourneyResultDto;
 
 import java.util.List;
 
@@ -35,7 +35,7 @@ public class CareOrchestrationController {
     }
 
     @PostMapping("/journeys/start")
-    public ResponseEntity<ServiceJourneyResultDTO> startServiceJourney(
+    public ResponseEntity<ServiceJourneyResultDto> startServiceJourney(
             @RequestParam @Min(1) Long elderId,
             @RequestParam(required = false) @Min(1) Long guardianId,
             @RequestParam @NotBlank String applicantName,
@@ -43,7 +43,7 @@ public class CareOrchestrationController {
             @RequestParam @NotBlank String serviceScene,
             @RequestParam @NotBlank String serviceRequest) {
 
-        ServiceJourneyResultDTO result = careOrchestrationService.startServiceJourney(
+        ServiceJourneyResultDto result = careOrchestrationService.startServiceJourney(
                 elderId,
                 guardianId,
                 applicantName,
@@ -55,13 +55,13 @@ public class CareOrchestrationController {
     }
 
     @PostMapping("/journeys/continue")
-    public ResponseEntity<ServiceJourneyResultDTO> continueAfterAssessment(
+    public ResponseEntity<ServiceJourneyResultDto> continueAfterAssessment(
             @RequestParam @Min(1) Long applicationId) {
         return ResponseEntity.ok(careOrchestrationService.continueAfterAssessment(applicationId));
     }
 
     @PostMapping("/journeys/reject-admission")
-    public ResponseEntity<ServiceJourneyResultDTO> rejectAdmissionJourney(
+    public ResponseEntity<ServiceJourneyResultDto> rejectAdmissionJourney(
             @RequestParam @Min(1) Long applicationId,
             @RequestParam @NotBlank String assessmentConclusion,
             @RequestParam @NotBlank String assessor) {
@@ -69,7 +69,7 @@ public class CareOrchestrationController {
     }
 
     @PostMapping("/journeys/reject-health")
-    public ResponseEntity<ServiceJourneyResultDTO> rejectHealthJourney(
+    public ResponseEntity<ServiceJourneyResultDto> rejectHealthJourney(
             @RequestParam @Min(1) Long applicationId,
             @RequestParam @NotBlank String assessmentConclusion,
             @RequestParam @NotBlank String assessor,
@@ -84,20 +84,20 @@ public class CareOrchestrationController {
     }
 
     @PostMapping("/journeys/withdraw")
-    public ResponseEntity<ServiceJourneyResultDTO> withdrawServiceJourney(
+    public ResponseEntity<ServiceJourneyResultDto> withdrawServiceJourney(
             @RequestParam @Min(1) Long applicationId,
             @RequestParam(required = false) String reason) {
         return ResponseEntity.ok(careOrchestrationService.withdrawServiceJourney(applicationId, reason));
     }
 
     @PostMapping("/journeys/review")
-    public ResponseEntity<ServiceJourneyResultDTO> reviewAndFinalize(
+    public ResponseEntity<ServiceJourneyResultDto> reviewAndFinalize(
             @RequestParam @Min(1) Long agreementId,
             @RequestParam @Min(1) Long elderId,
             @RequestParam @Min(0) Integer satisfactionScore,
             @RequestParam(required = false) String reviewComment) {
 
-        ServiceJourneyResultDTO result = careOrchestrationService.reviewAndFinalize(
+        ServiceJourneyResultDto result = careOrchestrationService.reviewAndFinalize(
                 agreementId,
                 elderId,
                 satisfactionScore,
@@ -107,13 +107,13 @@ public class CareOrchestrationController {
     }
 
     @GetMapping("/renewal-context/latest/by-applicant")
-    public ResponseEntity<RenewalContextDTO> getLatestRenewalContextByApplicant(
+    public ResponseEntity<RenewalContextDto> getLatestRenewalContextByApplicant(
             @RequestParam @NotBlank String applicantName) {
         return ResponseEntity.ok(careOrchestrationService.getLatestRenewalContextByApplicant(applicantName));
     }
 
     @PostMapping("/renewals/review")
-    public ResponseEntity<RenewalContextDTO> submitRenewalReview(
+    public ResponseEntity<RenewalContextDto> submitRenewalReview(
             @RequestParam @Min(1) Long agreementId,
             @RequestParam @Min(1) Long elderId,
             @RequestParam @Min(0) Integer satisfactionScore,
@@ -126,7 +126,7 @@ public class CareOrchestrationController {
     }
 
     @PostMapping("/renewals/{agreementId}/confirm")
-    public ResponseEntity<RenewalContextDTO> confirmRenewal(
+    public ResponseEntity<RenewalContextDto> confirmRenewal(
             @PathVariable @Min(1) Long agreementId,
             @RequestParam @Min(1) @Max(12) Integer renewMonths) {
         if (renewMonths == null || renewMonths < 1 || renewMonths > 12) {
@@ -136,37 +136,37 @@ public class CareOrchestrationController {
     }
 
     @PostMapping("/renewals/{agreementId}/decline")
-    public ResponseEntity<RenewalContextDTO> declineRenewal(
+    public ResponseEntity<RenewalContextDto> declineRenewal(
             @PathVariable @Min(1) Long agreementId,
             @RequestParam(required = false) String reason) {
         return ResponseEntity.ok(careOrchestrationService.declineRenewal(agreementId, reason));
     }
 
     @GetMapping("/journeys/intake-records")
-    public ResponseEntity<List<IntakeRecordDTO>> listIntakeRecords(
+    public ResponseEntity<List<IntakeRecordDto>> listIntakeRecords(
             @RequestParam @Min(1) Long elderId) {
         return ResponseEntity.ok(careOrchestrationService.listIntakeRecords(elderId));
     }
 
     @GetMapping("/journeys/intake-records/by-applicant")
-    public ResponseEntity<List<IntakeRecordDTO>> listIntakeRecordsByApplicant(
+    public ResponseEntity<List<IntakeRecordDto>> listIntakeRecordsByApplicant(
             @RequestParam @NotBlank String applicantName) {
         return ResponseEntity.ok(careOrchestrationService.listIntakeRecordsByApplicant(applicantName));
     }
 
     @GetMapping("/journeys/latest-result/by-applicant")
-    public ResponseEntity<ServiceJourneyResultDTO> getLatestJourneyResultByApplicant(
+    public ResponseEntity<ServiceJourneyResultDto> getLatestJourneyResultByApplicant(
             @RequestParam @NotBlank String applicantName) {
         return ResponseEntity.ok(careOrchestrationService.getLatestJourneyResultByApplicant(applicantName));
     }
 
     @GetMapping("/analytics/overview")
-    public ResponseEntity<CareAnalyticsOverviewDTO> getAnalyticsOverview() {
+    public ResponseEntity<CareAnalyticsOverviewDto> getAnalyticsOverview() {
         return ResponseEntity.ok(careOrchestrationService.getAnalyticsOverview());
     }
 
     @GetMapping("/journey-tasks")
-    public ResponseEntity<PagedResponseDTO<ServiceJourneyTaskItemDTO>> listJourneyTasks(
+    public ResponseEntity<PagedResponseDto<ServiceJourneyTaskItemDto>> listJourneyTasks(
             @RequestParam(required = false) @Min(1) Long applicationId,
             @RequestParam(required = false) @Min(1) Long elderId,
             @RequestParam(required = false) @Min(1) Long agreementId,
@@ -177,7 +177,7 @@ public class CareOrchestrationController {
             @RequestParam(defaultValue = "20") @Min(1) Integer size,
             @RequestParam(defaultValue = "dueAt") String sortBy,
             @RequestParam(defaultValue = "asc") String sortOrder) {
-        return ResponseEntity.ok(PagedResponseDTO.from(careOrchestrationService.listJourneyTasks(
+        return ResponseEntity.ok(PagedResponseDto.from(careOrchestrationService.listJourneyTasks(
                 applicationId,
                 elderId,
                 agreementId,
@@ -191,13 +191,13 @@ public class CareOrchestrationController {
     }
 
     @GetMapping("/journey-tasks/timeline")
-    public ResponseEntity<List<ServiceJourneyTaskItemDTO>> listJourneyTaskTimeline(
+    public ResponseEntity<List<ServiceJourneyTaskItemDto>> listJourneyTaskTimeline(
             @RequestParam @Min(1) Long applicationId) {
         return ResponseEntity.ok(careOrchestrationService.listJourneyTaskTimeline(applicationId));
     }
 
     @GetMapping("/journey-tasks/overview")
-    public ResponseEntity<ServiceJourneyTaskOverviewDTO> getJourneyTaskOverview(
+    public ResponseEntity<ServiceJourneyTaskOverviewDto> getJourneyTaskOverview(
             @RequestParam(required = false) @Min(1) Long applicationId,
             @RequestParam(required = false) @Min(1) Long elderId,
             @RequestParam(required = false) @Min(1) Long agreementId,
@@ -214,19 +214,19 @@ public class CareOrchestrationController {
     }
 
     @GetMapping("/journey-transition-logs/by-application")
-    public ResponseEntity<List<ServiceJourneyTransitionLogItemDTO>> listJourneyTransitionLogsByApplication(
+    public ResponseEntity<List<ServiceJourneyTransitionLogItemDto>> listJourneyTransitionLogsByApplication(
             @RequestParam @Min(1) Long applicationId) {
         return ResponseEntity.ok(careOrchestrationService.listJourneyTransitionLogsByApplication(applicationId));
     }
 
     @GetMapping("/journey-transition-logs/by-agreement")
-    public ResponseEntity<List<ServiceJourneyTransitionLogItemDTO>> listJourneyTransitionLogsByAgreement(
+    public ResponseEntity<List<ServiceJourneyTransitionLogItemDto>> listJourneyTransitionLogsByAgreement(
             @RequestParam @Min(1) Long agreementId) {
         return ResponseEntity.ok(careOrchestrationService.listJourneyTransitionLogsByAgreement(agreementId));
     }
 
     @PostMapping("/journeys/return")
-    public ResponseEntity<ServiceJourneyResultDTO> returnJourneyStep(
+    public ResponseEntity<ServiceJourneyResultDto> returnJourneyStep(
             @RequestParam @Min(1) Long applicationId,
             @RequestParam ServiceJourneyState targetState,
             @RequestParam(required = false) String reason) {
@@ -234,7 +234,7 @@ public class CareOrchestrationController {
     }
 
     @GetMapping("/analytics/trends")
-    public ResponseEntity<CareAnalyticsTrendsDTO> getAnalyticsTrends(
+    public ResponseEntity<CareAnalyticsTrendsDto> getAnalyticsTrends(
             @RequestParam(defaultValue = "30") @Min(1) Integer days) {
         return ResponseEntity.ok(careOrchestrationService.getAnalyticsTrends(days));
     }

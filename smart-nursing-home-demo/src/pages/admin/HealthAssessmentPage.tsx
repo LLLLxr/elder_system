@@ -2,16 +2,13 @@ import { useEffect, useState } from 'react';
 import {
   Alert,
   Button,
-  Card,
   Collapse,
   Form,
   Input,
   InputNumber,
   Select,
-  Space,
   Table,
   Tag,
-  Typography,
 } from 'antd';
 import { HealthCheckFormDetailModal } from 'common-react';
 import type { ColumnsType } from 'antd/es/table';
@@ -24,6 +21,7 @@ import {
   listPendingHealthAssessments,
   submitHealthAssessment,
 } from '../../api/healthApi';
+import AdminPageScaffold from '../../components/AdminPageScaffold';
 import type {
   HealthAssessmentRequest,
   HealthAssessmentSubmitRequest,
@@ -41,19 +39,19 @@ interface HealthAssessmentFormValues {
 
 const pendingColumns: ColumnsType<HealthAssessmentRequest> = [
   {
-    title: '申请单ID',
+    title: '申请单编号',
     dataIndex: 'applicationId',
     key: 'applicationId',
     width: 120,
   },
   {
-    title: '老人ID',
+    title: '老人编号',
     dataIndex: 'elderId',
     key: 'elderId',
     width: 110,
   },
   {
-    title: '协议ID',
+    title: '协议编号',
     dataIndex: 'agreementId',
     key: 'agreementId',
     width: 120,
@@ -93,13 +91,13 @@ const pendingColumns: ColumnsType<HealthAssessmentRequest> = [
 
 const historyColumns: ColumnsType<HealthAssessmentRequest> = [
   {
-    title: '申请单ID',
+    title: '申请单编号',
     dataIndex: 'applicationId',
     key: 'applicationId',
     width: 120,
   },
   {
-    title: '老人ID',
+    title: '老人编号',
     dataIndex: 'elderId',
     key: 'elderId',
     width: 110,
@@ -262,16 +260,10 @@ export default function HealthAssessmentPage() {
   };
 
   return (
-    <Space direction="vertical" size="large" style={{ width: '100%' }}>
-      <Typography.Title level={4} style={{ margin: 0 }}>
-        健康评估
-      </Typography.Title>
-
-      <Alert
-        type="info"
-        showIcon
-        message="本页仅处理用户端已提交申请的健康评估，不提供申请受理登记。"
-      />
+    <AdminPageScaffold
+      title="健康评估"
+      description="处理用户端已提交的健康评估请求，结合健康体检表提交评估结论。"
+    >
       <Alert
         type="info"
         showIcon
@@ -284,7 +276,7 @@ export default function HealthAssessmentPage() {
         <Alert
           type="success"
           showIcon
-          message={`健康评估通过，状态：${lastResult.finalStatus ?? '-'}，协议ID：${lastResult.agreementId ?? '-'}`}
+          message={`健康评估通过，状态：${lastResult.finalStatus ?? '-'}，协议编号：${lastResult.agreementId ?? '-'}`}
         />
       ) : null}
 
@@ -321,6 +313,7 @@ export default function HealthAssessmentPage() {
                 rowClassName={(record) =>
                   record.applicationId === selectedApplicationId ? 'ant-table-row-selected' : ''
                 }
+                scroll={{ x: 900 }}
               />
             ),
           },
@@ -337,77 +330,81 @@ export default function HealthAssessmentPage() {
               />
             ),
           },
+          {
+            key: 'submit-health-assessment',
+            label: '提交健康评估',
+            children: (
+              <Form<HealthAssessmentFormValues> form={form} layout="vertical" onFinish={handleSubmit}>
+                <Alert
+                  type={selectedApplicationId ? 'success' : 'warning'}
+                  showIcon
+                  message={selectedApplicationId ? `当前选中申请：${selectedApplicationId}` : '请先在上方待评估健康评估请求列表选择申请单'}
+                  style={{ marginBottom: 16 }}
+                />
+
+                <Form.Item
+                  label="评估结论"
+                  name="passed"
+                  rules={[{ required: true, message: '请选择评估结论' }]}
+                >
+                  <Select
+                    options={[
+                      { label: '通过（允许继续签约）', value: true },
+                      { label: '不通过（终止服务）', value: false },
+                    ]}
+                  />
+                </Form.Item>
+
+                <Form.Item
+                  label="评估说明"
+                  name="assessmentConclusion"
+                  rules={[{ required: true, message: '请输入评估说明' }]}
+                >
+                  <Input.TextArea rows={4} placeholder="记录健康评估依据与结论" />
+                </Form.Item>
+
+                <Form.Item
+                  label="评估人"
+                  name="assessor"
+                  rules={[{ required: true, message: '未获取到当前登录用户' }]}
+                >
+                  <Input disabled />
+                </Form.Item>
+
+                <Form.Item
+                  label="责任医生"
+                  name="responsibleDoctor"
+                  rules={[{ required: true, message: '请输入责任医生' }]}
+                >
+                  <Input placeholder="请输入责任医生姓名" />
+                </Form.Item>
+
+                <Form.Item
+                  label="评分"
+                  name="score"
+                  rules={[{ required: true, message: '请输入评分' }]}
+                  initialValue={75}
+                >
+                  <InputNumber min={0} max={100} style={{ width: '100%' }} />
+                </Form.Item>
+
+                <Button type="primary" htmlType="submit" loading={submitting}>
+                  完成健康评估
+                </Button>
+              </Form>
+            ),
+          },
         ]}
       />
 
-      <Card title="提交健康评估">
-        <Form<HealthAssessmentFormValues> form={form} layout="vertical" onFinish={handleSubmit}>
-          <Form.Item
-            label="当前选中申请"
-          >
-            <Input value={selectedApplicationId ?? ''} disabled placeholder="请先在上方待评估健康评估请求列表选择申请单" />
-          </Form.Item>
-
-          <Form.Item
-            label="评估结论"
-            name="passed"
-            rules={[{ required: true, message: '请选择评估结论' }]}
-          >
-            <Select
-              options={[
-                { label: '通过（允许继续签约）', value: true },
-                { label: '不通过（终止服务）', value: false },
-              ]}
-            />
-          </Form.Item>
-
-          <Form.Item
-            label="评估说明"
-            name="assessmentConclusion"
-            rules={[{ required: true, message: '请输入评估说明' }]}
-          >
-            <Input.TextArea rows={4} placeholder="记录健康评估依据与结论" />
-          </Form.Item>
-
-          <Form.Item
-            label="评估人"
-            name="assessor"
-            rules={[{ required: true, message: '未获取到当前登录用户' }]}
-          >
-            <Input disabled />
-          </Form.Item>
-
-          <Form.Item
-            label="责任医生"
-            name="responsibleDoctor"
-            rules={[{ required: true, message: '请输入责任医生' }]}
-          >
-            <Input placeholder="请输入责任医生姓名" />
-          </Form.Item>
-
-          <Form.Item
-            label="评分"
-            name="score"
-            rules={[{ required: true, message: '请输入评分' }]}
-            initialValue={75}
-          >
-            <InputNumber min={0} max={100} style={{ width: '100%' }} />
-          </Form.Item>
-
-          <Button type="primary" htmlType="submit" loading={submitting}>
-            完成健康评估
-          </Button>
-        </Form>
-      </Card>
-
       <HealthCheckFormDetailModal
-        title={`体检表详情（申请单ID：${activeRecord?.applicationId ?? '-'}）`}
+        title={`体检表详情（申请单编号：${activeRecord?.applicationId ?? '-'}）`}
         open={healthFormModalOpen}
         onCancel={() => setHealthFormModalOpen(false)}
         loading={healthFormLoading}
         error={healthFormError}
         detail={healthFormDetail}
       />
-    </Space>
+    </AdminPageScaffold>
   );
 }

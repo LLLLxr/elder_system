@@ -13,8 +13,12 @@ export interface HealthCheckFormDetail {
   selfEvaluationSection?: string;
   cognitiveEmotionSection?: string;
   lifestyleSection?: string;
+  nursingConclusionSection?: string;
   chronicDiseaseSummary?: string;
   allergySummary?: string;
+  riskLevel?: string;
+  score?: number;
+  conclusion?: string;
 }
 
 export interface HealthCheckFormDetailModalProps {
@@ -178,12 +182,14 @@ export default function HealthCheckFormDetailModal({
   const selfEvaluationSection = parseSection(detail?.selfEvaluationSection);
   const cognitiveEmotionSection = parseSection(detail?.cognitiveEmotionSection);
   const lifestyleSection = parseSection(detail?.lifestyleSection);
+  const nursingConclusionSection = parseSection(detail?.nursingConclusionSection);
 
   const symptom = symptomSection.data ?? {};
   const vital = vitalSignSection.data ?? {};
   const selfEvaluation = selfEvaluationSection.data ?? {};
   const cognitiveEmotion = cognitiveEmotionSection.data ?? {};
   const lifestyle = lifestyleSection.data ?? {};
+  const nursingConclusion = nursingConclusionSection.data ?? {};
 
   return (
     <Modal
@@ -214,6 +220,7 @@ export default function HealthCheckFormDetailModal({
             <SectionFallback label="症状区" section={symptomSection} />
             <Descriptions bordered column={1} size="small">
               <Descriptions.Item label="症状勾选">{formatArray(symptom.selected)}</Descriptions.Item>
+              <Descriptions.Item label="其他症状补充">{formatValue(symptom.other)}</Descriptions.Item>
             </Descriptions>
           </Card>
 
@@ -291,10 +298,24 @@ export default function HealthCheckFormDetailModal({
             </Descriptions>
           </Card>
 
-          <Card size="small" title="摘要信息">
+          <Card size="small" title="护理结论">
+            <SectionFallback label="护理结论区" section={nursingConclusionSection} />
             <Descriptions bordered column={1} size="small">
+              <Descriptions.Item label="护理结论摘要">{formatValue(nursingConclusion.summary)}</Descriptions.Item>
+              <Descriptions.Item label="护理建议">{formatValue(nursingConclusion.recommendation)}</Descriptions.Item>
+              <Descriptions.Item label="随访计划">{formatValue(nursingConclusion.followUpPlan)}</Descriptions.Item>
+            </Descriptions>
+          </Card>
+
+          <Card size="small" title="摘要信息">
+            <Descriptions bordered column={2} size="small">
               <Descriptions.Item label="慢病摘要">{detail.chronicDiseaseSummary ?? '-'}</Descriptions.Item>
               <Descriptions.Item label="过敏摘要">{detail.allergySummary ?? '-'}</Descriptions.Item>
+              <Descriptions.Item label="风险等级">{detail.riskLevel ?? '-'}</Descriptions.Item>
+              <Descriptions.Item label="评分">{detail.score ?? '-'}</Descriptions.Item>
+              <Descriptions.Item label="综合结论" span={2}>
+                {detail.conclusion ?? '-'}
+              </Descriptions.Item>
             </Descriptions>
           </Card>
         </Space>

@@ -1,7 +1,7 @@
 package org.smart_elder_system.careorchestration.feign;
 
-import org.smart_elder_system.common.dto.care.EligibilityAssessmentDTO;
-import org.smart_elder_system.common.dto.care.ServiceApplicationDTO;
+import org.smart_elder_system.common.dto.admission.EligibilityAssessmentDto;
+import org.smart_elder_system.common.dto.admission.ServiceApplicationDto;
 import org.springframework.cloud.openfeign.FeignClient;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -13,21 +13,21 @@ import org.springframework.web.bind.annotation.RequestParam;
 public interface AdmissionClient {
 
     @PostMapping("/applications")
-    ServiceApplicationDTO submitApplication(@RequestBody ServiceApplicationDTO applicationDTO);
+    ServiceApplicationDto submitApplication(@RequestBody ServiceApplicationDto applicationDto);
 
     @PostMapping("/assessments")
-    ServiceApplicationDTO assessEligibility(@RequestBody EligibilityAssessmentDTO assessmentDTO);
+    ServiceApplicationDto assessEligibility(@RequestBody EligibilityAssessmentDto assessmentDto);
 
     @GetMapping("/applications/{applicationId}")
-    ServiceApplicationDTO getApplication(@PathVariable("applicationId") Long applicationId);
+    ServiceApplicationDto getApplication(@PathVariable("applicationId") Long applicationId);
 
     @PostMapping("/applications/{applicationId}/withdraw")
-    ServiceApplicationDTO withdrawApplication(
+    ServiceApplicationDto withdrawApplication(
             @PathVariable("applicationId") Long applicationId,
             @RequestParam(value = "reason", required = false) String reason);
 
     @PostMapping("/applications/{applicationId}/revert-to-assessment")
-    ServiceApplicationDTO revertToAssessment(
+    ServiceApplicationDto revertToAssessment(
             @PathVariable("applicationId") Long applicationId,
             @RequestParam(value = "reason", required = false) String reason);
 }

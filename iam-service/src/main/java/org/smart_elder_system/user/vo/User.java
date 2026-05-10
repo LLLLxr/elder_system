@@ -2,6 +2,8 @@ package org.smart_elder_system.user.vo;
 
 import lombok.Data;
 
+import org.smart_elder_system.user.dto.ElderBindingDto;
+
 import java.time.LocalDateTime;
 import java.util.List;
 
@@ -59,4 +61,6 @@ public class User {
     private String faceVerifiedLabel;
 
     private List<String> roles;
+
+    private List<ElderBindingDto> elderBindings;
 }

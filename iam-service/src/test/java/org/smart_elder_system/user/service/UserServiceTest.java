@@ -6,11 +6,12 @@ import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.smart_elder_system.user.constant.UserConstants;
-import org.smart_elder_system.user.dto.UserDTO;
+import org.smart_elder_system.user.dto.UserDto;
 import org.smart_elder_system.user.po.UserPo;
 import org.smart_elder_system.user.repository.UserRepository;
 import org.springframework.security.crypto.password.PasswordEncoder;
 
+import java.util.List;
 import java.util.Optional;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
@@ -30,12 +31,15 @@ class UserServiceTest {
     @Mock
     private RoleService roleService;
 
+    @Mock
+    private ElderBindingService elderBindingService;
+
     @InjectMocks
     private UserService userService;
 
     @Test
     void shouldCreateUserUsingExplicitFieldMapping() {
-        UserDTO request = new UserDTO();
+        UserDto request = new UserDto();
         request.setUsername("user01");
         request.setPassword("plain-pass");
         request.setRealName("张三");
@@ -77,7 +81,7 @@ class UserServiceTest {
         existingUser.setAvatar("old.png");
         existingUser.setIdCard("11010519491231002X");
 
-        UserDTO request = new UserDTO();
+        UserDto request = new UserDto();
         request.setId(1L);
         request.setRealName("新姓名");
         request.setEmail("new@test.com");
@@ -120,6 +124,7 @@ class UserServiceTest {
 
         when(userRepository.findByUsername("user01")).thenReturn(Optional.of(user));
         when(roleService.getRolesByUserId(1L)).thenReturn(java.util.List.of("USER"));
+        when(elderBindingService.listBindingsByUserId(1L)).thenReturn(List.of());
 
         org.smart_elder_system.user.vo.User result = userService.findByUsername("user01");
 

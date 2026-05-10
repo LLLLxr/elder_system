@@ -96,7 +96,7 @@ export default function UserManagementPage() {
 
   const columns: ColumnsType<UserItem> = useMemo(
     () => [
-      { title: 'ID', dataIndex: 'id', key: 'id', width: 80 },
+      { title: '用户ID', dataIndex: 'id', key: 'id', width: 80 },
       { title: '用户名', dataIndex: 'username', key: 'username' },
       { title: '姓名', dataIndex: 'realName', key: 'realName', render: (value) => value || '-' },
       { title: '手机号', dataIndex: 'phone', key: 'phone', render: (value) => value || '-' },

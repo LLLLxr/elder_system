@@ -11,6 +11,136 @@ body {
     'Noto Sans', sans-serif;
 }
 
+.journey-app-header.ant-layout-header {
+  height: auto;
+  min-height: 64px;
+  line-height: normal;
+  background: #fff;
+  display: flex;
+  align-items: center;
+  border-bottom: 1px solid #f0f0f0;
+  padding: 10px 20px;
+  gap: 20px;
+}
+
+.journey-app-brand {
+  min-width: 220px;
+  flex-shrink: 0;
+}
+
+.journey-app-title {
+  white-space: nowrap;
+  line-height: 22px;
+}
+
+.journey-app-subtitle {
+  line-height: 20px;
+  white-space: nowrap;
+}
+
+.journey-app-menu.ant-menu-horizontal {
+  flex: 1;
+  min-width: 0;
+  border-bottom: none;
+}
+
+.journey-app-logout {
+  flex-shrink: 0;
+}
+
+.journey-app-content {
+  padding: 24px;
+}
+
+.journey-app-content-inner,
+.journey-page-scaffold {
+  width: 100%;
+}
+
+.journey-page-header {
+  width: 100%;
+  justify-content: space-between;
+  padding: 4px 0;
+}
+
+.journey-page-heading {
+  min-width: 0;
+}
+
+.journey-page-title.ant-typography {
+  margin: 0;
+  line-height: 30px;
+}
+
+.journey-page-actions {
+  display: flex;
+  justify-content: flex-end;
+}
+
+.journey-app-content .ant-card {
+  border-radius: 10px;
+  box-shadow: 0 4px 14px rgba(15, 35, 80, 0.04);
+}
+
+.journey-app-content .ant-card-head {
+  min-height: 48px;
+}
+
+.journey-app-content .ant-alert {
+  border-radius: 8px;
+}
+
+.elder-binding-card,
+.elder-request-card {
+  height: 100%;
+  cursor: pointer;
+}
+
+.elder-binding-card-active,
+.elder-request-card-active {
+  border-color: #1677ff !important;
+  box-shadow: 0 0 0 2px rgba(22, 119, 255, 0.12) !important;
+}
+
+.self-binding-flow-card,
+.self-binding-profile-card {
+  height: 100%;
+}
+
+@media (max-width: 992px) {
+  .journey-app-header.ant-layout-header {
+    align-items: flex-start;
+    flex-wrap: wrap;
+    gap: 8px 12px;
+    padding: 10px 16px;
+  }
+
+  .journey-app-brand {
+    min-width: 0;
+    flex: 1 1 auto;
+  }
+
+  .journey-app-subtitle {
+    white-space: normal;
+  }
+
+  .journey-app-menu.ant-menu-horizontal {
+    flex-basis: 100%;
+    order: 3;
+    overflow-x: auto;
+    overflow-y: hidden;
+  }
+
+  .journey-app-content {
+    padding: 16px;
+  }
+
+  .journey-page-actions {
+    width: 100%;
+    justify-content: flex-start;
+  }
+}
+
 .health-check-page .health-check-header {
   margin-bottom: 10px;
 }

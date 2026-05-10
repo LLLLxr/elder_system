@@ -6,7 +6,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.StringUtils;
 import org.smart_elder_system.user.constant.UserConstants;
-import org.smart_elder_system.user.dto.PermissionDTO;
+import org.smart_elder_system.user.dto.PermissionDto;
 import org.smart_elder_system.user.exception.BusinessException;
 import org.smart_elder_system.user.po.PermissionPo;
 import org.smart_elder_system.user.repository.PermissionRepository;
@@ -33,21 +33,21 @@ public class PermissionService {
     }
 
     @Transactional(rollbackFor = Exception.class)
-    public boolean createPermission(PermissionDTO permissionDTO) {
+    public boolean createPermission(PermissionDto permissionDto) {
         if (permissionRepository.existsByPermissionNameAndDeleteFlag(
-                permissionDTO.getPermissionName(), UserConstants.DELETE_FLAG_NORMAL)) {
+                permissionDto.getPermissionName(), UserConstants.DELETE_FLAG_NORMAL)) {
             throw new BusinessException("权限名称已存在");
         }
         if (permissionRepository.existsByPermissionCodeAndDeleteFlag(
-                permissionDTO.getPermissionCode(), UserConstants.DELETE_FLAG_NORMAL)) {
+                permissionDto.getPermissionCode(), UserConstants.DELETE_FLAG_NORMAL)) {
             throw new BusinessException("权限编码已存在");
         }
 
         PermissionPo newPermission = new PermissionPo();
-        newPermission.setPermissionName(permissionDTO.getPermissionName());
-        newPermission.setPermissionCode(permissionDTO.getPermissionCode());
-        newPermission.setDescription(permissionDTO.getDescription());
-        newPermission.setStatus(permissionDTO.getStatus() == null ? UserConstants.STATUS_NORMAL : permissionDTO.getStatus());
+        newPermission.setPermissionName(permissionDto.getPermissionName());
+        newPermission.setPermissionCode(permissionDto.getPermissionCode());
+        newPermission.setDescription(permissionDto.getDescription());
+        newPermission.setStatus(permissionDto.getStatus() == null ? UserConstants.STATUS_NORMAL : permissionDto.getStatus());
         newPermission.setDeleteFlag(UserConstants.DELETE_FLAG_NORMAL);
 
         permissionRepository.save(newPermission);
@@ -55,28 +55,28 @@ public class PermissionService {
     }
 
     @Transactional(rollbackFor = Exception.class)
-    public boolean updatePermission(PermissionDTO permissionDTO) {
-        PermissionPo existingPermission = permissionRepository.findById(permissionDTO.getId())
+    public boolean updatePermission(PermissionDto permissionDto) {
+        PermissionPo existingPermission = permissionRepository.findById(permissionDto.getId())
                 .orElseThrow(() -> new BusinessException("权限不存在"));
         if (UserConstants.DELETE_FLAG_DELETED.equals(existingPermission.getDeleteFlag())) {
             throw new BusinessException("权限不存在");
         }
-        if (!existingPermission.getPermissionName().equals(permissionDTO.getPermissionName()) &&
+        if (!existingPermission.getPermissionName().equals(permissionDto.getPermissionName()) &&
                 permissionRepository.existsByPermissionNameAndDeleteFlagAndIdNot(
-                        permissionDTO.getPermissionName(), UserConstants.DELETE_FLAG_NORMAL, permissionDTO.getId())) {
+                        permissionDto.getPermissionName(), UserConstants.DELETE_FLAG_NORMAL, permissionDto.getId())) {
             throw new BusinessException("权限名称已存在");
         }
-        if (!existingPermission.getPermissionCode().equals(permissionDTO.getPermissionCode()) &&
+        if (!existingPermission.getPermissionCode().equals(permissionDto.getPermissionCode()) &&
                 permissionRepository.existsByPermissionCodeAndDeleteFlagAndIdNot(
-                        permissionDTO.getPermissionCode(), UserConstants.DELETE_FLAG_NORMAL, permissionDTO.getId())) {
+                        permissionDto.getPermissionCode(), UserConstants.DELETE_FLAG_NORMAL, permissionDto.getId())) {
             throw new BusinessException("权限编码已存在");
         }
 
-        existingPermission.setPermissionName(permissionDTO.getPermissionName());
-        existingPermission.setPermissionCode(permissionDTO.getPermissionCode());
-        existingPermission.setDescription(permissionDTO.getDescription());
-        if (permissionDTO.getStatus() != null) {
-            existingPermission.setStatus(permissionDTO.getStatus());
+        existingPermission.setPermissionName(permissionDto.getPermissionName());
+        existingPermission.setPermissionCode(permissionDto.getPermissionCode());
+        existingPermission.setDescription(permissionDto.getDescription());
+        if (permissionDto.getStatus() != null) {
+            existingPermission.setStatus(permissionDto.getStatus());
         }
         permissionRepository.save(existingPermission);
         return true;

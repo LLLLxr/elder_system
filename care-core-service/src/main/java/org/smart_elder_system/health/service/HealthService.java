@@ -1,29 +1,42 @@
 package org.smart_elder_system.health.service;
 
+import jakarta.persistence.criteria.Predicate;
 import lombok.RequiredArgsConstructor;
-import org.springframework.dao.DataIntegrityViolationException;
-import org.springframework.stereotype.Service;
-import org.springframework.transaction.annotation.Transactional;
-import org.smart_elder_system.admission.model.ServiceApplication;
+import org.smart_elder_system.admission.vo.ServiceApplication;
 import org.smart_elder_system.admission.po.ServiceApplicationPo;
 import org.smart_elder_system.admission.repository.ServiceApplicationRepository;
-import org.smart_elder_system.common.dto.care.HealthAssessmentDTO;
-import org.smart_elder_system.common.dto.care.HealthAssessmentRequestDTO;
-import org.smart_elder_system.common.dto.care.HealthAssessmentSubmitDTO;
-import org.smart_elder_system.common.dto.care.HealthCheckFormCreateRequestDTO;
-import org.smart_elder_system.common.dto.care.HealthCheckFormDTO;
-import org.smart_elder_system.common.dto.care.HealthProfileDTO;
+import org.smart_elder_system.careorchestration.service.ServiceJourneyTaskService;
+import org.smart_elder_system.careorchestration.service.ServiceJourneyTransitionLogService;
+import org.smart_elder_system.common.dto.health.DoctorRoundRecordDto;
+import org.smart_elder_system.common.dto.health.DoctorRoundRecordSaveDto;
+import org.smart_elder_system.common.dto.health.HealthAssessmentDto;
+import org.smart_elder_system.common.dto.health.HealthAssessmentRequestDto;
+import org.smart_elder_system.common.dto.health.HealthAssessmentSubmitDto;
+import org.smart_elder_system.common.dto.health.HealthCheckFormCreateRequestDto;
+import org.smart_elder_system.common.dto.health.HealthCheckFormDto;
+import org.smart_elder_system.common.dto.health.HealthProfileDto;
+import org.smart_elder_system.contract.po.ServiceAgreementPo;
+import org.smart_elder_system.contract.repository.ServiceAgreementRepository;
 import org.smart_elder_system.health.HealthAuthorizationPolicy;
-import org.smart_elder_system.health.model.HealthAssessmentRecord;
-import org.smart_elder_system.health.model.HealthCheckForm;
-import org.smart_elder_system.health.model.HealthProfile;
+import org.smart_elder_system.health.vo.DoctorRoundRecord;
+import org.smart_elder_system.health.vo.HealthAssessmentRecord;
+import org.smart_elder_system.health.vo.HealthCheckForm;
+import org.smart_elder_system.health.vo.HealthProfile;
+import org.smart_elder_system.health.po.DoctorRoundRecordPo;
 import org.smart_elder_system.health.po.HealthAssessmentRecordPo;
 import org.smart_elder_system.health.po.HealthCheckFormPo;
 import org.smart_elder_system.health.po.HealthProfilePo;
+import org.smart_elder_system.health.repository.DoctorRoundRecordRepository;
 import org.smart_elder_system.health.repository.HealthAssessmentRecordRepository;
 import org.smart_elder_system.health.repository.HealthCheckFormRepository;
 import org.smart_elder_system.health.repository.HealthProfileRepository;
+import org.springframework.dao.DataIntegrityViolationException;
+import org.springframework.data.domain.Sort;
+import org.springframework.data.jpa.domain.Specification;
+import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
+import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.Comparator;
@@ -36,70 +49,77 @@ public class HealthService {
 
     private static final String ASSESSMENT_TYPE_PRE_SIGN_PASS = "PRE_SIGN_PASS";
     private static final String ASSESSMENT_TYPE_PRE_SIGN_FAIL = "PRE_SIGN_FAIL";
+    private static final String BUSINESS_TYPE_DOCTOR_ROUND_RECORD = "DOCTOR_ROUND_RECORD";
+    private static final String ACTION_DOCTOR_ROUND_RECORD_CREATED = "DOCTOR_ROUND_RECORD_CREATED";
+    private static final String ACTION_DOCTOR_ROUND_RECORD_UPDATED = "DOCTOR_ROUND_RECORD_UPDATED";
 
     private final HealthProfileRepository healthProfileRepository;
     private final HealthAssessmentRecordRepository healthAssessmentRecordRepository;
     private final HealthCheckFormRepository healthCheckFormRepository;
+    private final DoctorRoundRecordRepository doctorRoundRecordRepository;
     private final ServiceApplicationRepository serviceApplicationRepository;
+    private final ServiceAgreementRepository serviceAgreementRepository;
     private final HealthAuthorizationPolicy healthAuthorizationPolicy;
+    private final ServiceJourneyTaskService serviceJourneyTaskService;
+    private final ServiceJourneyTransitionLogService serviceJourneyTransitionLogService;
 
     public String getModuleScope() {
         return "健康管理模块：负责健康档案、健康评估、监测记录与干预建议";
     }
 
     @Transactional(rollbackFor = Exception.class)
-    public HealthProfileDTO createHealthProfile(HealthProfileDTO healthProfileDTO) {
+    public HealthProfileDto createHealthProfile(HealthProfileDto healthProfileDto) {
         Optional<HealthProfilePo> existing = healthProfileRepository.findByElderIdAndAgreementIdForUpdate(
-                healthProfileDTO.getElderId(),
-                healthProfileDTO.getAgreementId());
+                healthProfileDto.getElderId(),
+                healthProfileDto.getAgreementId());
         if (existing.isPresent()) {
             HealthProfilePo profilePo = existing.get();
-            mergeProfilePo(profilePo, healthProfileDTO);
-            return HealthProfile.fromPo(profilePo).toDTO();
+            mergeProfilePo(profilePo, healthProfileDto);
+            return HealthProfile.fromPo(profilePo).toDto();
         }
 
-        HealthProfile profile = HealthProfile.fromDTO(healthProfileDTO);
+        HealthProfile profile = HealthProfile.fromDto(healthProfileDto);
         profile.initialize();
 
         try {
             HealthProfilePo saved = healthProfileRepository.save(profile.toPo());
-            return HealthProfile.fromPo(saved).toDTO();
+            return HealthProfile.fromPo(saved).toDto();
         } catch (DataIntegrityViolationException exception) {
             HealthProfilePo existingProfile = healthProfileRepository.findTopByElderIdAndAgreementIdOrderByProfileDateDescIdDesc(
-                            healthProfileDTO.getElderId(),
-                            healthProfileDTO.getAgreementId())
+                            healthProfileDto.getElderId(),
+                            healthProfileDto.getAgreementId())
                     .orElseThrow(() -> exception);
-            mergeProfilePo(existingProfile, healthProfileDTO);
-            return HealthProfile.fromPo(existingProfile).toDTO();
+            mergeProfilePo(existingProfile, healthProfileDto);
+            return HealthProfile.fromPo(existingProfile).toDto();
         }
     }
 
-    public HealthAssessmentDTO performAssessment(HealthAssessmentDTO assessmentDTO) {
-        HealthAssessmentRecord record = HealthAssessmentRecord.fromDTO(assessmentDTO);
+    public HealthAssessmentDto performAssessment(HealthAssessmentDto assessmentDto) {
+        HealthAssessmentRecord record = HealthAssessmentRecord.fromDto(assessmentDto);
         record.assess();
 
         HealthAssessmentRecordPo saved = healthAssessmentRecordRepository.save(record.toPo());
         record.setAssessmentId(saved.getId());
-        return record.toDTO();
+        return record.toDto();
     }
 
     @Transactional(rollbackFor = Exception.class)
-    public HealthCheckFormDTO createAdminHealthCheckForm(HealthCheckFormCreateRequestDTO healthCheckFormCreateRequestDTO) {
+    public HealthCheckFormDto createAdminHealthCheckForm(HealthCheckFormCreateRequestDto healthCheckFormCreateRequestDto) {
         healthAuthorizationPolicy.requireCheckFormCreatePermission();
 
-        HealthCheckForm form = HealthCheckForm.fromCreateRequest(healthCheckFormCreateRequestDTO);
+        HealthCheckForm form = HealthCheckForm.fromCreateRequest(healthCheckFormCreateRequestDto);
         form.setAuthorUserId(healthAuthorizationPolicy.requireCurrentUserId());
         form.initialize();
 
         return saveHealthCheckForm(form);
     }
 
-    public HealthCheckFormDTO getAdminHealthCheckForm(Long formId) {
+    public HealthCheckFormDto getAdminHealthCheckForm(Long formId) {
         healthAuthorizationPolicy.requireCheckFormReadPermission();
         return getHealthCheckForm(formId);
     }
 
-    public HealthCheckFormDTO getLatestAdminHealthCheckForm(Long elderId, Long agreementId, Long authorUserId) {
+    public HealthCheckFormDto getLatestAdminHealthCheckForm(Long elderId, Long agreementId, Long authorUserId) {
         healthAuthorizationPolicy.requireCheckFormReadPermission();
 
         Optional<HealthCheckFormPo> optional = Optional.empty();
@@ -113,10 +133,10 @@ public class HealthService {
             optional = healthCheckFormRepository.findTopByElderIdOrderByCheckDateDescIdDesc(elderId);
         }
 
-        return HealthCheckForm.fromPo(optional.orElseThrow(() -> new IllegalArgumentException("未找到健康体检表"))).toDTO();
+        return HealthCheckForm.fromPo(optional.orElseThrow(() -> new IllegalArgumentException("未找到健康体检表"))).toDto();
     }
 
-    public List<HealthCheckFormDTO> listAdminHealthCheckForms(Long elderId, Long agreementId, Long authorUserId) {
+    public List<HealthCheckFormDto> listAdminHealthCheckForms(Long elderId, Long agreementId, Long authorUserId) {
         healthAuthorizationPolicy.requireCheckFormListPermission();
 
         List<HealthCheckFormPo> forms;
@@ -132,41 +152,117 @@ public class HealthService {
 
         return forms.stream()
                 .map(HealthCheckForm::fromPo)
-                .map(HealthCheckForm::toDTO)
+                .map(HealthCheckForm::toDto)
                 .toList();
     }
 
-    public HealthCheckFormDTO getHealthCheckForm(Long formId) {
+    public HealthCheckFormDto getHealthCheckForm(Long formId) {
         HealthCheckFormPo po = healthCheckFormRepository.findById(formId)
                 .orElseThrow(() -> new IllegalArgumentException("未找到健康体检表"));
-        return HealthCheckForm.fromPo(po).toDTO();
+        return HealthCheckForm.fromPo(po).toDto();
     }
 
-    public HealthCheckFormDTO getLatestHealthCheckForm(Long elderId, Long agreementId) {
+    public HealthCheckFormDto getLatestHealthCheckForm(Long elderId, Long agreementId) {
         Optional<HealthCheckFormPo> optional = agreementId == null
                 ? healthCheckFormRepository.findTopByElderIdOrderByCheckDateDescIdDesc(elderId)
                 : healthCheckFormRepository.findTopByElderIdAndAgreementIdOrderByCheckDateDescIdDesc(elderId, agreementId);
 
         HealthCheckFormPo po = optional.orElseThrow(() -> new IllegalArgumentException("未找到健康体检表"));
-        return HealthCheckForm.fromPo(po).toDTO();
+        return HealthCheckForm.fromPo(po).toDto();
     }
 
-    public List<HealthCheckFormDTO> listHealthCheckForms(Long elderId, Long agreementId) {
+    public List<HealthCheckFormDto> listHealthCheckForms(Long elderId, Long agreementId) {
         List<HealthCheckFormPo> forms = agreementId == null
                 ? healthCheckFormRepository.findByElderIdOrderByCheckDateDescIdDesc(elderId)
                 : healthCheckFormRepository.findByElderIdAndAgreementIdOrderByCheckDateDescIdDesc(elderId, agreementId);
 
         return forms.stream()
                 .map(HealthCheckForm::fromPo)
-                .map(HealthCheckForm::toDTO)
+                .map(HealthCheckForm::toDto)
                 .toList();
     }
 
-    public List<HealthAssessmentRequestDTO> listPendingAssessmentRequests() {
+    @Transactional(readOnly = true)
+    public List<DoctorRoundRecordDto> listDoctorRoundRecords(Long elderId, Long doctorId, LocalDate roundDate) {
+        healthAuthorizationPolicy.requireDoctorRoundRecordListPermission();
+        return doctorRoundRecordRepository.findAll(
+                        buildDoctorRoundRecordSpecification(elderId, doctorId, roundDate),
+                        Sort.by(Sort.Direction.DESC, "roundTime", "id"))
+                .stream()
+                .map(DoctorRoundRecord::fromPo)
+                .map(DoctorRoundRecord::toDto)
+                .toList();
+    }
+
+    @Transactional(rollbackFor = Exception.class)
+    public DoctorRoundRecordDto createDoctorRoundRecord(DoctorRoundRecordSaveDto dto) {
+        healthAuthorizationPolicy.requireDoctorRoundRecordCreatePermission();
+        Long doctorId = healthAuthorizationPolicy.requireCurrentUserId();
+        String doctorName = healthAuthorizationPolicy.requireCurrentUsername();
+
+        DoctorRoundRecord domain = DoctorRoundRecord.create(doctorId, doctorName, resolveElderName(dto.getElderId()), dto);
+        DoctorRoundRecordPo saved = doctorRoundRecordRepository.save(domain.toPo());
+        DoctorRoundRecord savedDomain = DoctorRoundRecord.fromPo(saved);
+        resolveAgreementByElderId(dto.getElderId()).ifPresent(agreement -> {
+            serviceJourneyTaskService.createDoctorRoundRecordTask(agreement.getApplicationId(), agreement.getId(), dto.getElderId());
+            serviceJourneyTaskService.completeOpenTask(agreement.getApplicationId(), ServiceJourneyTaskService.TASK_TYPE_DOCTOR_ROUND_RECORD);
+        });
+        serviceJourneyTransitionLogService.logBusinessAction(
+                BUSINESS_TYPE_DOCTOR_ROUND_RECORD,
+                saved.getId(),
+                saved.getElderId(),
+                ACTION_DOCTOR_ROUND_RECORD_CREATED,
+                null,
+                dto);
+        return savedDomain.toDto();
+    }
+
+    @Transactional(rollbackFor = Exception.class)
+    public DoctorRoundRecordDto updateDoctorRoundRecord(Long recordId, DoctorRoundRecordSaveDto dto) {
+        healthAuthorizationPolicy.requireDoctorRoundRecordUpdatePermission();
+
+        DoctorRoundRecordPo po = doctorRoundRecordRepository.findByIdForUpdate(recordId)
+                .orElseThrow(() -> new IllegalArgumentException("未找到查房记录"));
+        DoctorRoundRecord domain = DoctorRoundRecord.fromPo(po);
+        domain.updateFrom(dto);
+        domain.setElderName(resolveElderName(dto.getElderId()));
+        domain.applyTo(po);
+        DoctorRoundRecordPo saved = doctorRoundRecordRepository.save(po);
+        serviceJourneyTransitionLogService.logBusinessAction(
+                BUSINESS_TYPE_DOCTOR_ROUND_RECORD,
+                saved.getId(),
+                saved.getElderId(),
+                ACTION_DOCTOR_ROUND_RECORD_UPDATED,
+                null,
+                dto);
+        return DoctorRoundRecord.fromPo(saved).toDto();
+    }
+
+    @Transactional(readOnly = true)
+    public DoctorRoundRecordDto getDoctorRoundRecord(Long recordId) {
+        healthAuthorizationPolicy.requireDoctorRoundRecordReadPermission();
+        DoctorRoundRecordPo po = doctorRoundRecordRepository.findById(recordId)
+                .orElseThrow(() -> new IllegalArgumentException("未找到查房记录"));
+        return DoctorRoundRecord.fromPo(po).toDto();
+    }
+
+    @Transactional(readOnly = true)
+    public List<DoctorRoundRecordDto> listFamilyDoctorRoundRecords(Long elderId, LocalDate roundDate) {
+        healthAuthorizationPolicy.requireFamilyDoctorRoundRecordListPermission();
+        return doctorRoundRecordRepository.findAll(
+                        buildDoctorRoundRecordSpecification(elderId, null, roundDate),
+                        Sort.by(Sort.Direction.DESC, "roundTime", "id"))
+                .stream()
+                .map(DoctorRoundRecord::fromPo)
+                .map(DoctorRoundRecord::toDto)
+                .toList();
+    }
+
+    public List<HealthAssessmentRequestDto> listPendingAssessmentRequests() {
         List<ServiceApplicationPo> passedApplications = serviceApplicationRepository
                 .findByStatusInOrderBySubmittedAtDesc(List.of(ServiceApplication.STATUS_PASSED));
 
-        List<HealthAssessmentRequestDTO> pending = new ArrayList<>();
+        List<HealthAssessmentRequestDto> pending = new ArrayList<>();
         for (ServiceApplicationPo application : passedApplications) {
             Optional<HealthCheckFormPo> latestCheckForm = healthCheckFormRepository
                     .findTopByElderIdOrderByCheckDateDescIdDesc(application.getElderId());
@@ -181,16 +277,16 @@ public class HealthService {
             pending.add(toAssessmentRequest(application, latestCheckForm.get(), null));
         }
 
-        pending.sort(Comparator.comparing(HealthAssessmentRequestDTO::getSubmittedAt,
+        pending.sort(Comparator.comparing(HealthAssessmentRequestDto::getSubmittedAt,
                 Comparator.nullsLast(Comparator.reverseOrder())));
         return pending;
     }
 
-    public List<HealthAssessmentRequestDTO> listAssessmentHistory() {
+    public List<HealthAssessmentRequestDto> listAssessmentHistory() {
         List<ServiceApplicationPo> candidateApplications = serviceApplicationRepository
                 .findByStatusInOrderBySubmittedAtDesc(List.of(ServiceApplication.STATUS_PASSED, ServiceApplication.STATUS_FAILED));
 
-        List<HealthAssessmentRequestDTO> history = new ArrayList<>();
+        List<HealthAssessmentRequestDto> history = new ArrayList<>();
         for (ServiceApplicationPo application : candidateApplications) {
             Optional<HealthCheckFormPo> latestCheckForm = healthCheckFormRepository
                     .findTopByElderIdOrderByCheckDateDescIdDesc(application.getElderId());
@@ -209,14 +305,14 @@ public class HealthService {
             history.add(toAssessmentRequest(application, latestCheckForm.get(), record.get()));
         }
 
-        history.sort(Comparator.comparing(HealthAssessmentRequestDTO::getHealthAssessedAt,
+        history.sort(Comparator.comparing(HealthAssessmentRequestDto::getHealthAssessedAt,
                 Comparator.nullsLast(Comparator.reverseOrder())));
         return history;
     }
 
     @Transactional(rollbackFor = Exception.class)
-    public HealthAssessmentRequestDTO submitPreSignAssessment(HealthAssessmentSubmitDTO submitDTO) {
-        ServiceApplicationPo application = serviceApplicationRepository.findByIdForUpdate(submitDTO.getApplicationId())
+    public HealthAssessmentRequestDto submitPreSignAssessment(HealthAssessmentSubmitDto submitDto) {
+        ServiceApplicationPo application = serviceApplicationRepository.findByIdForUpdate(submitDto.getApplicationId())
                 .orElseThrow(() -> new IllegalArgumentException("未找到服务申请"));
 
         if (!ServiceApplication.STATUS_PASSED.equals(application.getStatus())) {
@@ -227,17 +323,17 @@ public class HealthService {
                 .findTopByElderIdOrderByCheckDateDescIdDesc(application.getElderId())
                 .orElseThrow(() -> new IllegalArgumentException("请先提交健康体检表"));
 
-        if (findLatestPreSignAssessment(submitDTO.getApplicationId(), application.getElderId(), application.getSubmittedAt()).isPresent()) {
+        if (findLatestPreSignAssessment(submitDto.getApplicationId(), application.getElderId(), application.getSubmittedAt()).isPresent()) {
             throw new IllegalArgumentException("该申请已完成健康评估");
         }
 
         HealthAssessmentRecord record = HealthAssessmentRecord.builder()
-                .applicationId(submitDTO.getApplicationId())
+                .applicationId(submitDto.getApplicationId())
                 .elderId(application.getElderId())
                 .agreementId(latestCheckForm.getAgreementId())
-                .assessmentType(Boolean.TRUE.equals(submitDTO.getPassed()) ? ASSESSMENT_TYPE_PRE_SIGN_PASS : ASSESSMENT_TYPE_PRE_SIGN_FAIL)
-                .conclusion(submitDTO.getAssessmentConclusion() + "（评估人：" + submitDTO.getAssessor() + "，责任医生：" + submitDTO.getResponsibleDoctor() + "）")
-                .score(submitDTO.getScore())
+                .assessmentType(Boolean.TRUE.equals(submitDto.getPassed()) ? ASSESSMENT_TYPE_PRE_SIGN_PASS : ASSESSMENT_TYPE_PRE_SIGN_FAIL)
+                .conclusion(submitDto.getAssessmentConclusion() + "（评估人：" + submitDto.getAssessor() + "，责任医生：" + submitDto.getResponsibleDoctor() + "）")
+                .score(submitDto.getScore())
                 .build();
         record.assess();
 
@@ -246,14 +342,14 @@ public class HealthService {
             return toAssessmentRequest(application, latestCheckForm, saved);
         } catch (DataIntegrityViolationException exception) {
             HealthAssessmentRecordPo existing = findLatestPreSignAssessment(
-                    submitDTO.getApplicationId(),
+                    submitDto.getApplicationId(),
                     application.getElderId(),
                     application.getSubmittedAt()).orElseThrow(() -> exception);
             return toAssessmentRequest(application, latestCheckForm, existing);
         }
     }
 
-    private HealthCheckFormDTO saveHealthCheckForm(HealthCheckForm form) {
+    private HealthCheckFormDto saveHealthCheckForm(HealthCheckForm form) {
         HealthCheckFormPo saved = healthCheckFormRepository.save(form.toPo());
         form.setFormId(saved.getId());
 
@@ -279,7 +375,7 @@ public class HealthService {
             healthProfileRepository.save(existingProfile);
         }
 
-        return form.toDTO();
+        return form.toDto();
     }
 
     private Optional<HealthAssessmentRecordPo> findLatestPreSignAssessment(Long applicationId, Long elderId, LocalDateTime submittedAt) {
@@ -301,11 +397,11 @@ public class HealthService {
                         lowerBound);
     }
 
-    private HealthAssessmentRequestDTO toAssessmentRequest(
+    private HealthAssessmentRequestDto toAssessmentRequest(
             ServiceApplicationPo application,
             HealthCheckFormPo checkForm,
             HealthAssessmentRecordPo assessmentRecord) {
-        HealthAssessmentRequestDTO dto = new HealthAssessmentRequestDTO();
+        HealthAssessmentRequestDto dto = new HealthAssessmentRequestDto();
         dto.setApplicationId(application.getId());
         dto.setElderId(application.getElderId());
         dto.setAgreementId(checkForm.getAgreementId());
@@ -326,23 +422,49 @@ public class HealthService {
         return dto;
     }
 
-    private void mergeProfilePo(HealthProfilePo profilePo, HealthProfileDTO healthProfileDTO) {
-        if (healthProfileDTO.getBloodType() != null) {
-            profilePo.setBloodType(healthProfileDTO.getBloodType());
+    private Specification<DoctorRoundRecordPo> buildDoctorRoundRecordSpecification(Long elderId, Long doctorId, LocalDate roundDate) {
+        return (root, query, cb) -> {
+            List<Predicate> predicates = new ArrayList<>();
+            if (elderId != null) {
+                predicates.add(cb.equal(root.get("elderId"), elderId));
+            }
+            if (doctorId != null) {
+                predicates.add(cb.equal(root.get("doctorId"), doctorId));
+            }
+            if (roundDate != null) {
+                predicates.add(cb.greaterThanOrEqualTo(root.get("roundTime"), roundDate.atStartOfDay()));
+                predicates.add(cb.lessThan(root.get("roundTime"), roundDate.plusDays(1).atStartOfDay()));
+            }
+            return cb.and(predicates.toArray(Predicate[]::new));
+        };
+    }
+
+    private String resolveElderName(Long elderId) {
+        return healthCheckFormRepository.findTopByElderIdOrderByCheckDateDescIdDesc(elderId)
+                .map(form -> form.getElderName() == null || form.getElderName().isBlank() ? "老人" + elderId : form.getElderName())
+                .orElse("老人" + elderId);
+    }
+
+    private Optional<ServiceAgreementPo> resolveAgreementByElderId(Long elderId) {
+        return serviceAgreementRepository.findTopByElderIdOrderByEffectiveDateDescIdDesc(elderId);
+    }
+
+    private void mergeProfilePo(HealthProfilePo profilePo, HealthProfileDto healthProfileDto) {
+        if (healthProfileDto.getBloodType() != null) {
+            profilePo.setBloodType(healthProfileDto.getBloodType());
         }
-        if (healthProfileDTO.getChronicDiseaseSummary() != null) {
-            profilePo.setChronicDiseaseSummary(healthProfileDTO.getChronicDiseaseSummary());
+        if (healthProfileDto.getChronicDiseaseSummary() != null) {
+            profilePo.setChronicDiseaseSummary(healthProfileDto.getChronicDiseaseSummary());
         }
-        if (healthProfileDTO.getAllergySummary() != null) {
-            profilePo.setAllergySummary(healthProfileDTO.getAllergySummary());
+        if (healthProfileDto.getAllergySummary() != null) {
+            profilePo.setAllergySummary(healthProfileDto.getAllergySummary());
         }
-        if (healthProfileDTO.getRiskLevel() != null) {
-            profilePo.setRiskLevel(healthProfileDTO.getRiskLevel());
+        if (healthProfileDto.getRiskLevel() != null) {
+            profilePo.setRiskLevel(healthProfileDto.getRiskLevel());
         }
-        if (healthProfileDTO.getProfileDate() != null) {
-            profilePo.setProfileDate(healthProfileDTO.getProfileDate());
+        if (healthProfileDto.getProfileDate() != null) {
+            profilePo.setProfileDate(healthProfileDto.getProfileDate());
         }
         healthProfileRepository.save(profilePo);
     }
 }
-

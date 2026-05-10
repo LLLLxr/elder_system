@@ -1,10 +1,8 @@
 package org.smart_elder_system.health;
 
-import org.springframework.http.HttpStatus;
-import org.springframework.web.bind.annotation.ResponseStatus;
+import org.smart_elder_system.carecore.exception.AuthorizationException;
 
-@ResponseStatus(HttpStatus.FORBIDDEN)
-public class HealthAuthorizationException extends RuntimeException {
+public class HealthAuthorizationException extends AuthorizationException {
 
     public HealthAuthorizationException(String message) {
         super(message);

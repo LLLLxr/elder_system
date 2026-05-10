@@ -1,10 +1,8 @@
 package org.smart_elder_system.careorchestration.security;
 
-import org.springframework.http.HttpStatus;
-import org.springframework.web.bind.annotation.ResponseStatus;
+import org.smart_elder_system.carecore.exception.AuthorizationException;
 
-@ResponseStatus(HttpStatus.FORBIDDEN)
-public class JourneyAuthorizationException extends RuntimeException {
+public class JourneyAuthorizationException extends AuthorizationException {
 
     public JourneyAuthorizationException(String message) {
         super(message);

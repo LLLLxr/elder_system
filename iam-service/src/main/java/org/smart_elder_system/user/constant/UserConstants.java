@@ -62,5 +62,13 @@ public final class UserConstants {
 
     /** 超级管理员角色 */
     public static final String ROLE_SUPER_ADMIN = "SUPER_ADMIN";
+
+    public static final String ELDER_BINDING_TYPE_SELF = "SELF";
+    public static final String ELDER_BINDING_TYPE_FAMILY = "FAMILY";
+    public static final String ELDER_BINDING_RELATION_SELF = "本人";
+
+    public static final String ELDER_BINDING_REQUEST_STATUS_PENDING = "PENDING";
+    public static final String ELDER_BINDING_REQUEST_STATUS_APPROVED = "APPROVED";
+    public static final String ELDER_BINDING_REQUEST_STATUS_REJECTED = "REJECTED";
 }
 

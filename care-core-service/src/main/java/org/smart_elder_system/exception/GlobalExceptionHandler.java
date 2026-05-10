@@ -2,8 +2,8 @@ package org.smart_elder_system.exception;
 
 import jakarta.persistence.OptimisticLockException;
 import jakarta.validation.ConstraintViolationException;
-import org.smart_elder_system.careorchestration.security.JourneyAuthorizationException;
-import org.smart_elder_system.health.HealthAuthorizationException;
+import org.smart_elder_system.carecore.exception.AuthorizationException;
+import org.smart_elder_system.common.response.ApiResponse;
 import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -60,10 +60,22 @@ public class GlobalExceptionHandler {
                 .body(ApiResponse.error(400, "缺少必要参数: " + exception.getParameterName()));
     }
 
+    @ExceptionHandler(ResourceNotFoundException.class)
+    public ResponseEntity<ApiResponse<?>> handleResourceNotFoundException(ResourceNotFoundException exception) {
+        return ResponseEntity.status(HttpStatus.NOT_FOUND)
+                .body(ApiResponse.error(404, exception.getMessage()));
+    }
+
     @ExceptionHandler(IllegalArgumentException.class)
     public ResponseEntity<ApiResponse<?>> handleIllegalArgumentException(IllegalArgumentException exception) {
         return ResponseEntity.status(HttpStatus.BAD_REQUEST)
                 .body(ApiResponse.error(400, exception.getMessage()));
+    }
+
+    @ExceptionHandler(IllegalStateException.class)
+    public ResponseEntity<ApiResponse<?>> handleIllegalStateException(IllegalStateException exception) {
+        return ResponseEntity.status(HttpStatus.CONFLICT)
+                .body(ApiResponse.error(409, exception.getMessage()));
     }
 
     @ExceptionHandler({ObjectOptimisticLockingFailureException.class, OptimisticLockException.class})
@@ -86,14 +98,20 @@ public class GlobalExceptionHandler {
                 message = "当前协议已存在健康档案";
             } else if (causeMessage.contains("uk_care_service_journey_task_open")) {
                 message = "当前旅程任务已存在进行中的记录";
+            } else if (causeMessage.contains("uk_admission_family_visit_reservation_slot_family_elder")) {
+                message = "当前家属已预约该老人此参观时段";
+            } else if (causeMessage.contains("uk_quality_caregiver_qualification_active")) {
+                message = "当前护理员已有待审核的资质申请";
+            } else if (causeMessage.contains("uk_caregiver_check_in_record_daily")) {
+                message = "当前护理员当天已提交该服务计划打卡记录";
             }
         }
         return ResponseEntity.status(HttpStatus.CONFLICT)
                 .body(ApiResponse.error(409, message));
     }
 
-    @ExceptionHandler({HealthAuthorizationException.class, JourneyAuthorizationException.class})
-    public ResponseEntity<ApiResponse<?>> handleAuthorizationException(RuntimeException exception) {
+    @ExceptionHandler(AuthorizationException.class)
+    public ResponseEntity<ApiResponse<?>> handleAuthorizationException(AuthorizationException exception) {
         return ResponseEntity.status(HttpStatus.FORBIDDEN)
                 .body(ApiResponse.error(403, exception.getMessage()));
     }
@@ -102,49 +120,5 @@ public class GlobalExceptionHandler {
     public ResponseEntity<ApiResponse<?>> handleException(Exception exception) {
         return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
                 .body(ApiResponse.error(500, "系统内部错误"));
-    }
-
-    public static class ApiResponse<T> {
-        private int code;
-        private String message;
-        private T data;
-
-        public ApiResponse(int code, String message, T data) {
-            this.code = code;
-            this.message = message;
-            this.data = data;
-        }
-
-        public static <T> ApiResponse<T> error(int code, String message) {
-            return new ApiResponse<>(code, message, null);
-        }
-
-        public static <T> ApiResponse<T> error(int code, String message, T data) {
-            return new ApiResponse<>(code, message, data);
-        }
-
-        public int getCode() {
-            return code;
-        }
-
-        public void setCode(int code) {
-            this.code = code;
-        }
-
-        public String getMessage() {
-            return message;
-        }
-
-        public void setMessage(String message) {
-            this.message = message;
-        }
-
-        public T getData() {
-            return data;
-        }
-
-        public void setData(T data) {
-            this.data = data;
-        }
     }
 }

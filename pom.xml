@@ -24,6 +24,7 @@
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
         <spring-cloud.version>2024.0.3</spring-cloud.version>
         <spring-cloud-alibaba.version>2023.0.1.0</spring-cloud-alibaba.version>
+        <archunit.version>1.2.1</archunit.version>
     </properties>
 
     <!-- 添加modules配置 -->
@@ -58,6 +59,13 @@
                 <groupId>org</groupId>
                 <artifactId>common-lib</artifactId>
                 <version>${project.version}</version>
+            </dependency>
+            <!-- ArchUnit架构测试 -->
+            <dependency>
+                <groupId>com.tngtech.archunit</groupId>
+                <artifactId>archunit-junit5</artifactId>
+                <version>${archunit.version}</version>
+                <scope>test</scope>
             </dependency>
         </dependencies>
     </dependencyManagement>

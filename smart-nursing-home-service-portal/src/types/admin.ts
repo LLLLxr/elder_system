@@ -1,14 +1,55 @@
+export interface ElderBindingItem {
+  bindingId?: number;
+  userId?: number;
+  elderId?: number;
+  elderName?: string;
+  elderIdCard?: string;
+  elderPhone?: string;
+  gender?: string;
+  birthDate?: string;
+  elderStatus?: string;
+  bindingType?: string;
+  relationToElder?: string;
+  createdAt?: string;
+}
+
+export interface ElderBindingRequestItem {
+  requestId?: number;
+  applicantUserId?: number;
+  elderId?: number;
+  elderName: string;
+  elderIdCard: string;
+  elderPhone?: string;
+  bindingType?: string;
+  relationToElder?: string;
+  status?: string;
+  reviewedBy?: string;
+  reviewComment?: string;
+  reviewedAt?: string;
+  createdAt?: string;
+}
+
+export interface FamilyElderBindingRequestCreatePayload {
+  elderName: string;
+  elderIdCard: string;
+  elderPhone?: string;
+  relationToElder: string;
+}
+
 export interface UserItem {
   id: number;
   username: string;
   realName?: string;
   email?: string;
   phone?: string;
+  idCardNo?: string;
+  idCardVerified?: number;
   status?: number;
   statusLabel?: string;
   userTypeLabel?: string;
   createTime?: string;
   roles?: string[];
+  elderBindings?: ElderBindingItem[];
 }
 
 export interface UserPageResponse {

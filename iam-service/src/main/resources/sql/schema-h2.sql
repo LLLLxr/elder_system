@@ -107,6 +107,41 @@ CREATE TABLE face_verify_record (
     FOREIGN KEY (user_id) REFERENCES sys_user(id)
 );
 
+CREATE TABLE user_elder_binding_request (
+    id BIGINT AUTO_INCREMENT PRIMARY KEY,
+    applicant_user_id BIGINT NOT NULL,
+    elder_id BIGINT,
+    elder_name VARCHAR(100) NOT NULL,
+    elder_id_card VARCHAR(32) NOT NULL,
+    elder_phone VARCHAR(32),
+    relation_to_elder VARCHAR(64) NOT NULL,
+    status VARCHAR(32) NOT NULL,
+    reviewed_by VARCHAR(100),
+    review_comment VARCHAR(500),
+    reviewed_at TIMESTAMP,
+    created_by VARCHAR(64) NOT NULL DEFAULT 'system',
+    last_modified_by VARCHAR(64) NOT NULL DEFAULT 'system',
+    created_date_time_utc TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    last_modified_date_time_utc TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    version BIGINT NOT NULL DEFAULT 1,
+    FOREIGN KEY (applicant_user_id) REFERENCES sys_user(id)
+);
+
+CREATE TABLE user_elder_binding (
+    id BIGINT AUTO_INCREMENT PRIMARY KEY,
+    user_id BIGINT NOT NULL,
+    elder_id BIGINT NOT NULL,
+    binding_type VARCHAR(32) NOT NULL,
+    relation_to_elder VARCHAR(64),
+    created_by VARCHAR(64) NOT NULL DEFAULT 'system',
+    last_modified_by VARCHAR(64) NOT NULL DEFAULT 'system',
+    created_date_time_utc TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    last_modified_date_time_utc TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    version BIGINT NOT NULL DEFAULT 1,
+    CONSTRAINT uk_user_elder_binding_user_elder_type UNIQUE (user_id, elder_id, binding_type),
+    FOREIGN KEY (user_id) REFERENCES sys_user(id)
+);
+
 CREATE TABLE user_operation_log (
     id BIGINT AUTO_INCREMENT PRIMARY KEY,
     user_id BIGINT,

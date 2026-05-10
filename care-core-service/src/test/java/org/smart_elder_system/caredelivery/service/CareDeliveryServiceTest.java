@@ -6,10 +6,11 @@ import org.mockito.ArgumentCaptor;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
-import org.smart_elder_system.caredelivery.model.CarePlan;
+import org.smart_elder_system.caredelivery.vo.CarePlan;
 import org.smart_elder_system.caredelivery.po.CarePlanPo;
 import org.smart_elder_system.caredelivery.repository.CarePlanRepository;
-import org.smart_elder_system.common.dto.care.CarePlanDTO;
+import org.smart_elder_system.common.dto.caredelivery.CarePlanDto;
+import org.smart_elder_system.contract.repository.ServiceAgreementRepository;
 
 import java.time.LocalDate;
 import java.util.Optional;
@@ -25,12 +26,15 @@ class CareDeliveryServiceTest {
     @Mock
     private CarePlanRepository carePlanRepository;
 
+    @Mock
+    private ServiceAgreementRepository serviceAgreementRepository;
+
     @InjectMocks
     private CareDeliveryService careDeliveryService;
 
     @Test
     void shouldCreateCarePlanUsingModelConversion() {
-        CarePlanDTO request = new CarePlanDTO();
+        CarePlanDto request = new CarePlanDto();
         request.setAgreementId(1L);
         request.setElderId(1001L);
         request.setPlanName("个性化护理计划");
@@ -43,7 +47,7 @@ class CareDeliveryServiceTest {
             return po;
         });
 
-        CarePlanDTO result = careDeliveryService.createCarePlan(request);
+        CarePlanDto result = careDeliveryService.createCarePlan(request);
 
         assertEquals(10L, result.getPlanId());
         assertEquals(CarePlan.STATUS_CREATED, result.getStatus());
@@ -64,7 +68,7 @@ class CareDeliveryServiceTest {
         when(carePlanRepository.findById(1L)).thenReturn(Optional.of(po));
         when(carePlanRepository.save(any())).thenAnswer(invocation -> invocation.getArgument(0));
 
-        CarePlanDTO result = careDeliveryService.startCarePlan(1L);
+        CarePlanDto result = careDeliveryService.startCarePlan(1L);
 
         assertEquals(CarePlan.STATUS_IN_PROGRESS, result.getStatus());
         assertEquals(CarePlan.STATUS_IN_PROGRESS, po.getStatus());
@@ -77,7 +81,7 @@ class CareDeliveryServiceTest {
         when(carePlanRepository.findById(1L)).thenReturn(Optional.of(po));
         when(carePlanRepository.save(any())).thenAnswer(invocation -> invocation.getArgument(0));
 
-        CarePlanDTO result = careDeliveryService.closeCarePlan(1L);
+        CarePlanDto result = careDeliveryService.closeCarePlan(1L);
 
         assertEquals(CarePlan.STATUS_CLOSED, result.getStatus());
         assertEquals(CarePlan.STATUS_CLOSED, po.getStatus());

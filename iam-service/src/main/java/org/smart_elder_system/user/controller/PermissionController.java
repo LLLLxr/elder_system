@@ -8,7 +8,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 import org.smart_elder_system.user.aop.OperationLog;
-import org.smart_elder_system.user.dto.PermissionDTO;
+import org.smart_elder_system.user.dto.PermissionDto;
 import org.smart_elder_system.user.po.PermissionPo;
 import org.smart_elder_system.user.service.PermissionService;
 
@@ -79,9 +79,9 @@ public class PermissionController {
     @PreAuthorize("hasAuthority('PERMISSION_MANAGE')")
     @OperationLog(operationType = "PERMISSION_CREATE", description = "创建权限")
     public ResponseEntity<Boolean> createPermission(
-            @Parameter(description = "权限信息") @RequestBody PermissionDTO permissionDTO) {
+            @Parameter(description = "权限信息") @RequestBody PermissionDto permissionDto) {
 
-        boolean result = permissionService.createPermission(permissionDTO);
+        boolean result = permissionService.createPermission(permissionDto);
         return ResponseEntity.ok(result);
     }
 
@@ -91,10 +91,10 @@ public class PermissionController {
     @OperationLog(operationType = "PERMISSION_UPDATE", description = "更新权限")
     public ResponseEntity<Boolean> updatePermission(
             @Parameter(description = "权限ID") @PathVariable Long permissionId,
-            @Parameter(description = "权限信息") @RequestBody PermissionDTO permissionDTO) {
+            @Parameter(description = "权限信息") @RequestBody PermissionDto permissionDto) {
 
-        permissionDTO.setId(permissionId);
-        boolean result = permissionService.updatePermission(permissionDTO);
+        permissionDto.setId(permissionId);
+        boolean result = permissionService.updatePermission(permissionDto);
         return ResponseEntity.ok(result);
     }
 

@@ -62,7 +62,7 @@ export default function RoleManagementPage() {
 
   const columns: ColumnsType<RoleItem> = useMemo(
     () => [
-      { title: 'ID', dataIndex: 'id', key: 'id', width: 80 },
+      { title: '角色ID', dataIndex: 'id', key: 'id', width: 80 },
       { title: '角色名称', dataIndex: 'roleName', key: 'roleName' },
       { title: '角色编码', dataIndex: 'roleCode', key: 'roleCode' },
       { title: '描述', dataIndex: 'description', key: 'description', render: (value) => value || '-' },

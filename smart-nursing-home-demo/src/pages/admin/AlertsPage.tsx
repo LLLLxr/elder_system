@@ -1,5 +1,5 @@
 import { useMemo } from 'react';
-import { Card, List, Space, Tag, Typography } from 'antd';
+import { Card, Collapse, List, Space, Tag, Typography } from 'antd';
 
 interface AlertItem {
   id: number;
@@ -41,22 +41,30 @@ export default function AlertsPage() {
         <Typography.Text>当前待处理告警：{pendingCount} 条</Typography.Text>
       </Card>
 
-      <Card title="告警清单">
-        <List
-          bordered
-          dataSource={items}
-          renderItem={(item) => (
-            <List.Item>
-              <Space>
-                <Typography.Text strong>{item.title}</Typography.Text>
-                <Tag color={colorByLevel(item.level)}>{item.level}</Tag>
-                <Tag color={colorByStatus(item.status)}>{item.status}</Tag>
-                <Typography.Text type="secondary">负责人：{item.owner}</Typography.Text>
-              </Space>
-            </List.Item>
-          )}
-        />
-      </Card>
+      <Collapse
+        items={[
+          {
+            key: 'alerts',
+            label: `告警清单（${items.length}）`,
+            children: (
+              <List
+                bordered
+                dataSource={items}
+                renderItem={(item) => (
+                  <List.Item>
+                    <Space>
+                      <Typography.Text strong>{item.title}</Typography.Text>
+                      <Tag color={colorByLevel(item.level)}>{item.level}</Tag>
+                      <Tag color={colorByStatus(item.status)}>{item.status}</Tag>
+                      <Typography.Text type="secondary">负责人：{item.owner}</Typography.Text>
+                    </Space>
+                  </List.Item>
+                )}
+              />
+            ),
+          },
+        ]}
+      />
     </Space>
   );
 }

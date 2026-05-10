@@ -73,7 +73,7 @@ export default function PermissionManagementPage() {
 
   const columns: ColumnsType<PermissionItem> = useMemo(
     () => [
-      { title: 'ID', dataIndex: 'id', key: 'id', width: 80 },
+      { title: '权限ID', dataIndex: 'id', key: 'id', width: 80 },
       { title: '权限名称', dataIndex: 'permissionName', key: 'permissionName' },
       { title: '权限编码', dataIndex: 'permissionCode', key: 'permissionCode' },
       { title: '描述', dataIndex: 'description', key: 'description', render: (value) => value || '-' },

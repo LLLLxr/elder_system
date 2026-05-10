@@ -6,15 +6,18 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
-import org.smart_elder_system.common.dto.care.HealthAssessmentDTO;
-import org.smart_elder_system.common.dto.care.HealthAssessmentRequestDTO;
-import org.smart_elder_system.common.dto.care.HealthAssessmentSubmitDTO;
-import org.smart_elder_system.common.dto.care.HealthCheckFormCreateRequestDTO;
-import org.smart_elder_system.common.dto.care.HealthCheckFormDTO;
-import org.smart_elder_system.common.dto.care.HealthProfileDTO;
+import org.smart_elder_system.common.dto.health.DoctorRoundRecordDto;
+import org.smart_elder_system.common.dto.health.DoctorRoundRecordSaveDto;
+import org.smart_elder_system.common.dto.health.HealthAssessmentDto;
+import org.smart_elder_system.common.dto.health.HealthAssessmentRequestDto;
+import org.smart_elder_system.common.dto.health.HealthAssessmentSubmitDto;
+import org.smart_elder_system.common.dto.health.HealthCheckFormCreateRequestDto;
+import org.smart_elder_system.common.dto.health.HealthCheckFormDto;
+import org.smart_elder_system.common.dto.health.HealthProfileDto;
 import org.smart_elder_system.health.HealthAuthorizationException;
 import org.smart_elder_system.health.service.HealthService;
 
+import java.time.LocalDate;
 import java.util.List;
 
 @RestController
@@ -31,33 +34,33 @@ public class HealthController {
     }
 
     @PostMapping("/profiles")
-    public ResponseEntity<HealthProfileDTO> createHealthProfile(@Valid @RequestBody HealthProfileDTO profileDTO) {
-        return ResponseEntity.ok(healthService.createHealthProfile(profileDTO));
+    public ResponseEntity<HealthProfileDto> createHealthProfile(@Valid @RequestBody HealthProfileDto profileDto) {
+        return ResponseEntity.ok(healthService.createHealthProfile(profileDto));
     }
 
     @PostMapping("/assessments")
-    public ResponseEntity<HealthAssessmentDTO> performAssessment(@Valid @RequestBody HealthAssessmentDTO assessmentDTO) {
-        return ResponseEntity.ok(healthService.performAssessment(assessmentDTO));
+    public ResponseEntity<HealthAssessmentDto> performAssessment(@Valid @RequestBody HealthAssessmentDto assessmentDto) {
+        return ResponseEntity.ok(healthService.performAssessment(assessmentDto));
     }
 
     @PostMapping("/check-forms")
-    public ResponseEntity<HealthCheckFormDTO> createHealthCheckForm() {
+    public ResponseEntity<HealthCheckFormDto> createHealthCheckForm() {
         throw new HealthAuthorizationException("健康体检表需由后台专业人员填写");
     }
 
     @PostMapping("/admin/check-forms")
-    public ResponseEntity<HealthCheckFormDTO> createAdminHealthCheckForm(
-            @Valid @RequestBody HealthCheckFormCreateRequestDTO healthCheckFormCreateRequestDTO) {
-        return ResponseEntity.ok(healthService.createAdminHealthCheckForm(healthCheckFormCreateRequestDTO));
+    public ResponseEntity<HealthCheckFormDto> createAdminHealthCheckForm(
+            @Valid @RequestBody HealthCheckFormCreateRequestDto healthCheckFormCreateRequestDto) {
+        return ResponseEntity.ok(healthService.createAdminHealthCheckForm(healthCheckFormCreateRequestDto));
     }
 
     @GetMapping("/admin/check-forms/{formId}")
-    public ResponseEntity<HealthCheckFormDTO> getAdminHealthCheckForm(@PathVariable @Min(1) Long formId) {
+    public ResponseEntity<HealthCheckFormDto> getAdminHealthCheckForm(@PathVariable @Min(1) Long formId) {
         return ResponseEntity.ok(healthService.getAdminHealthCheckForm(formId));
     }
 
     @GetMapping("/admin/check-forms/latest")
-    public ResponseEntity<HealthCheckFormDTO> getLatestAdminHealthCheckForm(
+    public ResponseEntity<HealthCheckFormDto> getLatestAdminHealthCheckForm(
             @RequestParam @Min(1) Long elderId,
             @RequestParam(required = false) @Min(1) Long agreementId,
             @RequestParam(required = false) @Min(1) Long authorUserId) {
@@ -66,7 +69,7 @@ public class HealthController {
     }
 
     @GetMapping("/admin/check-forms")
-    public ResponseEntity<List<HealthCheckFormDTO>> listAdminHealthCheckForms(
+    public ResponseEntity<List<HealthCheckFormDto>> listAdminHealthCheckForms(
             @RequestParam(required = false) @Min(1) Long elderId,
             @RequestParam(required = false) @Min(1) Long agreementId,
             @RequestParam(required = false) @Min(1) Long authorUserId) {
@@ -79,12 +82,12 @@ public class HealthController {
     }
 
     @GetMapping("/check-forms/{formId}")
-    public ResponseEntity<HealthCheckFormDTO> getHealthCheckForm(@PathVariable @Min(1) Long formId) {
+    public ResponseEntity<HealthCheckFormDto> getHealthCheckForm(@PathVariable @Min(1) Long formId) {
         return ResponseEntity.ok(healthService.getHealthCheckForm(formId));
     }
 
     @GetMapping("/check-forms/latest")
-    public ResponseEntity<HealthCheckFormDTO> getLatestHealthCheckForm(
+    public ResponseEntity<HealthCheckFormDto> getLatestHealthCheckForm(
             @RequestParam @Min(1) Long elderId,
             @RequestParam(required = false) @Min(1) Long agreementId) {
 
@@ -92,7 +95,7 @@ public class HealthController {
     }
 
     @GetMapping("/check-forms")
-    public ResponseEntity<List<HealthCheckFormDTO>> listHealthCheckForms(
+    public ResponseEntity<List<HealthCheckFormDto>> listHealthCheckForms(
             @RequestParam(required = false) @Min(1) Long elderId,
             @RequestParam(required = false) @Min(1) Long agreementId) {
 
@@ -103,19 +106,52 @@ public class HealthController {
         return ResponseEntity.ok(healthService.listHealthCheckForms(elderId, agreementId));
     }
 
+    @GetMapping("/doctor-round-records")
+    public ResponseEntity<List<DoctorRoundRecordDto>> listDoctorRoundRecords(
+            @RequestParam(required = false) @Min(1) Long elderId,
+            @RequestParam(required = false) @Min(1) Long doctorId,
+            @RequestParam(required = false) LocalDate roundDate) {
+        return ResponseEntity.ok(healthService.listDoctorRoundRecords(elderId, doctorId, roundDate));
+    }
+
+    @PostMapping("/doctor-round-records")
+    public ResponseEntity<DoctorRoundRecordDto> createDoctorRoundRecord(
+            @Valid @RequestBody DoctorRoundRecordSaveDto dto) {
+        return ResponseEntity.ok(healthService.createDoctorRoundRecord(dto));
+    }
+
+    @PutMapping("/doctor-round-records/{recordId}")
+    public ResponseEntity<DoctorRoundRecordDto> updateDoctorRoundRecord(
+            @PathVariable @Min(1) Long recordId,
+            @Valid @RequestBody DoctorRoundRecordSaveDto dto) {
+        return ResponseEntity.ok(healthService.updateDoctorRoundRecord(recordId, dto));
+    }
+
+    @GetMapping("/doctor-round-records/{recordId}")
+    public ResponseEntity<DoctorRoundRecordDto> getDoctorRoundRecord(@PathVariable @Min(1) Long recordId) {
+        return ResponseEntity.ok(healthService.getDoctorRoundRecord(recordId));
+    }
+
+    @GetMapping("/family/doctor-round-records/{elderId}")
+    public ResponseEntity<List<DoctorRoundRecordDto>> listFamilyDoctorRoundRecords(
+            @PathVariable @Min(1) Long elderId,
+            @RequestParam(required = false) LocalDate roundDate) {
+        return ResponseEntity.ok(healthService.listFamilyDoctorRoundRecords(elderId, roundDate));
+    }
+
     @GetMapping("/assessment-requests/pending")
-    public ResponseEntity<List<HealthAssessmentRequestDTO>> listPendingAssessmentRequests() {
+    public ResponseEntity<List<HealthAssessmentRequestDto>> listPendingAssessmentRequests() {
         return ResponseEntity.ok(healthService.listPendingAssessmentRequests());
     }
 
     @GetMapping("/assessment-requests/history")
-    public ResponseEntity<List<HealthAssessmentRequestDTO>> listAssessmentHistory() {
+    public ResponseEntity<List<HealthAssessmentRequestDto>> listAssessmentHistory() {
         return ResponseEntity.ok(healthService.listAssessmentHistory());
     }
 
     @PostMapping("/assessment-requests")
-    public ResponseEntity<HealthAssessmentRequestDTO> submitPreSignAssessment(
-            @Valid @RequestBody HealthAssessmentSubmitDTO submitDTO) {
-        return ResponseEntity.ok(healthService.submitPreSignAssessment(submitDTO));
+    public ResponseEntity<HealthAssessmentRequestDto> submitPreSignAssessment(
+            @Valid @RequestBody HealthAssessmentSubmitDto submitDto) {
+        return ResponseEntity.ok(healthService.submitPreSignAssessment(submitDto));
     }
 }

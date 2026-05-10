@@ -1,6 +1,6 @@
 package org.smart_elder_system.careorchestration.feign;
 
-import org.smart_elder_system.common.dto.care.ServiceAgreementDTO;
+import org.smart_elder_system.common.dto.contract.ServiceAgreementDto;
 import org.springframework.cloud.openfeign.FeignClient;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -11,19 +11,19 @@ import org.springframework.web.bind.annotation.RequestParam;
 public interface ContractClient {
 
     @PostMapping("/agreements/draft")
-    ServiceAgreementDTO createDraftAgreement(@RequestBody ServiceAgreementDTO agreementDTO);
+    ServiceAgreementDto createDraftAgreement(@RequestBody ServiceAgreementDto agreementDto);
 
     @PostMapping("/agreements/sign")
-    ServiceAgreementDTO signAgreement(@RequestBody ServiceAgreementDTO agreementDTO);
+    ServiceAgreementDto signAgreement(@RequestBody ServiceAgreementDto agreementDto);
 
     @PostMapping("/agreements/{agreementId}/renew")
-    ServiceAgreementDTO renewAgreement(@PathVariable("agreementId") Long agreementId,
-                                       @RequestBody ServiceAgreementDTO agreementDTO);
+    ServiceAgreementDto renewAgreement(@PathVariable("agreementId") Long agreementId,
+                                       @RequestBody ServiceAgreementDto agreementDto);
 
     @PostMapping("/agreements/{agreementId}/terminate")
-    ServiceAgreementDTO terminateAgreement(@PathVariable("agreementId") Long agreementId);
+    ServiceAgreementDto terminateAgreement(@PathVariable("agreementId") Long agreementId);
 
     @PostMapping("/agreements/{agreementId}/revert-to-draft")
-    ServiceAgreementDTO revertToDraftAgreement(@PathVariable("agreementId") Long agreementId,
+    ServiceAgreementDto revertToDraftAgreement(@PathVariable("agreementId") Long agreementId,
                                                @RequestParam(value = "reason", required = false) String reason);
 }

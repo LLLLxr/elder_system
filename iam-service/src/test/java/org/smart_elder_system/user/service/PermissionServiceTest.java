@@ -6,7 +6,7 @@ import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.smart_elder_system.user.constant.UserConstants;
-import org.smart_elder_system.user.dto.PermissionDTO;
+import org.smart_elder_system.user.dto.PermissionDto;
 import org.smart_elder_system.user.po.PermissionPo;
 import org.smart_elder_system.user.repository.PermissionRepository;
 import org.smart_elder_system.user.repository.RoleRepository;
@@ -31,7 +31,7 @@ class PermissionServiceTest {
 
     @Test
     void shouldCreatePermissionUsingExplicitFieldMapping() {
-        PermissionDTO request = new PermissionDTO();
+        PermissionDto request = new PermissionDto();
         request.setPermissionName("权限查看");
         request.setPermissionCode("permission:view");
         request.setDescription("查看权限");
@@ -59,7 +59,7 @@ class PermissionServiceTest {
         existingPermission.setStatus(UserConstants.STATUS_NORMAL);
         existingPermission.setDeleteFlag(UserConstants.DELETE_FLAG_NORMAL);
 
-        PermissionDTO request = new PermissionDTO();
+        PermissionDto request = new PermissionDto();
         request.setId(1L);
         request.setPermissionName("新权限");
         request.setPermissionCode("permission:new");

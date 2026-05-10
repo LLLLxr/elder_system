@@ -5,9 +5,9 @@ import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
-import org.smart_elder_system.business.dto.AuthValidationResultDTO;
-import org.smart_elder_system.business.dto.BusinessUserInfoDTO;
-import org.smart_elder_system.business.dto.MessageResponseDTO;
+import org.smart_elder_system.business.dto.AuthValidationResultDto;
+import org.smart_elder_system.business.dto.BusinessUserInfoDto;
+import org.smart_elder_system.business.dto.MessageResponseDto;
 import org.smart_elder_system.business.feign.AuthServiceClient;
 import org.springframework.http.ResponseEntity;
 
@@ -25,7 +25,7 @@ class BusinessControllerTest {
 
     @Test
     void shouldReturnBusinessInfoWhenTokenIsValid() {
-        AuthValidationResultDTO result = new AuthValidationResultDTO();
+        AuthValidationResultDto result = new AuthValidationResultDto();
         result.setValid(true);
         result.setUsername("user01");
 
@@ -39,7 +39,7 @@ class BusinessControllerTest {
 
     @Test
     void shouldReturnTypedUserInfoWhenTokenIsValid() {
-        BusinessUserInfoDTO userInfo = new BusinessUserInfoDTO();
+        BusinessUserInfoDto userInfo = new BusinessUserInfoDto();
         userInfo.setUsername("user01");
 
         when(authServiceClient.getUserInfo("token-value")).thenReturn(userInfo);
@@ -47,7 +47,7 @@ class BusinessControllerTest {
         ResponseEntity<?> response = businessController.getUserInfo("Bearer token-value");
 
         assertEquals(200, response.getStatusCode().value());
-        assertEquals("user01", ((BusinessUserInfoDTO) response.getBody()).getUsername());
+        assertEquals("user01", ((BusinessUserInfoDto) response.getBody()).getUsername());
     }
 
     @Test
@@ -55,6 +55,6 @@ class BusinessControllerTest {
         ResponseEntity<?> response = businessController.getUserInfo(null);
 
         assertEquals(401, response.getStatusCode().value());
-        assertEquals("缺少或无效的 Authorization 头", ((MessageResponseDTO) response.getBody()).getMessage());
+        assertEquals("缺少或无效的 Authorization 头", ((MessageResponseDto) response.getBody()).getMessage());
     }
 }

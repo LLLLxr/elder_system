@@ -1,5 +1,6 @@
 package org.smart_elder_system.user.po;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.*;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
@@ -56,6 +57,7 @@ public class UserPo extends JpaUserAuditablePo {
     @Column(name = "delete_flag")
     private Integer deleteFlag;
 
+    @JsonIgnore
     @ManyToMany
     @JoinTable(
         name = "user_role",

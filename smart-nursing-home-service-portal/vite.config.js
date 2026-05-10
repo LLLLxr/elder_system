@@ -20,6 +20,55 @@ export default defineConfig(({ mode }) => {
         'react/jsx-dev-runtime': path.resolve(baseDir, 'node_modules/react/jsx-dev-runtime.js'),
       },
     },
+    build: {
+      rollupOptions: {
+        onwarn(warning, warn) {
+          if (warning.code === 'MODULE_LEVEL_DIRECTIVE' && warning.message.includes("'use client'")) {
+            return;
+          }
+          warn(warning);
+        },
+        output: {
+          manualChunks(id) {
+            if (id.includes('node_modules/react') || id.includes('node_modules/react-dom') || id.includes('node_modules/react-router-dom')) {
+              return 'react-vendor';
+            }
+            if (id.includes('node_modules/@ant-design/icons')) {
+              return 'antd-icons';
+            }
+            if (id.includes('node_modules/antd/es/')) {
+              const componentName = id.split('node_modules/antd/es/')[1]?.split('/')[0];
+              if (['form', 'input', 'input-number', 'select', 'date-picker', 'radio', 'picker'].includes(componentName)) {
+                return 'antd-entry';
+              }
+              if (['table', 'descriptions', 'list', 'tabs', 'collapse', 'drawer', 'modal', 'statistic', 'steps', 'tag', 'empty'].includes(componentName)) {
+                return 'antd-display';
+              }
+              if (['alert', 'button', 'card', 'layout', 'menu', 'message', 'space', 'spin', 'typography'].includes(componentName)) {
+                return 'antd-basic';
+              }
+              return 'antd-core';
+            }
+            if (id.includes('node_modules/@ant-design')) {
+              return 'antd-core';
+            }
+            if (id.includes('node_modules/rc-')) {
+              return 'antd-rc';
+            }
+            if (id.includes('node_modules/dayjs')) {
+              return 'dayjs';
+            }
+            if (id.includes('node_modules/axios')) {
+              return 'axios';
+            }
+            if (id.includes('node_modules')) {
+              return 'vendor';
+            }
+            return undefined;
+          },
+        },
+      },
+    },
     server: {
       port: 5174,
       proxy: {

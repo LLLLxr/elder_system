@@ -24,66 +24,146 @@ export default defineConfig(function (_a) {
                 '/auth': {
                     target: proxyTarget,
                     changeOrigin: true,
+                    configure: function (proxy) {
+                        proxy.on('proxyReq', function (proxyReq) {
+                            proxyReq.removeHeader('cookie');
+                        });
+                    },
                 },
                 '/api/auth': {
                     target: proxyTarget,
                     changeOrigin: true,
+                    configure: function (proxy) {
+                        proxy.on('proxyReq', function (proxyReq) {
+                            proxyReq.removeHeader('cookie');
+                        });
+                    },
                 },
                 '/api/users': {
                     target: proxyTarget,
                     changeOrigin: true,
+                    configure: function (proxy) {
+                        proxy.on('proxyReq', function (proxyReq) {
+                            proxyReq.removeHeader('cookie');
+                        });
+                    },
                 },
                 '/api/roles': {
                     target: proxyTarget,
                     changeOrigin: true,
+                    configure: function (proxy) {
+                        proxy.on('proxyReq', function (proxyReq) {
+                            proxyReq.removeHeader('cookie');
+                        });
+                    },
                 },
                 '/api/permissions': {
                     target: proxyTarget,
                     changeOrigin: true,
+                    configure: function (proxy) {
+                        proxy.on('proxyReq', function (proxyReq) {
+                            proxyReq.removeHeader('cookie');
+                        });
+                    },
                 },
                 '/care-orchestration': {
                     target: proxyTarget,
                     changeOrigin: true,
+                    configure: function (proxy) {
+                        proxy.on('proxyReq', function (proxyReq) {
+                            proxyReq.removeHeader('cookie');
+                        });
+                    },
                 },
                 '/admission': {
                     target: proxyTarget,
                     changeOrigin: true,
+                    configure: function (proxy) {
+                        proxy.on('proxyReq', function (proxyReq) {
+                            proxyReq.removeHeader('cookie');
+                        });
+                    },
                 },
                 '/contract': {
                     target: proxyTarget,
                     changeOrigin: true,
+                    configure: function (proxy) {
+                        proxy.on('proxyReq', function (proxyReq) {
+                            proxyReq.removeHeader('cookie');
+                        });
+                    },
                 },
                 '/health': {
                     target: proxyTarget,
                     changeOrigin: true,
+                    configure: function (proxy) {
+                        proxy.on('proxyReq', function (proxyReq) {
+                            proxyReq.removeHeader('cookie');
+                        });
+                    },
                 },
                 '/care-delivery': {
                     target: proxyTarget,
                     changeOrigin: true,
+                    configure: function (proxy) {
+                        proxy.on('proxyReq', function (proxyReq) {
+                            proxyReq.removeHeader('cookie');
+                        });
+                    },
                 },
                 '/quality': {
                     target: proxyTarget,
                     changeOrigin: true,
+                    configure: function (proxy) {
+                        proxy.on('proxyReq', function (proxyReq) {
+                            proxyReq.removeHeader('cookie');
+                        });
+                    },
                 },
                 '/billing': {
                     target: proxyTarget,
                     changeOrigin: true,
+                    configure: function (proxy) {
+                        proxy.on('proxyReq', function (proxyReq) {
+                            proxyReq.removeHeader('cookie');
+                        });
+                    },
                 },
                 '/resource-scheduling': {
                     target: proxyTarget,
                     changeOrigin: true,
+                    configure: function (proxy) {
+                        proxy.on('proxyReq', function (proxyReq) {
+                            proxyReq.removeHeader('cookie');
+                        });
+                    },
                 },
                 '/safety-emergency': {
                     target: proxyTarget,
                     changeOrigin: true,
+                    configure: function (proxy) {
+                        proxy.on('proxyReq', function (proxyReq) {
+                            proxyReq.removeHeader('cookie');
+                        });
+                    },
                 },
                 '/business': {
                     target: proxyTarget,
                     changeOrigin: true,
+                    configure: function (proxy) {
+                        proxy.on('proxyReq', function (proxyReq) {
+                            proxyReq.removeHeader('cookie');
+                        });
+                    },
                 },
                 '/user-service': {
                     target: proxyTarget,
                     changeOrigin: true,
+                    configure: function (proxy) {
+                        proxy.on('proxyReq', function (proxyReq) {
+                            proxyReq.removeHeader('cookie');
+                        });
+                    },
                 },
             },
         },

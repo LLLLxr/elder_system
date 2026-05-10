@@ -6,14 +6,14 @@ import org.mockito.ArgumentCaptor;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
-import org.smart_elder_system.admission.model.ServiceApplication;
+import org.smart_elder_system.admission.vo.ServiceApplication;
 import org.smart_elder_system.admission.po.ServiceApplicationPo;
 import org.smart_elder_system.admission.repository.ServiceApplicationRepository;
-import org.smart_elder_system.common.dto.care.HealthAssessmentRequestDTO;
-import org.smart_elder_system.common.dto.care.HealthAssessmentSubmitDTO;
-import org.smart_elder_system.common.dto.care.HealthCheckFormCreateRequestDTO;
-import org.smart_elder_system.common.dto.care.HealthCheckFormDTO;
-import org.smart_elder_system.common.dto.care.HealthProfileDTO;
+import org.smart_elder_system.common.dto.health.HealthAssessmentRequestDto;
+import org.smart_elder_system.common.dto.health.HealthAssessmentSubmitDto;
+import org.smart_elder_system.common.dto.health.HealthCheckFormCreateRequestDto;
+import org.smart_elder_system.common.dto.health.HealthCheckFormDto;
+import org.smart_elder_system.common.dto.health.HealthProfileDto;
 import org.smart_elder_system.health.HealthAuthorizationException;
 import org.smart_elder_system.health.HealthAuthorizationPolicy;
 import org.smart_elder_system.health.po.HealthAssessmentRecordPo;
@@ -59,7 +59,7 @@ class HealthServiceTest {
 
     @Test
     void shouldCreateHealthProfileUsingModelConversion() {
-        HealthProfileDTO request = new HealthProfileDTO();
+        HealthProfileDto request = new HealthProfileDto();
         request.setElderId(1001L);
         request.setAgreementId(1L);
         request.setBloodType("A");
@@ -74,7 +74,7 @@ class HealthServiceTest {
             return po;
         });
 
-        HealthProfileDTO result = healthService.createHealthProfile(request);
+        HealthProfileDto result = healthService.createHealthProfile(request);
 
         assertEquals(10L, result.getProfileId());
         assertEquals("A", result.getBloodType());
@@ -90,7 +90,7 @@ class HealthServiceTest {
 
     @Test
     void shouldCreateAdminHealthCheckFormUsingCurrentUserId() {
-        HealthCheckFormCreateRequestDTO request = new HealthCheckFormCreateRequestDTO();
+        HealthCheckFormCreateRequestDto request = new HealthCheckFormCreateRequestDto();
         request.setElderId(1001L);
         request.setAgreementId(1L);
         request.setElderName("张三");
@@ -113,7 +113,7 @@ class HealthServiceTest {
         when(healthProfileRepository.findByElderIdAndAgreementIdForUpdate(1001L, 1L)).thenReturn(Optional.empty());
         when(healthProfileRepository.save(any())).thenAnswer(invocation -> invocation.getArgument(0));
 
-        HealthCheckFormDTO result = healthService.createAdminHealthCheckForm(request);
+        HealthCheckFormDto result = healthService.createAdminHealthCheckForm(request);
 
         assertEquals(20L, result.getFormId());
         assertEquals(2001L, result.getAuthorUserId());
@@ -135,7 +135,7 @@ class HealthServiceTest {
 
     @Test
     void shouldRejectAdminHealthCheckFormWithoutPermission() {
-        HealthCheckFormCreateRequestDTO request = new HealthCheckFormCreateRequestDTO();
+        HealthCheckFormCreateRequestDto request = new HealthCheckFormCreateRequestDto();
         request.setElderId(1001L);
         request.setAgreementId(1L);
         request.setElderName("张三");
@@ -182,7 +182,7 @@ class HealthServiceTest {
             return po;
         });
 
-        HealthAssessmentSubmitDTO request = new HealthAssessmentSubmitDTO();
+        HealthAssessmentSubmitDto request = new HealthAssessmentSubmitDto();
         request.setApplicationId(1L);
         request.setPassed(true);
         request.setAssessmentConclusion("适合签约");
@@ -190,7 +190,7 @@ class HealthServiceTest {
         request.setResponsibleDoctor("李医生");
         request.setScore(88);
 
-        HealthAssessmentRequestDTO result = healthService.submitPreSignAssessment(request);
+        HealthAssessmentRequestDto result = healthService.submitPreSignAssessment(request);
 
         assertEquals(1L, result.getApplicationId());
         assertEquals("PASSED", result.getAssessmentStatus());

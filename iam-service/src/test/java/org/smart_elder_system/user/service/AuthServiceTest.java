@@ -4,13 +4,12 @@ import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
-import org.smart_elder_system.common.dto.LoginDTO;
+import org.smart_elder_system.common.dto.LoginDto;
 import org.smart_elder_system.common.jwt.JwtProperties;
 import org.smart_elder_system.common.jwt.JwtTokenUtil;
 import org.smart_elder_system.user.constant.UserConstants;
 import org.smart_elder_system.user.po.UserPo;
 import org.smart_elder_system.user.repository.UserRepository;
-import org.smart_elder_system.user.service.impl.UserDetailsServiceImpl;
 import org.smart_elder_system.user.vo.Login;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
@@ -76,11 +75,11 @@ class AuthServiceTest {
                 tokenBlacklistService
         );
 
-        LoginDTO loginDTO = new LoginDTO();
-        loginDTO.setUsername("admin");
-        loginDTO.setPassword("admin123");
+        LoginDto loginDto = new LoginDto();
+        loginDto.setUsername("admin");
+        loginDto.setPassword("admin123");
 
-        Login login = authService.login(loginDTO);
+        Login login = authService.login(loginDto);
 
         assertEquals(List.of("ADMIN"), login.getRoles());
         assertEquals(List.of("journey:assessment:reject", "journey:withdraw"), login.getPermissions());

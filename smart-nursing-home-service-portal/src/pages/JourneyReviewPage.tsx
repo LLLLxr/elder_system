@@ -1,9 +1,10 @@
 import { useEffect, useMemo, useState } from 'react';
-import { Alert, Card, Form, Input, InputNumber, Space, Typography } from 'antd';
+import { Alert, Card, Form, Input, InputNumber, Space } from 'antd';
 import { useNavigate } from 'react-router-dom';
 import { reviewAndFinalize } from '../api/careOrchestrationApi';
 import { extractApiErrorMessage } from '../api/client';
-import { getLatestHealthCheckForm } from '../api/healthApi';
+import JourneyPageScaffold from '../components/JourneyPageScaffold';
+import { listHealthCheckForms } from '../api/healthApi';
 import { ROUTE_PATHS } from '../constants/routes';
 import type { ReviewAndFinalizeRequest } from '../types/care';
 
@@ -43,8 +44,8 @@ export default function JourneyReviewPage() {
       }
 
       try {
-        await getLatestHealthCheckForm(context.elderId, context.agreementId);
-        setHealthChecked(true);
+        const forms = await listHealthCheckForms(context.elderId, context.agreementId);
+        setHealthChecked(forms.length > 0);
       } catch {
         setHealthChecked(false);
       }
@@ -84,11 +85,10 @@ export default function JourneyReviewPage() {
   };
 
   return (
-    <Space direction="vertical" size="large" style={{ width: '100%' }}>
-      <Typography.Title level={4} style={{ margin: 0 }}>
-        评价收尾
-      </Typography.Title>
-
+    <JourneyPageScaffold
+      title="评价收尾"
+      description="在健康体检与需求评估完成后，提交满意度评价并进入旅程收尾。"
+    >
       <Card>
         <Space direction="vertical" size="large" style={{ width: '100%' }}>
           {errorMessage ? <Alert type="error" message={errorMessage} showIcon /> : null}
@@ -106,12 +106,12 @@ export default function JourneyReviewPage() {
             <Form.Item
               label="协议ID"
               name="agreementId"
-              rules={[{ required: true, message: '请输入协议ID' }]}
+              rules={[{ required: true, message: '请输入协议编号' }]}
             >
               <InputNumber style={{ width: '100%' }} min={1} placeholder="例如：30001" />
             </Form.Item>
 
-            <Form.Item label="老人ID" name="elderId" rules={[{ required: true, message: '请输入老人ID' }]}>
+            <Form.Item label="老人ID" name="elderId" rules={[{ required: true, message: '请输入老人编号' }]}>
               <InputNumber style={{ width: '100%' }} min={1} placeholder="例如：10001" />
             </Form.Item>
 
@@ -133,6 +133,6 @@ export default function JourneyReviewPage() {
           </Form>
         </Space>
       </Card>
-    </Space>
+    </JourneyPageScaffold>
   );
 }

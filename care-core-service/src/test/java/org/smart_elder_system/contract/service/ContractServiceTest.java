@@ -6,8 +6,8 @@ import org.mockito.ArgumentCaptor;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
-import org.smart_elder_system.common.dto.care.ServiceAgreementDTO;
-import org.smart_elder_system.contract.model.ServiceAgreement;
+import org.smart_elder_system.common.dto.contract.ServiceAgreementDto;
+import org.smart_elder_system.contract.vo.ServiceAgreement;
 import org.smart_elder_system.contract.po.ServiceAgreementPo;
 import org.smart_elder_system.contract.repository.ServiceAgreementRepository;
 
@@ -34,7 +34,7 @@ class ContractServiceTest {
         ServiceAgreementPo po = agreementPo(1L, ServiceAgreement.STATUS_ACTIVE, "签约员", LocalDate.of(2026, 4, 26), LocalDate.of(2027, 4, 26));
         when(serviceAgreementRepository.findById(1L)).thenReturn(Optional.of(po));
 
-        ServiceAgreementDTO result = contractService.getAgreement(1L);
+        ServiceAgreementDto result = contractService.getAgreement(1L);
 
         assertEquals(1L, result.getAgreementId());
         assertEquals(ServiceAgreement.STATUS_ACTIVE, result.getStatus());
@@ -46,7 +46,7 @@ class ContractServiceTest {
         ServiceAgreementPo po = agreementPo(2L, ServiceAgreement.STATUS_DRAFT, null, null, null);
         when(serviceAgreementRepository.findTopByApplicationIdOrderByIdDesc(1L)).thenReturn(Optional.of(po));
 
-        ServiceAgreementDTO result = contractService.getLatestAgreementByApplicationId(1L);
+        ServiceAgreementDto result = contractService.getLatestAgreementByApplicationId(1L);
 
         assertEquals(2L, result.getAgreementId());
         assertEquals(ServiceAgreement.STATUS_DRAFT, result.getStatus());
@@ -54,7 +54,7 @@ class ContractServiceTest {
 
     @Test
     void shouldCreateDraftAgreementUsingModelConversion() {
-        ServiceAgreementDTO request = new ServiceAgreementDTO();
+        ServiceAgreementDto request = new ServiceAgreementDto();
         request.setApplicationId(1L);
         request.setElderId(1001L);
         request.setServiceScene("HOME");
@@ -66,7 +66,7 @@ class ContractServiceTest {
             return po;
         });
 
-        ServiceAgreementDTO result = contractService.createDraftAgreement(request);
+        ServiceAgreementDto result = contractService.createDraftAgreement(request);
 
         assertEquals(10L, result.getAgreementId());
         assertEquals(ServiceAgreement.STATUS_DRAFT, result.getStatus());
@@ -85,13 +85,13 @@ class ContractServiceTest {
         when(serviceAgreementRepository.findByIdForUpdate(1L)).thenReturn(Optional.of(po));
         when(serviceAgreementRepository.save(any())).thenAnswer(invocation -> invocation.getArgument(0));
 
-        ServiceAgreementDTO request = new ServiceAgreementDTO();
+        ServiceAgreementDto request = new ServiceAgreementDto();
         request.setAgreementId(1L);
         request.setSignedBy("签约员");
         request.setEffectiveDate(LocalDate.of(2026, 4, 26));
         request.setExpiryDate(LocalDate.of(2026, 5, 26));
 
-        ServiceAgreementDTO result = contractService.signAgreement(request);
+        ServiceAgreementDto result = contractService.signAgreement(request);
 
         assertEquals(ServiceAgreement.STATUS_ACTIVE, result.getStatus());
         assertEquals("签约员", po.getSignedBy());
@@ -105,12 +105,12 @@ class ContractServiceTest {
         when(serviceAgreementRepository.findByIdForUpdate(1L)).thenReturn(Optional.of(po));
         when(serviceAgreementRepository.save(any())).thenAnswer(invocation -> invocation.getArgument(0));
 
-        ServiceAgreementDTO request = new ServiceAgreementDTO();
+        ServiceAgreementDto request = new ServiceAgreementDto();
         request.setAgreementId(1L);
         request.setSignedBy("签约员");
         request.setEffectiveDate(LocalDate.of(2026, 4, 26));
 
-        ServiceAgreementDTO result = contractService.signAgreement(request);
+        ServiceAgreementDto result = contractService.signAgreement(request);
 
         assertEquals(LocalDate.of(2026, 5, 26), result.getExpiryDate());
         assertEquals(LocalDate.of(2026, 5, 26), po.getExpiryDate());
@@ -122,7 +122,7 @@ class ContractServiceTest {
         when(serviceAgreementRepository.findByIdForUpdate(1L)).thenReturn(Optional.of(po));
         when(serviceAgreementRepository.save(any())).thenAnswer(invocation -> invocation.getArgument(0));
 
-        ServiceAgreementDTO result = contractService.renewAgreement(1L, new ServiceAgreementDTO());
+        ServiceAgreementDto result = contractService.renewAgreement(1L, new ServiceAgreementDto());
 
         assertEquals(ServiceAgreement.STATUS_ACTIVE, result.getStatus());
         assertEquals(LocalDate.of(2026, 6, 26), result.getExpiryDate());
@@ -135,10 +135,10 @@ class ContractServiceTest {
         when(serviceAgreementRepository.findByIdForUpdate(1L)).thenReturn(Optional.of(po));
         when(serviceAgreementRepository.save(any())).thenAnswer(invocation -> invocation.getArgument(0));
 
-        ServiceAgreementDTO request = new ServiceAgreementDTO();
+        ServiceAgreementDto request = new ServiceAgreementDto();
         request.setExpiryDate(LocalDate.of(2026, 8, 26));
 
-        ServiceAgreementDTO result = contractService.renewAgreement(1L, request);
+        ServiceAgreementDto result = contractService.renewAgreement(1L, request);
 
         assertEquals(ServiceAgreement.STATUS_ACTIVE, result.getStatus());
         assertEquals(LocalDate.of(2026, 8, 26), result.getExpiryDate());
@@ -151,7 +151,7 @@ class ContractServiceTest {
         when(serviceAgreementRepository.findByIdForUpdate(1L)).thenReturn(Optional.of(po));
         when(serviceAgreementRepository.save(any())).thenAnswer(invocation -> invocation.getArgument(0));
 
-        ServiceAgreementDTO result = contractService.revertToDraftAgreement(1L, "退回");
+        ServiceAgreementDto result = contractService.revertToDraftAgreement(1L, "退回");
 
         assertEquals(ServiceAgreement.STATUS_DRAFT, result.getStatus());
         assertNull(po.getSignedBy());

@@ -22,7 +22,9 @@ import org.springframework.scheduling.annotation.EnableScheduling;
                 "org.smart_elder_system.contract",
                 "org.smart_elder_system.caredelivery",
                 "org.smart_elder_system.health",
-                "org.smart_elder_system.quality"
+                "org.smart_elder_system.quality",
+                "org.smart_elder_system.elder",
+                "org.smart_elder_system.exception"
         },
         nameGenerator = FullyQualifiedAnnotationBeanNameGenerator.class,
         excludeFilters = @ComponentScan.Filter(
@@ -37,7 +39,8 @@ import org.springframework.scheduling.annotation.EnableScheduling;
         "org.smart_elder_system.contract.repository",
         "org.smart_elder_system.caredelivery.repository",
         "org.smart_elder_system.health.repository",
-        "org.smart_elder_system.quality.repository"
+        "org.smart_elder_system.quality.repository",
+        "org.smart_elder_system.elder.repository"
 })
 @EntityScan(basePackages = {
         "org.smart_elder_system.careorchestration.po",
@@ -45,7 +48,8 @@ import org.springframework.scheduling.annotation.EnableScheduling;
         "org.smart_elder_system.contract.po",
         "org.smart_elder_system.caredelivery.po",
         "org.smart_elder_system.health.po",
-        "org.smart_elder_system.quality.po"
+        "org.smart_elder_system.quality.po",
+        "org.smart_elder_system.elder.po"
 })
 public class CareCoreServiceApplication {
 

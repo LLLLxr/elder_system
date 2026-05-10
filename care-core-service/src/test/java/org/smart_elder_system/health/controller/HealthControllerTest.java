@@ -11,8 +11,8 @@ import org.springframework.http.converter.json.MappingJackson2HttpMessageConvert
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.setup.MockMvcBuilders;
 import org.springframework.validation.beanvalidation.LocalValidatorFactoryBean;
-import org.smart_elder_system.common.dto.care.HealthCheckFormCreateRequestDTO;
-import org.smart_elder_system.common.dto.care.HealthCheckFormDTO;
+import org.smart_elder_system.common.dto.health.HealthCheckFormCreateRequestDto;
+import org.smart_elder_system.common.dto.health.HealthCheckFormDto;
 import org.smart_elder_system.exception.GlobalExceptionHandler;
 import org.smart_elder_system.health.service.HealthService;
 
@@ -61,7 +61,7 @@ class HealthControllerTest {
 
     @Test
     void shouldCreateAdminHealthCheckForm() throws Exception {
-        HealthCheckFormDTO response = healthCheckForm(
+        HealthCheckFormDto response = healthCheckForm(
                 20L,
                 1001L,
                 3001L,
@@ -72,7 +72,7 @@ class HealthControllerTest {
                 "PAPER_V1"
         );
 
-        when(healthService.createAdminHealthCheckForm(any(HealthCheckFormCreateRequestDTO.class))).thenReturn(response);
+        when(healthService.createAdminHealthCheckForm(any(HealthCheckFormCreateRequestDto.class))).thenReturn(response);
 
         mockMvc.perform(post("/health/admin/check-forms")
                         .contentType(MediaType.APPLICATION_JSON)
@@ -95,7 +95,7 @@ class HealthControllerTest {
                 .andExpect(jsonPath("$.responsibleDoctor").value("李医生"))
                 .andExpect(jsonPath("$.formVersion").value("PAPER_V1"));
 
-        verify(healthService).createAdminHealthCheckForm(any(HealthCheckFormCreateRequestDTO.class));
+        verify(healthService).createAdminHealthCheckForm(any(HealthCheckFormCreateRequestDto.class));
     }
 
     @Test
@@ -116,7 +116,7 @@ class HealthControllerTest {
 
     @Test
     void shouldGetLatestHealthCheckFormWithoutAuthorUserId() throws Exception {
-        HealthCheckFormDTO response = healthCheckForm(
+        HealthCheckFormDto response = healthCheckForm(
                 21L,
                 1001L,
                 3001L,
@@ -143,7 +143,7 @@ class HealthControllerTest {
 
     @Test
     void shouldIgnoreAuthorUserIdOnLatestHealthCheckFormRequest() throws Exception {
-        HealthCheckFormDTO response = healthCheckForm(
+        HealthCheckFormDto response = healthCheckForm(
                 22L,
                 1001L,
                 3001L,
@@ -169,7 +169,7 @@ class HealthControllerTest {
         verify(healthService).getLatestHealthCheckForm(1001L, 3001L);
     }
 
-    private HealthCheckFormDTO healthCheckForm(
+    private HealthCheckFormDto healthCheckForm(
             Long formId,
             Long elderId,
             Long agreementId,
@@ -179,7 +179,7 @@ class HealthControllerTest {
             String responsibleDoctor,
             String formVersion
     ) throws Exception {
-        HealthCheckFormDTO response = new HealthCheckFormDTO();
+        HealthCheckFormDto response = new HealthCheckFormDto();
         setField(response, "formId", formId);
         setField(response, "elderId", elderId);
         setField(response, "agreementId", agreementId);

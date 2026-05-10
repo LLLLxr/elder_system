@@ -1,3 +1,19 @@
+CREATE TABLE elder_profile (
+    id BIGINT AUTO_INCREMENT PRIMARY KEY,
+    elder_name VARCHAR(100) NOT NULL,
+    id_card VARCHAR(32) NOT NULL,
+    phone VARCHAR(32),
+    gender VARCHAR(16),
+    birth_date DATE,
+    status VARCHAR(32) NOT NULL,
+    created_by VARCHAR(64) NOT NULL DEFAULT 'system',
+    last_modified_by VARCHAR(64) NOT NULL DEFAULT 'system',
+    created_date_time_utc TIMESTAMP NOT NULL,
+    last_modified_date_time_utc TIMESTAMP NOT NULL,
+    version BIGINT NOT NULL,
+    CONSTRAINT uk_elder_profile_id_card UNIQUE (id_card)
+);
+
 CREATE TABLE care_service_application (
     id BIGINT AUTO_INCREMENT PRIMARY KEY,
     elder_id BIGINT NOT NULL,
@@ -46,6 +62,44 @@ CREATE TABLE care_plan (
     personalization_note VARCHAR(500),
     status VARCHAR(32),
     plan_date DATE,
+    plan_items_json VARCHAR(5000),
+    assigned_caregiver_id BIGINT,
+    assigned_caregiver_name VARCHAR(100),
+    created_by VARCHAR(64) NOT NULL DEFAULT 'system',
+    last_modified_by VARCHAR(64) NOT NULL DEFAULT 'system',
+    created_date_time_utc TIMESTAMP NOT NULL,
+    last_modified_date_time_utc TIMESTAMP NOT NULL,
+    version BIGINT NOT NULL
+);
+
+CREATE TABLE caregiver_check_in_record (
+    id BIGINT AUTO_INCREMENT PRIMARY KEY,
+    elder_id BIGINT NOT NULL,
+    elder_name VARCHAR(100),
+    caregiver_id BIGINT NOT NULL,
+    caregiver_name VARCHAR(100),
+    service_plan_id BIGINT NOT NULL,
+    task_date DATE NOT NULL,
+    task_items_json VARCHAR(5000) NOT NULL,
+    completion_status VARCHAR(32) NOT NULL,
+    completion_time TIMESTAMP,
+    created_by VARCHAR(64) NOT NULL DEFAULT 'system',
+    last_modified_by VARCHAR(64) NOT NULL DEFAULT 'system',
+    created_date_time_utc TIMESTAMP NOT NULL,
+    last_modified_date_time_utc TIMESTAMP NOT NULL,
+    version BIGINT NOT NULL,
+    CONSTRAINT uk_caregiver_check_in_record_daily UNIQUE (service_plan_id, caregiver_id, elder_id, task_date)
+);
+
+CREATE TABLE nurse_care_record (
+    id BIGINT AUTO_INCREMENT PRIMARY KEY,
+    elder_id BIGINT NOT NULL,
+    elder_name VARCHAR(100),
+    nurse_id BIGINT NOT NULL,
+    nurse_name VARCHAR(100),
+    service_plan_id BIGINT,
+    record_date DATE NOT NULL,
+    record_form_data VARCHAR(5000) NOT NULL,
     created_by VARCHAR(64) NOT NULL DEFAULT 'system',
     last_modified_by VARCHAR(64) NOT NULL DEFAULT 'system',
     created_date_time_utc TIMESTAMP NOT NULL,
@@ -115,6 +169,22 @@ CREATE TABLE care_health_check_form (
     version BIGINT NOT NULL
 );
 
+CREATE TABLE doctor_round_record (
+    id BIGINT AUTO_INCREMENT PRIMARY KEY,
+    elder_id BIGINT NOT NULL,
+    elder_name VARCHAR(100),
+    doctor_id BIGINT NOT NULL,
+    doctor_name VARCHAR(100),
+    content VARCHAR(2000) NOT NULL,
+    risk_flag BOOLEAN NOT NULL,
+    round_time TIMESTAMP NOT NULL,
+    created_by VARCHAR(64) NOT NULL DEFAULT 'system',
+    last_modified_by VARCHAR(64) NOT NULL DEFAULT 'system',
+    created_date_time_utc TIMESTAMP NOT NULL,
+    last_modified_date_time_utc TIMESTAMP NOT NULL,
+    version BIGINT NOT NULL
+);
+
 CREATE TABLE care_service_review (
     id BIGINT AUTO_INCREMENT PRIMARY KEY,
     agreement_id BIGINT NOT NULL,
@@ -166,4 +236,66 @@ CREATE TABLE care_service_journey_task (
     last_modified_date_time_utc TIMESTAMP NOT NULL,
     version BIGINT NOT NULL,
     CONSTRAINT uk_care_service_journey_task_open UNIQUE (application_id, task_type, open_flag)
+);
+
+CREATE TABLE admission_family_visit_slot (
+    id BIGINT AUTO_INCREMENT PRIMARY KEY,
+    slot_date DATE NOT NULL,
+    start_time TIME NOT NULL,
+    end_time TIME NOT NULL,
+    capacity INTEGER NOT NULL,
+    reserved_count INTEGER NOT NULL,
+    status VARCHAR(32) NOT NULL,
+    created_by VARCHAR(64) NOT NULL DEFAULT 'system',
+    last_modified_by VARCHAR(64) NOT NULL DEFAULT 'system',
+    created_date_time_utc TIMESTAMP NOT NULL,
+    last_modified_date_time_utc TIMESTAMP NOT NULL,
+    version BIGINT NOT NULL,
+    CONSTRAINT uk_admission_family_visit_slot_date_time UNIQUE (slot_date, start_time, end_time)
+);
+
+CREATE TABLE admission_family_visit_reservation (
+    id BIGINT AUTO_INCREMENT PRIMARY KEY,
+    slot_id BIGINT NOT NULL,
+    elder_id BIGINT NOT NULL,
+    family_user_id BIGINT NOT NULL,
+    family_username VARCHAR(100) NOT NULL,
+    visitor_name VARCHAR(100) NOT NULL,
+    visitor_phone VARCHAR(32) NOT NULL,
+    relation_to_elder VARCHAR(64) NOT NULL,
+    visit_purpose VARCHAR(500) NOT NULL,
+    status VARCHAR(32) NOT NULL,
+    reviewed_by VARCHAR(100),
+    review_comment VARCHAR(500),
+    reviewed_at TIMESTAMP,
+    created_by VARCHAR(64) NOT NULL DEFAULT 'system',
+    last_modified_by VARCHAR(64) NOT NULL DEFAULT 'system',
+    created_date_time_utc TIMESTAMP NOT NULL,
+    last_modified_date_time_utc TIMESTAMP NOT NULL,
+    version BIGINT NOT NULL,
+    CONSTRAINT uk_admission_family_visit_reservation_slot_family_elder UNIQUE (slot_id, family_user_id, elder_id)
+);
+
+CREATE TABLE quality_caregiver_qualification_application (
+    id BIGINT AUTO_INCREMENT PRIMARY KEY,
+    caregiver_user_id BIGINT NOT NULL,
+    caregiver_username VARCHAR(100) NOT NULL,
+    real_name VARCHAR(100) NOT NULL,
+    phone VARCHAR(32) NOT NULL,
+    id_card_no VARCHAR(32) NOT NULL,
+    certificate_no VARCHAR(64) NOT NULL,
+    certificate_type VARCHAR(64) NOT NULL,
+    years_of_experience INTEGER,
+    skill_summary VARCHAR(1000) NOT NULL,
+    status VARCHAR(32) NOT NULL,
+    reviewed_by VARCHAR(100),
+    review_comment VARCHAR(500),
+    reviewed_at TIMESTAMP,
+    active_flag INTEGER,
+    created_by VARCHAR(64) NOT NULL DEFAULT 'system',
+    last_modified_by VARCHAR(64) NOT NULL DEFAULT 'system',
+    created_date_time_utc TIMESTAMP NOT NULL,
+    last_modified_date_time_utc TIMESTAMP NOT NULL,
+    version BIGINT NOT NULL,
+    CONSTRAINT uk_quality_caregiver_qualification_active UNIQUE (caregiver_user_id, active_flag)
 );

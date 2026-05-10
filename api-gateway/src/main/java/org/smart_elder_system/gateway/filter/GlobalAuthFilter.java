@@ -89,13 +89,16 @@ public class GlobalAuthFilter implements GlobalFilter, Ordered {
                 String roles = rolesClaim instanceof List<?> roleList
                         ? roleList.stream().map(String::valueOf).collect(Collectors.joining(","))
                         : "";
+                if (isIamRoute(path)) {
+                    return chain.filter(exchange);
+                }
                 ServerHttpRequest modifiedRequest = request.mutate()
                         .header("X-User-Name", username)
                         .header("X-User-Id", userId)
                         .header("X-User-Permissions", permissions)
                         .header("X-User-Roles", roles)
                         .build();
-                
+
                 return chain.filter(exchange.mutate().request(modifiedRequest).build());
             } catch (Exception e) {
                 log.error("JWT token validation failed", e);
@@ -103,6 +106,15 @@ public class GlobalAuthFilter implements GlobalFilter, Ordered {
         }
         
         return writeUnauthorized(exchange);
+    }
+
+    private boolean isIamRoute(String path) {
+        return path.startsWith("/auth/")
+                || path.startsWith("/api/auth/")
+                || path.startsWith("/api/users/")
+                || path.startsWith("/api/roles/")
+                || path.startsWith("/api/permissions/")
+                || path.startsWith("/user-service/");
     }
 
     private Mono<Void> writeUnauthorized(ServerWebExchange exchange) {

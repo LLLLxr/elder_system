@@ -43,4 +43,13 @@ public class CarePlanPo extends JpaUserAuditablePo {
 
     @Column(name = "plan_date")
     private LocalDate planDate;
+
+    @Column(name = "plan_items_json", length = 5000)
+    private String planItemsJson;
+
+    @Column(name = "assigned_caregiver_id")
+    private Long assignedCaregiverId;
+
+    @Column(name = "assigned_caregiver_name", length = 100)
+    private String assignedCaregiverName;
 }

@@ -1,31 +1,120 @@
 import { Button, Layout, Menu, Typography } from 'antd';
 import type { MenuProps } from 'antd';
+import { useEffect } from 'react';
 import { Outlet, useLocation, useNavigate } from 'react-router-dom';
-import { logout } from '../api/authApi';
+import { getCurrentAdminUser, logout, setCurrentAdminUserContext } from '../api/authApi';
+import { getUserPermissionsByRole, getUserRoles } from '../api/roleAdminApi';
 import { ROUTE_PATHS } from '../constants/routes';
 
 const { Header, Content } = Layout;
 
 const menuItems: MenuProps['items'] = [
   { key: ROUTE_PATHS.ADMIN_DASHBOARD, label: '全局看板' },
-  { key: ROUTE_PATHS.ADMIN_NEEDS_ASSESSMENT, label: '需求评估' },
-  { key: ROUTE_PATHS.ADMIN_HEALTH_CHECK_FORMS, label: '体检表录入' },
-  { key: ROUTE_PATHS.ADMIN_HEALTH_ASSESSMENT, label: '健康评估' },
-  { key: ROUTE_PATHS.ADMIN_JOURNEY_TASKS, label: '任务看板' },
-  { key: ROUTE_PATHS.ADMIN_USERS_ANALYTICS, label: '用户分析' },
-  { key: ROUTE_PATHS.ADMIN_CARE, label: '护理分析' },
-  { key: ROUTE_PATHS.ADMIN_OPS, label: '运营分析' },
-  { key: ROUTE_PATHS.ADMIN_ALERTS, label: '告警中心' },
-  { key: ROUTE_PATHS.ADMIN_USERS, label: '用户管理' },
-  { key: ROUTE_PATHS.ADMIN_ROLES, label: '角色管理' },
-  { key: ROUTE_PATHS.ADMIN_PERMISSIONS, label: '权限管理' },
+  {
+    key: 'medical-work',
+    label: '医护工作',
+    children: [
+      { key: ROUTE_PATHS.ADMIN_JOURNEY_TASKS, label: '任务看板' },
+      { key: ROUTE_PATHS.ADMIN_NEEDS_ASSESSMENT, label: '需求评估' },
+      { key: ROUTE_PATHS.ADMIN_HEALTH_CHECK_FORMS, label: '体检表录入' },
+      { key: ROUTE_PATHS.ADMIN_HEALTH_ASSESSMENT, label: '健康评估' },
+      { key: ROUTE_PATHS.ADMIN_NURSE_CARE_RECORDS, label: '护理记录' },
+      { key: ROUTE_PATHS.ADMIN_DOCTOR_ROUND_RECORDS, label: '查房记录' },
+      { key: ROUTE_PATHS.ADMIN_ALERTS, label: '告警中心' },
+    ],
+  },
+  {
+    key: 'review-center',
+    label: '审核中心',
+    children: [
+      { key: ROUTE_PATHS.ADMIN_FAMILY_VISIT_REVIEWS, label: '家属预约审核' },
+      { key: ROUTE_PATHS.ADMIN_ELDER_BINDING_REVIEWS, label: '老人绑定审核' },
+      { key: ROUTE_PATHS.ADMIN_CAREGIVER_QUALIFICATION_REVIEWS, label: '护理员资质审核' },
+    ],
+  },
+  {
+    key: 'analytics-center',
+    label: '数据分析',
+    children: [
+      { key: ROUTE_PATHS.ADMIN_USERS_ANALYTICS, label: '用户分析' },
+      { key: ROUTE_PATHS.ADMIN_CARE, label: '护理分析' },
+      { key: ROUTE_PATHS.ADMIN_OPS, label: '运营分析' },
+    ],
+  },
+  {
+    key: 'system-management',
+    label: '系统管理',
+    children: [
+      { key: ROUTE_PATHS.ADMIN_USERS, label: '用户管理' },
+      { key: ROUTE_PATHS.ADMIN_ROLES, label: '角色管理' },
+      { key: ROUTE_PATHS.ADMIN_PERMISSIONS, label: '权限管理' },
+    ],
+  },
 ];
+
+const routeMenuKeys = new Set([
+  ROUTE_PATHS.ADMIN_DASHBOARD,
+  ROUTE_PATHS.ADMIN_JOURNEY_TASKS,
+  ROUTE_PATHS.ADMIN_NEEDS_ASSESSMENT,
+  ROUTE_PATHS.ADMIN_HEALTH_CHECK_FORMS,
+  ROUTE_PATHS.ADMIN_HEALTH_ASSESSMENT,
+  ROUTE_PATHS.ADMIN_NURSE_CARE_RECORDS,
+  ROUTE_PATHS.ADMIN_DOCTOR_ROUND_RECORDS,
+  ROUTE_PATHS.ADMIN_ALERTS,
+  ROUTE_PATHS.ADMIN_FAMILY_VISIT_REVIEWS,
+  ROUTE_PATHS.ADMIN_ELDER_BINDING_REVIEWS,
+  ROUTE_PATHS.ADMIN_CAREGIVER_QUALIFICATION_REVIEWS,
+  ROUTE_PATHS.ADMIN_USERS_ANALYTICS,
+  ROUTE_PATHS.ADMIN_CARE,
+  ROUTE_PATHS.ADMIN_OPS,
+  ROUTE_PATHS.ADMIN_USERS,
+  ROUTE_PATHS.ADMIN_ROLES,
+  ROUTE_PATHS.ADMIN_PERMISSIONS,
+]);
 
 export default function AdminLayout() {
   const navigate = useNavigate();
   const location = useLocation();
 
-  const selectedMenuKey = menuItems?.some((item) => item?.key === location.pathname)
+  useEffect(() => {
+    const currentUser = getCurrentAdminUser();
+    if (currentUser.userId == null) {
+      return;
+    }
+    if (currentUser.permissions.length > 0 && currentUser.roles.length > 0) {
+      return;
+    }
+
+    let canceled = false;
+
+    const syncUserContext = async () => {
+      try {
+        const [roles, permissions] = await Promise.all([
+          getUserRoles(currentUser.userId),
+          getUserPermissionsByRole(currentUser.userId),
+        ]);
+        if (canceled) {
+          return;
+        }
+        setCurrentAdminUserContext({
+          roles,
+          permissions: permissions
+            .map((item) => item.permissionCode)
+            .filter((item): item is string => typeof item === 'string' && item.length > 0),
+        });
+      } catch {
+        // ignore sync failures and let pages surface their own request errors
+      }
+    };
+
+    void syncUserContext();
+
+    return () => {
+      canceled = true;
+    };
+  }, []);
+
+  const selectedMenuKey = routeMenuKeys.has(location.pathname)
     ? location.pathname
     : ROUTE_PATHS.ADMIN_DASHBOARD;
 
@@ -63,7 +152,9 @@ export default function AdminLayout() {
       </Header>
 
       <Content style={{ padding: 24 }}>
-        <Outlet />
+        <div style={{ maxWidth: 1440, margin: '0 auto' }}>
+          <Outlet />
+        </div>
       </Content>
     </Layout>
   );

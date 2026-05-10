@@ -1,9 +1,9 @@
 package org.smart_elder_system.business.controller;
 
 import lombok.RequiredArgsConstructor;
-import org.smart_elder_system.business.dto.AuthValidationResultDTO;
-import org.smart_elder_system.business.dto.BusinessUserInfoDTO;
-import org.smart_elder_system.business.dto.MessageResponseDTO;
+import org.smart_elder_system.business.dto.AuthValidationResultDto;
+import org.smart_elder_system.business.dto.BusinessUserInfoDto;
+import org.smart_elder_system.business.dto.MessageResponseDto;
 import org.smart_elder_system.business.feign.AuthServiceClient;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -24,7 +24,7 @@ public class BusinessController {
             return ResponseEntity.status(401).body("缺少或无效的 Authorization 头");
         }
         try {
-            AuthValidationResultDTO validateResult = authServiceClient.validateToken(token.substring(7));
+            AuthValidationResultDto validateResult = authServiceClient.validateToken(token.substring(7));
             if (Boolean.TRUE.equals(validateResult.getValid())) {
                 return ResponseEntity.ok("这是业务服务的信息");
             }
@@ -37,13 +37,13 @@ public class BusinessController {
     @GetMapping("/user-info")
     public ResponseEntity<?> getUserInfo(@RequestHeader(value = "Authorization", required = false) String token) {
         if (token == null || !token.startsWith("Bearer ")) {
-            return ResponseEntity.status(401).body(new MessageResponseDTO("缺少或无效的 Authorization 头"));
+            return ResponseEntity.status(401).body(new MessageResponseDto("缺少或无效的 Authorization 头"));
         }
         try {
-            BusinessUserInfoDTO userInfo = authServiceClient.getUserInfo(token.substring(7));
+            BusinessUserInfoDto userInfo = authServiceClient.getUserInfo(token.substring(7));
             return ResponseEntity.ok(userInfo);
         } catch (Exception e) {
-            return ResponseEntity.status(401).body(new MessageResponseDTO("无效的访问令牌"));
+            return ResponseEntity.status(401).body(new MessageResponseDto("无效的访问令牌"));
         }
     }
 }

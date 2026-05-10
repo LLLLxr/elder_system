@@ -8,7 +8,7 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-import org.smart_elder_system.common.dto.FaceVerifyDTO;
+import org.smart_elder_system.common.dto.FaceVerifyDto;
 import org.smart_elder_system.user.constant.UserConstants;
 import org.smart_elder_system.user.exception.BusinessException;
 import org.smart_elder_system.user.po.FaceVerifyRecordPo;
@@ -31,13 +31,13 @@ public class FaceVerifyService {
     private final UserRepository userRepository;
 
     @Transactional(rollbackFor = Exception.class)
-    public VerifyResult verifyFace(FaceVerifyDTO faceVerifyDTO) {
+    public VerifyResult verifyFace(FaceVerifyDto faceVerifyDto) {
         FaceVerifyRecordPo record = new FaceVerifyRecordPo();
-        record.setFaceImageUrl(faceVerifyDTO.getFaceImageUrl());
+        record.setFaceImageUrl(faceVerifyDto.getFaceImageUrl());
         record.setVerifyStatus(UserConstants.VERIFY_STATUS_PROCESSING);
         record = faceVerifyRecordRepository.save(record);
 
-        FaceLocalResult localResult = callThirdPartyVerifyService(faceVerifyDTO);
+        FaceLocalResult localResult = callThirdPartyVerifyService(faceVerifyDto);
         return updateVerifyResult(record.getId(), localResult);
     }
 
@@ -46,7 +46,7 @@ public class FaceVerifyService {
         return faceVerifyRecordRepository.findByUserIdPaged(userId, pageable);
     }
 
-    private FaceLocalResult callThirdPartyVerifyService(FaceVerifyDTO faceVerifyDTO) {
+    private FaceLocalResult callThirdPartyVerifyService(FaceVerifyDto faceVerifyDto) {
         try {
             log.info("调用第三方人脸验证服务");
             Thread.sleep(800);

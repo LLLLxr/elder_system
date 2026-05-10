@@ -1,6 +1,6 @@
 package org.smart_elder_system.careorchestration.feign;
 
-import org.smart_elder_system.common.dto.care.CarePlanDTO;
+import org.smart_elder_system.common.dto.caredelivery.CarePlanDto;
 import org.springframework.cloud.openfeign.FeignClient;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -9,5 +9,5 @@ import org.springframework.web.bind.annotation.RequestBody;
 public interface CareDeliveryClient {
 
     @PostMapping("/plans")
-    CarePlanDTO createCarePlan(@RequestBody CarePlanDTO carePlanDTO);
+    CarePlanDto createCarePlan(@RequestBody CarePlanDto carePlanDto);
 }

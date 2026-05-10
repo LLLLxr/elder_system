@@ -19,14 +19,11 @@ import org.smart_elder_system.careorchestration.journey.ServiceJourneyState;
 import org.smart_elder_system.careorchestration.journey.ServiceJourneyStateMachine;
 import org.smart_elder_system.careorchestration.security.JourneyAuthorizationException;
 import org.smart_elder_system.careorchestration.security.ServiceJourneyTransitionPolicy;
-import org.smart_elder_system.common.dto.care.CarePlanDTO;
-import org.smart_elder_system.common.dto.care.HealthAssessmentDTO;
-import org.smart_elder_system.common.dto.care.HealthAssessmentRequestDTO;
-import org.smart_elder_system.common.dto.care.HealthProfileDTO;
-import org.smart_elder_system.common.dto.care.ServiceAgreementDTO;
-import org.smart_elder_system.common.dto.care.ServiceApplicationDTO;
-import org.smart_elder_system.common.dto.care.ServiceJourneyResultDTO;
-import org.smart_elder_system.common.dto.care.ServiceReviewDTO;
+import org.smart_elder_system.common.dto.health.HealthAssessmentRequestDto;
+import org.smart_elder_system.common.dto.contract.ServiceAgreementDto;
+import org.smart_elder_system.common.dto.admission.ServiceApplicationDto;
+import org.smart_elder_system.common.dto.careorchestration.ServiceJourneyResultDto;
+import org.smart_elder_system.common.dto.quality.ServiceReviewDto;
 import org.smart_elder_system.contract.po.ServiceAgreementPo;
 import org.smart_elder_system.contract.repository.ServiceAgreementRepository;
 import org.smart_elder_system.contract.service.ContractService;
@@ -37,6 +34,7 @@ import org.smart_elder_system.health.service.HealthService;
 import org.smart_elder_system.quality.po.ServiceReviewPo;
 import org.smart_elder_system.quality.repository.ServiceReviewRepository;
 import org.smart_elder_system.quality.service.QualityService;
+import org.smart_elder_system.quality.vo.ServiceReview;
 
 import java.time.LocalDate;
 import java.time.LocalDateTime;
@@ -98,16 +96,16 @@ class CareOrchestrationServiceTest {
 
     @Test
     void shouldStartServiceJourney() {
-        ServiceApplicationDTO submitted = new ServiceApplicationDTO();
+        ServiceApplicationDto submitted = new ServiceApplicationDto();
         submitted.setApplicationId(1001L);
         submitted.setElderId(3003L);
-        submitted.setStatus(org.smart_elder_system.admission.model.ServiceApplication.STATUS_SUBMITTED);
+        submitted.setStatus(org.smart_elder_system.admission.vo.ServiceApplication.STATUS_SUBMITTED);
 
         when(serviceApplicationRepository.findByElderIdForUpdate(3003L)).thenReturn(java.util.List.of());
         when(admissionService.submitApplication(any())).thenReturn(submitted);
 
         CareOrchestrationService service = newService();
-        ServiceJourneyResultDTO result = service.startServiceJourney(
+        ServiceJourneyResultDto result = service.startServiceJourney(
                 3003L,
                 4004L,
                 "张三",
@@ -128,7 +126,7 @@ class CareOrchestrationServiceTest {
                 eq(ServiceJourneyEvent.APPLICATION_SUBMITTED),
                 eq(ServiceJourneyState.PENDING_ASSESSMENT),
                 eq("申请受理提交成功"),
-                any(ServiceApplicationDTO.class)
+                any(ServiceApplicationDto.class)
         );
         verify(serviceJourneyTaskService).createAdmissionAssessmentTask(1001L, 3003L);
     }
@@ -136,7 +134,7 @@ class CareOrchestrationServiceTest {
     @Test
     void shouldRejectDuplicateOngoingJourneyWhenStarting() {
         ServiceApplicationPo existing = applicationPo(9001L, 3003L,
-                org.smart_elder_system.admission.model.ServiceApplication.STATUS_SUBMITTED);
+                org.smart_elder_system.admission.vo.ServiceApplication.STATUS_SUBMITTED);
         when(serviceApplicationRepository.findByElderIdForUpdate(3003L)).thenReturn(java.util.List.of(existing));
 
         CareOrchestrationService service = newService();
@@ -150,7 +148,7 @@ class CareOrchestrationServiceTest {
     @Test
     void shouldContinueToPendingHealthAssessmentAfterAdmissionApproval() {
         ServiceApplicationPo application = applicationPo(1001L, 3003L,
-                org.smart_elder_system.admission.model.ServiceApplication.STATUS_PASSED);
+                org.smart_elder_system.admission.vo.ServiceApplication.STATUS_PASSED);
 
         when(serviceApplicationRepository.findByIdForUpdate(1001L)).thenReturn(Optional.of(application));
         when(serviceAgreementRepository.findLatestByApplicationIdForUpdate(1001L)).thenReturn(Optional.empty());
@@ -158,7 +156,7 @@ class CareOrchestrationServiceTest {
                 .thenReturn(Optional.empty());
 
         CareOrchestrationService service = newService();
-        ServiceJourneyResultDTO result = service.continueAfterAssessment(1001L);
+        ServiceJourneyResultDto result = service.continueAfterAssessment(1001L);
 
         assertEquals("PENDING_HEALTH_ASSESSMENT", result.getFinalStatus());
         assertEquals("需求评估已通过，待完成健康评估后继续签约", result.getMessage());
@@ -180,7 +178,7 @@ class CareOrchestrationServiceTest {
     @Test
     void shouldContinueTerminatedJourneyAfterWithdrawnAdmission() {
         ServiceApplicationPo application = applicationPo(1001L, 3003L,
-                org.smart_elder_system.admission.model.ServiceApplication.STATUS_WITHDRAWN);
+                org.smart_elder_system.admission.vo.ServiceApplication.STATUS_WITHDRAWN);
 
         when(serviceApplicationRepository.findByIdForUpdate(1001L)).thenReturn(Optional.of(application));
         when(serviceAgreementRepository.findLatestByApplicationIdForUpdate(1001L)).thenReturn(Optional.empty());
@@ -188,7 +186,7 @@ class CareOrchestrationServiceTest {
                 .thenReturn(Optional.empty());
 
         CareOrchestrationService service = newService();
-        ServiceJourneyResultDTO result = service.continueAfterAssessment(1001L);
+        ServiceJourneyResultDto result = service.continueAfterAssessment(1001L);
 
         assertEquals("TERMINATED", result.getFinalStatus());
         assertEquals("申请已撤回", result.getMessage());
@@ -208,7 +206,7 @@ class CareOrchestrationServiceTest {
     @Test
     void shouldContinueToPendingAgreementAfterHealthApproval() {
         ServiceApplicationPo application = applicationPo(1001L, 3003L,
-                org.smart_elder_system.admission.model.ServiceApplication.STATUS_PASSED);
+                org.smart_elder_system.admission.vo.ServiceApplication.STATUS_PASSED);
         application.setApplicantName("张三");
         application.setServiceScene("HOME");
 
@@ -216,7 +214,7 @@ class CareOrchestrationServiceTest {
         agreement.setId(2002L);
         agreement.setApplicationId(1001L);
         agreement.setElderId(3003L);
-        agreement.setStatus(org.smart_elder_system.contract.model.ServiceAgreement.STATUS_DRAFT);
+        agreement.setStatus(org.smart_elder_system.contract.vo.ServiceAgreement.STATUS_DRAFT);
         agreement.setServiceScene("HOME");
 
         HealthAssessmentRecordPo assessment = new HealthAssessmentRecordPo();
@@ -232,7 +230,7 @@ class CareOrchestrationServiceTest {
                 .thenReturn(Optional.of(assessment));
 
         CareOrchestrationService service = newService();
-        ServiceJourneyResultDTO result = service.continueAfterAssessment(1001L);
+        ServiceJourneyResultDto result = service.continueAfterAssessment(1001L);
 
         assertEquals("PENDING_AGREEMENT", result.getFinalStatus());
         assertEquals("健康评估已通过，待签订服务协议", result.getMessage());
@@ -258,18 +256,18 @@ class CareOrchestrationServiceTest {
     @Test
     void shouldRejectAdmissionJourney() {
         ServiceApplicationPo application = applicationPo(1001L, 3003L,
-                org.smart_elder_system.admission.model.ServiceApplication.STATUS_SUBMITTED);
+                org.smart_elder_system.admission.vo.ServiceApplication.STATUS_SUBMITTED);
 
-        ServiceApplicationDTO rejected = new ServiceApplicationDTO();
+        ServiceApplicationDto rejected = new ServiceApplicationDto();
         rejected.setApplicationId(1001L);
         rejected.setElderId(3003L);
-        rejected.setStatus(org.smart_elder_system.admission.model.ServiceApplication.STATUS_FAILED);
+        rejected.setStatus(org.smart_elder_system.admission.vo.ServiceApplication.STATUS_FAILED);
 
         when(serviceApplicationRepository.findByIdForUpdate(1001L)).thenReturn(Optional.of(application));
         when(admissionService.assessEligibility(any())).thenReturn(rejected);
 
         CareOrchestrationService service = newService();
-        ServiceJourneyResultDTO result = service.rejectAdmissionJourney(1001L, "不符合准入条件", "tester");
+        ServiceJourneyResultDto result = service.rejectAdmissionJourney(1001L, "不符合准入条件", "tester");
 
         assertEquals("TERMINATED", result.getFinalStatus());
         assertEquals("需求评估未通过，服务终止", result.getMessage());
@@ -292,9 +290,9 @@ class CareOrchestrationServiceTest {
     @Test
     void shouldRejectHealthJourney() {
         ServiceApplicationPo application = applicationPo(1001L, 3003L,
-                org.smart_elder_system.admission.model.ServiceApplication.STATUS_PASSED);
+                org.smart_elder_system.admission.vo.ServiceApplication.STATUS_PASSED);
 
-        HealthAssessmentRequestDTO rejected = new HealthAssessmentRequestDTO();
+        HealthAssessmentRequestDto rejected = new HealthAssessmentRequestDto();
         rejected.setApplicationId(1001L);
         rejected.setElderId(3003L);
         rejected.setAssessmentStatus("FAILED");
@@ -306,7 +304,7 @@ class CareOrchestrationServiceTest {
         when(healthService.submitPreSignAssessment(any())).thenReturn(rejected);
 
         CareOrchestrationService service = newService();
-        ServiceJourneyResultDTO result = service.rejectHealthJourney(1001L, "高风险不适合签约", "nurse", "doctor", 40);
+        ServiceJourneyResultDto result = service.rejectHealthJourney(1001L, "高风险不适合签约", "nurse", "doctor", 40);
 
         assertEquals("TERMINATED", result.getFinalStatus());
         assertEquals("健康评估未通过，服务终止", result.getMessage());
@@ -329,12 +327,12 @@ class CareOrchestrationServiceTest {
     @Test
     void shouldWithdrawJourneyBeforeServiceStarts() {
         ServiceApplicationPo application = applicationPo(1001L, 3003L,
-                org.smart_elder_system.admission.model.ServiceApplication.STATUS_PASSED);
+                org.smart_elder_system.admission.vo.ServiceApplication.STATUS_PASSED);
 
-        ServiceApplicationDTO withdrawn = new ServiceApplicationDTO();
+        ServiceApplicationDto withdrawn = new ServiceApplicationDto();
         withdrawn.setApplicationId(1001L);
         withdrawn.setElderId(3003L);
-        withdrawn.setStatus(org.smart_elder_system.admission.model.ServiceApplication.STATUS_WITHDRAWN);
+        withdrawn.setStatus(org.smart_elder_system.admission.vo.ServiceApplication.STATUS_WITHDRAWN);
 
         when(serviceApplicationRepository.findByIdForUpdate(1001L)).thenReturn(Optional.of(application));
         when(serviceAgreementRepository.findLatestByApplicationIdForUpdate(1001L)).thenReturn(Optional.empty());
@@ -343,7 +341,7 @@ class CareOrchestrationServiceTest {
         when(admissionService.withdrawApplication(1001L, "用户主动撤回")).thenReturn(withdrawn);
 
         CareOrchestrationService service = newService();
-        ServiceJourneyResultDTO result = service.withdrawServiceJourney(1001L, "用户主动撤回");
+        ServiceJourneyResultDto result = service.withdrawServiceJourney(1001L, "用户主动撤回");
 
         assertEquals("TERMINATED", result.getFinalStatus());
         assertEquals("申请已撤回", result.getMessage());
@@ -371,13 +369,13 @@ class CareOrchestrationServiceTest {
     @Test
     void shouldRejectWithdrawForInServiceJourney() {
         ServiceApplicationPo application = applicationPo(1001L, 3003L,
-                org.smart_elder_system.admission.model.ServiceApplication.STATUS_PASSED);
+                org.smart_elder_system.admission.vo.ServiceApplication.STATUS_PASSED);
 
         ServiceAgreementPo agreement = new ServiceAgreementPo();
         agreement.setId(2002L);
         agreement.setApplicationId(1001L);
         agreement.setElderId(3003L);
-        agreement.setStatus(org.smart_elder_system.contract.model.ServiceAgreement.STATUS_ACTIVE);
+        agreement.setStatus(org.smart_elder_system.contract.vo.ServiceAgreement.STATUS_ACTIVE);
 
         when(serviceApplicationRepository.findByIdForUpdate(1001L)).thenReturn(Optional.of(application));
         when(serviceAgreementRepository.findLatestByApplicationIdForUpdate(1001L)).thenReturn(Optional.of(agreement));
@@ -393,12 +391,12 @@ class CareOrchestrationServiceTest {
     @Test
     void shouldReturnFromHealthAssessmentToAssessment() {
         ServiceApplicationPo application = applicationPo(1001L, 3003L,
-                org.smart_elder_system.admission.model.ServiceApplication.STATUS_PASSED);
+                org.smart_elder_system.admission.vo.ServiceApplication.STATUS_PASSED);
 
-        ServiceApplicationDTO returned = new ServiceApplicationDTO();
+        ServiceApplicationDto returned = new ServiceApplicationDto();
         returned.setApplicationId(1001L);
         returned.setElderId(3003L);
-        returned.setStatus(org.smart_elder_system.admission.model.ServiceApplication.STATUS_ASSESSED);
+        returned.setStatus(org.smart_elder_system.admission.vo.ServiceApplication.STATUS_ASSESSED);
 
         when(serviceApplicationRepository.findByIdForUpdate(1001L)).thenReturn(Optional.of(application));
         when(serviceAgreementRepository.findLatestByApplicationIdForUpdate(1001L)).thenReturn(Optional.empty());
@@ -407,7 +405,7 @@ class CareOrchestrationServiceTest {
         when(admissionService.revertToAssessment(1001L, "资料需补充")).thenReturn(returned);
 
         CareOrchestrationService service = newService();
-        ServiceJourneyResultDTO result = service.returnJourneyStep(1001L, ServiceJourneyState.PENDING_ASSESSMENT, "资料需补充");
+        ServiceJourneyResultDto result = service.returnJourneyStep(1001L, ServiceJourneyState.PENDING_ASSESSMENT, "资料需补充");
 
         assertEquals("PENDING_ASSESSMENT", result.getFinalStatus());
         verify(serviceJourneyTransitionPolicy).requireAuthority("journey:return:assessment");
@@ -428,13 +426,13 @@ class CareOrchestrationServiceTest {
     @Test
     void shouldReturnFromPendingAgreementToHealthAssessment() {
         ServiceApplicationPo application = applicationPo(1001L, 3003L,
-                org.smart_elder_system.admission.model.ServiceApplication.STATUS_PASSED);
+                org.smart_elder_system.admission.vo.ServiceApplication.STATUS_PASSED);
 
         ServiceAgreementPo agreement = new ServiceAgreementPo();
         agreement.setId(2002L);
         agreement.setApplicationId(1001L);
         agreement.setElderId(3003L);
-        agreement.setStatus(org.smart_elder_system.contract.model.ServiceAgreement.STATUS_DRAFT);
+        agreement.setStatus(org.smart_elder_system.contract.vo.ServiceAgreement.STATUS_DRAFT);
 
         HealthAssessmentRecordPo assessment = new HealthAssessmentRecordPo();
         assessment.setApplicationId(1001L);
@@ -442,11 +440,11 @@ class CareOrchestrationServiceTest {
         assessment.setAssessmentType("PRE_SIGN_PASS");
         assessment.setAssessedAt(LocalDateTime.now());
 
-        ServiceAgreementDTO returnedAgreement = new ServiceAgreementDTO();
+        ServiceAgreementDto returnedAgreement = new ServiceAgreementDto();
         returnedAgreement.setAgreementId(2002L);
         returnedAgreement.setApplicationId(1001L);
         returnedAgreement.setElderId(3003L);
-        returnedAgreement.setStatus(org.smart_elder_system.contract.model.ServiceAgreement.STATUS_DRAFT);
+        returnedAgreement.setStatus(org.smart_elder_system.contract.vo.ServiceAgreement.STATUS_DRAFT);
 
         when(serviceApplicationRepository.findByIdForUpdate(1001L)).thenReturn(Optional.of(application));
         when(serviceAgreementRepository.findLatestByApplicationIdForUpdate(1001L)).thenReturn(Optional.of(agreement));
@@ -455,7 +453,7 @@ class CareOrchestrationServiceTest {
         when(contractService.revertToDraftAgreement(2002L, "重新评估健康状况")).thenReturn(returnedAgreement);
 
         CareOrchestrationService service = newService();
-        ServiceJourneyResultDTO result = service.returnJourneyStep(1001L, ServiceJourneyState.PENDING_HEALTH_ASSESSMENT, "重新评估健康状况");
+        ServiceJourneyResultDto result = service.returnJourneyStep(1001L, ServiceJourneyState.PENDING_HEALTH_ASSESSMENT, "重新评估健康状况");
 
         assertEquals("PENDING_HEALTH_ASSESSMENT", result.getFinalStatus());
         verify(serviceJourneyTransitionPolicy).requireAuthority("journey:return:health");
@@ -479,25 +477,25 @@ class CareOrchestrationServiceTest {
         agreement.setId(2002L);
         agreement.setApplicationId(1001L);
         agreement.setElderId(3003L);
-        agreement.setStatus(org.smart_elder_system.contract.model.ServiceAgreement.STATUS_ACTIVE);
+        agreement.setStatus(org.smart_elder_system.contract.vo.ServiceAgreement.STATUS_ACTIVE);
 
         ServiceReviewPo previousReview = new ServiceReviewPo();
         previousReview.setAgreementId(2002L);
-        previousReview.setReviewConclusion(org.smart_elder_system.quality.model.ServiceReview.REVIEW_CONCLUSION_IMPROVE);
+        previousReview.setReviewConclusion(ServiceReview.REVIEW_CONCLUSION_IMPROVE);
 
-        ServiceReviewDTO reviewed = new ServiceReviewDTO();
+        ServiceReviewDto reviewed = new ServiceReviewDto();
         reviewed.setAgreementId(2002L);
         reviewed.setElderId(3003L);
         reviewed.setSatisfactionScore(85);
         reviewed.setReviewComment("改善后续约");
-        reviewed.setReviewConclusion(org.smart_elder_system.quality.model.ServiceReview.REVIEW_CONCLUSION_RENEW);
+        reviewed.setReviewConclusion(ServiceReview.REVIEW_CONCLUSION_RENEW);
 
         when(serviceAgreementRepository.findByIdForUpdate(2002L)).thenReturn(Optional.of(agreement));
         when(serviceReviewRepository.findLatestByAgreementIdForUpdate(2002L)).thenReturn(Optional.of(previousReview));
         when(qualityService.reviewService(any())).thenReturn(reviewed);
 
         CareOrchestrationService service = newService();
-        ServiceJourneyResultDTO result = service.reviewAndFinalize(2002L, 3003L, 85, "改善后续约");
+        ServiceJourneyResultDto result = service.reviewAndFinalize(2002L, 3003L, 85, "改善后续约");
 
         assertEquals("RENEWED", result.getFinalStatus());
         assertEquals("服务评价结果为续约，协议已续约", result.getMessage());
@@ -511,7 +509,7 @@ class CareOrchestrationServiceTest {
                 eq(ServiceJourneyEvent.REVIEW_RENEW),
                 eq(ServiceJourneyState.RENEWED),
                 eq("服务评价结果为续约，协议已续约"),
-                any(ServiceReviewDTO.class)
+                any(ServiceReviewDto.class)
         );
     }
 
@@ -521,17 +519,17 @@ class CareOrchestrationServiceTest {
         agreement.setId(2002L);
         agreement.setApplicationId(1001L);
         agreement.setElderId(3003L);
-        agreement.setStatus(org.smart_elder_system.contract.model.ServiceAgreement.STATUS_ACTIVE);
+        agreement.setStatus(org.smart_elder_system.contract.vo.ServiceAgreement.STATUS_ACTIVE);
 
         ServiceReviewPo previousReview = new ServiceReviewPo();
         previousReview.setAgreementId(2002L);
-        previousReview.setReviewConclusion(org.smart_elder_system.quality.model.ServiceReview.REVIEW_CONCLUSION_IMPROVE);
+        previousReview.setReviewConclusion(ServiceReview.REVIEW_CONCLUSION_IMPROVE);
 
         when(serviceAgreementRepository.findByIdForUpdate(2002L)).thenReturn(Optional.of(agreement));
         when(serviceReviewRepository.findLatestByAgreementIdForUpdate(2002L)).thenReturn(Optional.of(previousReview));
 
         CareOrchestrationService service = newService();
-        ServiceJourneyResultDTO result = service.reviewAndFinalize(2002L, 3003L, 70, "继续改进");
+        ServiceJourneyResultDto result = service.reviewAndFinalize(2002L, 3003L, 70, "继续改进");
 
         assertEquals("IMPROVEMENT_REQUIRED", result.getFinalStatus());
         assertEquals("服务评价完成，建议结果：IMPROVE", result.getMessage());
@@ -547,21 +545,21 @@ class CareOrchestrationServiceTest {
         agreement.setId(2002L);
         agreement.setApplicationId(1001L);
         agreement.setElderId(3003L);
-        agreement.setStatus(org.smart_elder_system.contract.model.ServiceAgreement.STATUS_ACTIVE);
+        agreement.setStatus(org.smart_elder_system.contract.vo.ServiceAgreement.STATUS_ACTIVE);
         agreement.setEffectiveDate(LocalDate.of(2026, 4, 26));
         agreement.setExpiryDate(LocalDate.of(2026, 5, 26));
 
-        ServiceAgreementDTO renewedAgreement = new ServiceAgreementDTO();
+        ServiceAgreementDto renewedAgreement = new ServiceAgreementDto();
         renewedAgreement.setAgreementId(2002L);
         renewedAgreement.setApplicationId(1001L);
         renewedAgreement.setElderId(3003L);
-        renewedAgreement.setStatus(org.smart_elder_system.contract.model.ServiceAgreement.STATUS_ACTIVE);
+        renewedAgreement.setStatus(org.smart_elder_system.contract.vo.ServiceAgreement.STATUS_ACTIVE);
         renewedAgreement.setEffectiveDate(LocalDate.of(2026, 4, 26));
         renewedAgreement.setExpiryDate(LocalDate.of(2026, 8, 26));
 
         when(serviceAgreementRepository.findByIdForUpdate(2002L)).thenReturn(Optional.of(agreement));
         when(serviceReviewRepository.findLatestByAgreementIdForUpdate(2002L)).thenReturn(Optional.empty());
-        when(contractService.renewAgreement(eq(2002L), any(ServiceAgreementDTO.class))).thenReturn(renewedAgreement);
+        when(contractService.renewAgreement(eq(2002L), any(ServiceAgreementDto.class))).thenReturn(renewedAgreement);
 
         CareOrchestrationService service = newService();
         var result = service.confirmRenewal(2002L, 3);
@@ -580,7 +578,7 @@ class CareOrchestrationServiceTest {
         agreement.setId(2002L);
         agreement.setApplicationId(1001L);
         agreement.setElderId(3003L);
-        agreement.setStatus(org.smart_elder_system.contract.model.ServiceAgreement.STATUS_ACTIVE);
+        agreement.setStatus(org.smart_elder_system.contract.vo.ServiceAgreement.STATUS_ACTIVE);
         agreement.setEffectiveDate(LocalDate.of(2026, 4, 26));
         agreement.setExpiryDate(LocalDate.of(2026, 5, 26));
 
@@ -598,7 +596,7 @@ class CareOrchestrationServiceTest {
     @Test
     void shouldRejectWhenPermissionMissing() {
         ServiceApplicationPo application = applicationPo(1001L, 3003L,
-                org.smart_elder_system.admission.model.ServiceApplication.STATUS_SUBMITTED);
+                org.smart_elder_system.admission.vo.ServiceApplication.STATUS_SUBMITTED);
         when(serviceApplicationRepository.findByIdForUpdate(1001L)).thenReturn(Optional.of(application));
         doThrow(new JourneyAuthorizationException("当前用户无权执行旅程操作: journey:assessment:reject"))
                 .when(serviceJourneyTransitionPolicy)

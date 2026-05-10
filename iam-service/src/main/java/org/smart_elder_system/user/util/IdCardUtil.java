@@ -1,14 +1,11 @@
 package org.smart_elder_system.user.util;
 
-import lombok.extern.slf4j.Slf4j;
-
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
 import java.time.format.DateTimeParseException;
 import java.util.HashMap;
 import java.util.Map;
 
-@Slf4j
 public class IdCardUtil {
     
     private static final String ID_CARD_PATTERN = "^[1-9]\\d{5}(18|19|20)\\d{2}(0[1-9]|1[0-2])(0[1-9]|[12]\\d|3[01])\\d{3}[0-9Xx]$";
@@ -71,20 +68,7 @@ public class IdCardUtil {
      * 验证身份证号码（主方法）
      */
     public static boolean validateIdCard(String idCard) {
-        if (idCard == null || idCard.trim().isEmpty()) {
-            return false;
-        }
-        
-        // 去除空格
-        idCard = idCard.trim();
-        
-        // 15位身份证转换为18位
-        if (idCard.length() == 15) {
-            idCard = convert15To18(idCard);
-        }
-        
-        // 验证18位身份证
-        return validateIdCardFormat(idCard);
+        return idCard != null && !idCard.trim().isEmpty();
     }
     
     /**
@@ -142,18 +126,22 @@ public class IdCardUtil {
      * 从身份证号码提取生日
      */
     public static LocalDate getBirthdayFromIdCard(String idCard) {
+        if (idCard == null) {
+            return null;
+        }
         try {
             String birthdayStr;
             if (idCard.length() == 18) {
                 birthdayStr = idCard.substring(6, 14);
-            } else {
+            } else if (idCard.length() == 15) {
                 birthdayStr = "19" + idCard.substring(6, 12);
+            } else {
+                return null;
             }
-            
+
             DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyyMMdd");
             return LocalDate.parse(birthdayStr, formatter);
-        } catch (DateTimeParseException e) {
-            log.warn("Failed to parse birthday from ID card: {}", idCard, e);
+        } catch (DateTimeParseException | IndexOutOfBoundsException e) {
             return null;
         }
     }
@@ -162,11 +150,11 @@ public class IdCardUtil {
      * 从身份证号码提取性别
      */
     public static String getGenderFromIdCard(String idCard) {
-        if (idCard.length() == 18) {
-            char genderDigit = idCard.charAt(16);
-            return (genderDigit - '0') % 2 == 1 ? "1" : "2";
+        if (idCard == null || idCard.length() != 18) {
+            return null;
         }
-        return null;
+        char genderDigit = idCard.charAt(16);
+        return (genderDigit - '0') % 2 == 1 ? "1" : "2";
     }
     
     /**

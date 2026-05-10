@@ -3,6 +3,7 @@ import { Alert, Button, Card, Space, Typography } from 'antd';
 import { useNavigate } from 'react-router-dom';
 import { getJourneyOverview } from '../api/careOrchestrationApi';
 import { extractApiErrorMessage } from '../api/client';
+import JourneyPageScaffold from '../components/JourneyPageScaffold';
 import { ROUTE_PATHS } from '../constants/routes';
 import { canAccessAssessmentReview } from '../stores/userStore';
 
@@ -32,11 +33,18 @@ export default function JourneyOverviewPage() {
   }, []);
 
   return (
-    <Space direction="vertical" size="large" style={{ width: '100%' }}>
-      <Typography.Title level={4} style={{ margin: 0 }}>
-        服务旅程总览
-      </Typography.Title>
-
+    <JourneyPageScaffold
+      title="入院服务总览"
+      description="从申请发起、评估、签约到在院服务，按旅程查看当前可办理事项。"
+      actions={
+        <Space>
+          <Button type="primary" onClick={() => navigate(ROUTE_PATHS.JOURNEY_START)}>
+            发起申请
+          </Button>
+          {canReviewAssessment ? <Button onClick={() => navigate(ROUTE_PATHS.JOURNEY_REVIEW)}>提交评价收尾</Button> : null}
+        </Space>
+      }
+    >
       {errorMessage ? <Alert type="error" message={errorMessage} showIcon /> : null}
 
       <Card loading={loading} title="旅程说明">
@@ -44,13 +52,6 @@ export default function JourneyOverviewPage() {
           {overview || '正在加载旅程说明...'}
         </Typography.Paragraph>
       </Card>
-
-      <Space>
-        <Button type="primary" onClick={() => navigate(ROUTE_PATHS.JOURNEY_START)}>
-          发起服务旅程
-        </Button>
-        {canReviewAssessment ? <Button onClick={() => navigate(ROUTE_PATHS.JOURNEY_REVIEW)}>提交评价收尾</Button> : null}
-      </Space>
-    </Space>
+    </JourneyPageScaffold>
   );
 }

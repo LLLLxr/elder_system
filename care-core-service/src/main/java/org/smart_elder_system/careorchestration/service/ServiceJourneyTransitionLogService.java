@@ -3,7 +3,7 @@ package org.smart_elder_system.careorchestration.service;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import lombok.RequiredArgsConstructor;
-import org.smart_elder_system.careorchestration.dto.ServiceJourneyTransitionLogItemDTO;
+import org.smart_elder_system.careorchestration.dto.ServiceJourneyTransitionLogItemDto;
 import org.smart_elder_system.careorchestration.journey.ServiceJourneyEvent;
 import org.smart_elder_system.careorchestration.journey.ServiceJourneyState;
 import org.smart_elder_system.careorchestration.po.ServiceJourneyTransitionLogPo;
@@ -45,6 +45,26 @@ public class ServiceJourneyTransitionLogService {
         transitionLogRepository.save(log);
     }
 
+    public void logBusinessAction(
+            String businessType,
+            Long businessId,
+            Long elderId,
+            String action,
+            String reason,
+            Object requestSnapshot) {
+        ServiceJourneyTransitionLogPo log = new ServiceJourneyTransitionLogPo();
+        log.setApplicationId(businessId);
+        log.setAgreementId(null);
+        log.setElderId(elderId);
+        log.setFromState(businessType);
+        log.setJourneyEvent(action);
+        log.setToState(action);
+        log.setReason(reason);
+        log.setRequestSnapshot(serializeSnapshot(requestSnapshot));
+        log.setTransitionTime(LocalDateTime.now());
+        transitionLogRepository.save(log);
+    }
+
     public boolean hasReturnToHealthAfter(Long applicationId, LocalDateTime assessedAt) {
         if (applicationId == null || assessedAt == null) {
             return false;
@@ -69,22 +89,22 @@ public class ServiceJourneyTransitionLogService {
                 .orElse(false);
     }
 
-    public List<ServiceJourneyTransitionLogItemDTO> listByApplicationId(Long applicationId) {
+    public List<ServiceJourneyTransitionLogItemDto> listByApplicationId(Long applicationId) {
         return transitionLogRepository.findByApplicationIdOrderByTransitionTimeAscIdAsc(applicationId)
                 .stream()
-                .map(this::toItemDTO)
+                .map(this::toItemDto)
                 .toList();
     }
 
-    public List<ServiceJourneyTransitionLogItemDTO> listByAgreementId(Long agreementId) {
+    public List<ServiceJourneyTransitionLogItemDto> listByAgreementId(Long agreementId) {
         return transitionLogRepository.findByAgreementIdOrderByTransitionTimeAscIdAsc(agreementId)
                 .stream()
-                .map(this::toItemDTO)
+                .map(this::toItemDto)
                 .toList();
     }
 
-    private ServiceJourneyTransitionLogItemDTO toItemDTO(ServiceJourneyTransitionLogPo po) {
-        ServiceJourneyTransitionLogItemDTO dto = new ServiceJourneyTransitionLogItemDTO();
+    private ServiceJourneyTransitionLogItemDto toItemDto(ServiceJourneyTransitionLogPo po) {
+        ServiceJourneyTransitionLogItemDto dto = new ServiceJourneyTransitionLogItemDto();
         dto.setLogId(po.getId());
         dto.setApplicationId(po.getApplicationId());
         dto.setAgreementId(po.getAgreementId());

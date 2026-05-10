@@ -5,127 +5,282 @@
   </component>
   <component name="ChangeListManager">
     <list default="true" id="fd68612d-4ac6-41a9-9738-6ece05de52ef" name="更改" comment="">
-      <change beforePath="$PROJECT_DIR$/.idea/encodings.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/encodings.xml" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/care-core-service/src/main/java/org/smart_elder_system/admission/AdmissionAuthorizationException.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/care-core-service/src/main/java/org/smart_elder_system/admission/AdmissionAuthorizationPolicy.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/care-core-service/src/main/java/org/smart_elder_system/admission/po/FamilyVisitReservationPo.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/care-core-service/src/main/java/org/smart_elder_system/admission/po/FamilyVisitSlotPo.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/care-core-service/src/main/java/org/smart_elder_system/admission/repository/FamilyVisitReservationRepository.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/care-core-service/src/main/java/org/smart_elder_system/admission/repository/FamilyVisitSlotRepository.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/care-core-service/src/main/java/org/smart_elder_system/admission/rules/FamilyVisitReservationRules.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/care-core-service/src/main/java/org/smart_elder_system/admission/service/FamilyVisitSlotProvisioningService.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/care-core-service/src/main/java/org/smart_elder_system/admission/vo/FamilyVisitReservation.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/care-core-service/src/main/java/org/smart_elder_system/admission/vo/FamilyVisitSlot.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/care-core-service/src/main/java/org/smart_elder_system/caredelivery/CareDeliveryAuthorizationException.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/care-core-service/src/main/java/org/smart_elder_system/caredelivery/CareDeliveryAuthorizationPolicy.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/care-core-service/src/main/java/org/smart_elder_system/caredelivery/po/CaregiverCheckInRecordPo.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/care-core-service/src/main/java/org/smart_elder_system/caredelivery/po/NurseCareRecordPo.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/care-core-service/src/main/java/org/smart_elder_system/caredelivery/repository/CaregiverCheckInRecordRepository.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/care-core-service/src/main/java/org/smart_elder_system/caredelivery/repository/NurseCareRecordRepository.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/care-core-service/src/main/java/org/smart_elder_system/caredelivery/vo/CarePlan.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/care-core-service/src/main/java/org/smart_elder_system/caredelivery/vo/CaregiverCheckInRecord.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/care-core-service/src/main/java/org/smart_elder_system/caredelivery/vo/NurseCareRecord.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/care-core-service/src/main/java/org/smart_elder_system/elder/vo/ElderProfile.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/care-core-service/src/main/java/org/smart_elder_system/health/po/DoctorRoundRecordPo.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/care-core-service/src/main/java/org/smart_elder_system/health/repository/DoctorRoundRecordRepository.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/care-core-service/src/main/java/org/smart_elder_system/health/vo/DoctorRoundRecord.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/care-core-service/src/main/java/org/smart_elder_system/quality/QualityAuthorizationException.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/care-core-service/src/main/java/org/smart_elder_system/quality/QualityAuthorizationPolicy.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/care-core-service/src/main/java/org/smart_elder_system/quality/po/CaregiverQualificationApplicationPo.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/care-core-service/src/main/java/org/smart_elder_system/quality/repository/CaregiverQualificationApplicationRepository.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/care-core-service/src/main/java/org/smart_elder_system/quality/vo/CaregiverQualificationApplication.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/care-core-service/src/test/java/org/smart_elder_system/admission/controller/AdmissionControllerTest.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/care-core-service/src/test/java/org/smart_elder_system/admission/rules/FamilyVisitReservationRulesTest.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/care-core-service/src/test/java/org/smart_elder_system/admission/service/FamilyVisitSlotProvisioningServiceTest.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/care-core-service/src/test/java/org/smart_elder_system/contract/controller/ContractControllerTest.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/care-core-service/src/test/java/org/smart_elder_system/quality/controller/QualityControllerTest.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/common-lib/src/main/java/org/smart_elder_system/common/dto/admission/FamilyVisitReservationDto.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/common-lib/src/main/java/org/smart_elder_system/common/dto/admission/FamilyVisitReservationReviewDto.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/common-lib/src/main/java/org/smart_elder_system/common/dto/admission/FamilyVisitReservationRuleDto.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/common-lib/src/main/java/org/smart_elder_system/common/dto/admission/FamilyVisitSlotDto.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/common-lib/src/main/java/org/smart_elder_system/common/dto/caredelivery/CaregiverCheckInRecordDto.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/common-lib/src/main/java/org/smart_elder_system/common/dto/caredelivery/CaregiverCheckInSubmitDto.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/common-lib/src/main/java/org/smart_elder_system/common/dto/caredelivery/DailyCareTaskDto.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/common-lib/src/main/java/org/smart_elder_system/common/dto/caredelivery/DailyCareTaskItemDto.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/common-lib/src/main/java/org/smart_elder_system/common/dto/caredelivery/FamilyServicePlanDto.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/common-lib/src/main/java/org/smart_elder_system/common/dto/caredelivery/NurseCareRecordDto.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/common-lib/src/main/java/org/smart_elder_system/common/dto/caredelivery/NurseCareRecordSaveDto.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/common-lib/src/main/java/org/smart_elder_system/common/dto/contract/RenewalContextDto.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/common-lib/src/main/java/org/smart_elder_system/common/dto/health/DoctorRoundRecordDto.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/common-lib/src/main/java/org/smart_elder_system/common/dto/health/DoctorRoundRecordSaveDto.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/common-lib/src/main/java/org/smart_elder_system/common/dto/quality/CaregiverQualificationApplicationDto.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/common-lib/src/main/java/org/smart_elder_system/common/dto/quality/CaregiverQualificationReviewDto.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/smart-nursing-home-demo/src/api/caregiverQualificationApi.ts" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/smart-nursing-home-demo/src/api/familyVisitApi.ts" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/smart-nursing-home-demo/src/pages/admin/CaregiverQualificationReviewPage.tsx" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/smart-nursing-home-demo/src/pages/admin/FamilyVisitReviewPage.tsx" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/smart-nursing-home-service-portal/src/api/caregiverQualificationApi.ts" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/smart-nursing-home-service-portal/src/api/contractApi.ts" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/smart-nursing-home-service-portal/src/api/familyVisitApi.ts" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/smart-nursing-home-service-portal/src/pages/CaregiverQualificationStatusPage.tsx" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/smart-nursing-home-service-portal/src/pages/CaregiverQualificationSubmitPage.tsx" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/smart-nursing-home-service-portal/src/pages/FamilyVisitReservationCreatePage.tsx" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/smart-nursing-home-service-portal/src/pages/JourneyAgreementPage.tsx" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/smart-nursing-home-service-portal/src/pages/MyFamilyVisitReservationsPage.tsx" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/医养结合智慧养护平台-实施拆解.md" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/医养结合智慧养护平台-总体里程碑路线图.md" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/医养结合智慧养护平台-改造设计.md" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/医养结合智慧养护平台-阶段一任务与模块路由设计.md" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/医养结合智慧养护平台-阶段一前端实施清单.md" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/医养结合智慧养护平台-阶段一前端页面开发顺序.md" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/医养结合智慧养护平台-阶段一后端实施清单.md" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/医养结合智慧养护平台-阶段一后端接口开发顺序.md" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/医养结合智慧养护平台-阶段一开发实施建议总览.md" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/医养结合智慧养护平台-阶段一开发顺序与工时预估.md" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/医养结合智慧养护平台-阶段一接口字段明细.md" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/医养结合智慧养护平台-阶段一文件改造映射清单.md" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/医养结合智慧养护平台-阶段一联调与验收清单.md" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/医养结合智慧养护平台-阶段一联调问题排查清单.md" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/医养结合智慧养护平台-阶段一表结构草案.md" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/医养结合智慧养护平台-阶段一页面字段清单.md" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/医养结合智慧养护平台-阶段三前端页面开发顺序.md" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/医养结合智慧养护平台-阶段三后端接口开发顺序.md" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/医养结合智慧养护平台-阶段三实施拆解.md" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/医养结合智慧养护平台-阶段三接口字段明细.md" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/医养结合智慧养护平台-阶段三联调问题排查清单.md" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/医养结合智慧养护平台-阶段三表结构草案.md" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/医养结合智慧养护平台-阶段二前端页面开发顺序.md" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/医养结合智慧养护平台-阶段二后端接口开发顺序.md" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/医养结合智慧养护平台-阶段二实施拆解.md" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/医养结合智慧养护平台-阶段二接口字段明细.md" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/医养结合智慧养护平台-阶段二联调问题排查清单.md" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/医养结合智慧养护平台-阶段二表结构草案.md" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/医养结合智慧养护平台-阶段五实施拆解.md" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/医养结合智慧养护平台-阶段五接口字段明细.md" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/医养结合智慧养护平台-阶段五表结构草案.md" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/医养结合智慧养护平台-阶段四实施拆解.md" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/医养结合智慧养护平台-阶段四接口字段明细.md" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/医养结合智慧养护平台-阶段四表结构草案.md" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/医养结合智慧养护平台-需求整理.md" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/医养结合智慧养护平台-项目改造总任务清单.md" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/.claude/settings.local.json" beforeDir="false" afterPath="$PROJECT_DIR$/.claude/settings.local.json" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/.gitignore" beforeDir="false" afterPath="$PROJECT_DIR$/.gitignore" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/api-gateway/pom.xml" beforeDir="false" afterPath="$PROJECT_DIR$/api-gateway/pom.xml" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/api-gateway/src/main/java/org/smart_elder_system/gateway/filter/GlobalAuthFilter.java" beforeDir="false" afterPath="$PROJECT_DIR$/api-gateway/src/main/java/org/smart_elder_system/gateway/filter/GlobalAuthFilter.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/api-gateway/src/main/resources/application-dev.yaml" beforeDir="false" afterPath="$PROJECT_DIR$/api-gateway/src/main/resources/application-dev.yaml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/api-gateway/src/main/resources/application-prd.yaml" beforeDir="false" afterPath="$PROJECT_DIR$/api-gateway/src/main/resources/application-prd.yaml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/api-gateway/src/main/resources/application.yaml" beforeDir="false" afterPath="$PROJECT_DIR$/api-gateway/src/main/resources/application.yaml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/auth/Dockerfile" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/auth/pom.xml" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/auth/src/main/java/org/smart_elder_system/auth/AuthServiceApplication.java" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/auth/src/main/java/org/smart_elder_system/auth/client/UserServiceClient.java" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/auth/src/main/java/org/smart_elder_system/auth/config/SecurityConfig.java" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/auth/src/main/java/org/smart_elder_system/auth/config/UserDetailsServiceConfig.java" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/auth/src/main/java/org/smart_elder_system/auth/controller/AuthController.java" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/auth/src/main/java/org/smart_elder_system/auth/exception/AuthExceptionHandler.java" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/auth/src/main/java/org/smart_elder_system/auth/filter/JwtAuthenticationFilter.java" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/auth/src/main/java/org/smart_elder_system/auth/service/JwtUserDetailsService.java" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/auth/src/main/java/org/smart_elder_system/auth/util/JwtTokenUtil.java" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/auth/src/main/java/org/smart_elder_system/auth/util/PasswordTest.java" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/auth/src/main/resources/application-dev.yaml" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/auth/src/main/resources/application-prd.yaml" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/auth/src/main/resources/application.yaml" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/auth/src/test/java/org/smart_elder_system/auth/controller/AuthControllerTest.java" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/auth/src/test/java/org/smart_elder_system/auth/util/JwtTokenUtilTest.java" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/business/Dockerfile" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/business/pom.xml" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/business/src/main/java/org/smart_elder_system/business/BusinessServiceApplication.java" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/business/src/main/java/org/smart_elder_system/business/controller/BusinessController.java" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/business/src/main/java/org/smart_elder_system/business/feign/AuthServiceClient.java" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/business/src/main/resources/application-dev.yaml" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/business/src/main/resources/application-prd.yaml" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/business/src/main/resources/application.yaml" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/care-core-service/pom.xml" beforeDir="false" afterPath="$PROJECT_DIR$/care-core-service/pom.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/care-core-service/src/main/java/org/smart_elder_system/admission/controller/AdmissionController.java" beforeDir="false" afterPath="$PROJECT_DIR$/care-core-service/src/main/java/org/smart_elder_system/admission/controller/AdmissionController.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/care-core-service/src/main/java/org/smart_elder_system/admission/model/EligibilityAssessment.java" beforeDir="false" afterPath="$PROJECT_DIR$/care-core-service/src/main/java/org/smart_elder_system/admission/vo/EligibilityAssessment.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/care-core-service/src/main/java/org/smart_elder_system/admission/model/ServiceApplication.java" beforeDir="false" afterPath="$PROJECT_DIR$/care-core-service/src/main/java/org/smart_elder_system/admission/vo/ServiceApplication.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/care-core-service/src/main/java/org/smart_elder_system/admission/po/ServiceApplicationPo.java" beforeDir="false" afterPath="$PROJECT_DIR$/care-core-service/src/main/java/org/smart_elder_system/admission/po/ServiceApplicationPo.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/care-core-service/src/main/java/org/smart_elder_system/admission/service/AdmissionService.java" beforeDir="false" afterPath="$PROJECT_DIR$/care-core-service/src/main/java/org/smart_elder_system/admission/service/AdmissionService.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/care-core-service/src/main/java/org/smart_elder_system/carecore/CareCoreServiceApplication.java" beforeDir="false" afterPath="$PROJECT_DIR$/care-core-service/src/main/java/org/smart_elder_system/carecore/CareCoreServiceApplication.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/care-core-service/src/main/java/org/smart_elder_system/caredelivery/controller/CareDeliveryController.java" beforeDir="false" afterPath="$PROJECT_DIR$/care-core-service/src/main/java/org/smart_elder_system/caredelivery/controller/CareDeliveryController.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/care-core-service/src/main/java/org/smart_elder_system/caredelivery/model/CarePlan.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/care-core-service/src/main/java/org/smart_elder_system/caredelivery/po/CarePlanPo.java" beforeDir="false" afterPath="$PROJECT_DIR$/care-core-service/src/main/java/org/smart_elder_system/caredelivery/po/CarePlanPo.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/care-core-service/src/main/java/org/smart_elder_system/caredelivery/repository/CarePlanRepository.java" beforeDir="false" afterPath="$PROJECT_DIR$/care-core-service/src/main/java/org/smart_elder_system/caredelivery/repository/CarePlanRepository.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/care-core-service/src/main/java/org/smart_elder_system/caredelivery/service/CareDeliveryService.java" beforeDir="false" afterPath="$PROJECT_DIR$/care-core-service/src/main/java/org/smart_elder_system/caredelivery/service/CareDeliveryService.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/care-core-service/src/main/java/org/smart_elder_system/careorchestration/controller/CareOrchestrationController.java" beforeDir="false" afterPath="$PROJECT_DIR$/care-core-service/src/main/java/org/smart_elder_system/careorchestration/controller/CareOrchestrationController.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/care-core-service/src/main/java/org/smart_elder_system/careorchestration/dto/CareAnalyticsOverviewDTO.java" beforeDir="false" afterPath="$PROJECT_DIR$/care-core-service/src/main/java/org/smart_elder_system/careorchestration/dto/CareAnalyticsOverviewDto.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/care-core-service/src/main/java/org/smart_elder_system/careorchestration/dto/CareAnalyticsTrendsDTO.java" beforeDir="false" afterPath="$PROJECT_DIR$/care-core-service/src/main/java/org/smart_elder_system/careorchestration/dto/CareAnalyticsTrendsDto.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/care-core-service/src/main/java/org/smart_elder_system/careorchestration/dto/PagedResponseDTO.java" beforeDir="false" afterPath="$PROJECT_DIR$/care-core-service/src/main/java/org/smart_elder_system/careorchestration/dto/PagedResponseDto.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/care-core-service/src/main/java/org/smart_elder_system/careorchestration/dto/ServiceJourneyTaskItemDTO.java" beforeDir="false" afterPath="$PROJECT_DIR$/care-core-service/src/main/java/org/smart_elder_system/careorchestration/dto/ServiceJourneyTaskItemDto.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/care-core-service/src/main/java/org/smart_elder_system/careorchestration/dto/ServiceJourneyTaskOverviewDTO.java" beforeDir="false" afterPath="$PROJECT_DIR$/care-core-service/src/main/java/org/smart_elder_system/careorchestration/dto/ServiceJourneyTaskOverviewDto.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/care-core-service/src/main/java/org/smart_elder_system/careorchestration/dto/ServiceJourneyTransitionLogItemDTO.java" beforeDir="false" afterPath="$PROJECT_DIR$/care-core-service/src/main/java/org/smart_elder_system/careorchestration/dto/ServiceJourneyTransitionLogItemDto.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/care-core-service/src/main/java/org/smart_elder_system/careorchestration/feign/AdmissionClient.java" beforeDir="false" afterPath="$PROJECT_DIR$/care-core-service/src/main/java/org/smart_elder_system/careorchestration/feign/AdmissionClient.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/care-core-service/src/main/java/org/smart_elder_system/careorchestration/feign/CareDeliveryClient.java" beforeDir="false" afterPath="$PROJECT_DIR$/care-core-service/src/main/java/org/smart_elder_system/careorchestration/feign/CareDeliveryClient.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/care-core-service/src/main/java/org/smart_elder_system/careorchestration/feign/ContractClient.java" beforeDir="false" afterPath="$PROJECT_DIR$/care-core-service/src/main/java/org/smart_elder_system/careorchestration/feign/ContractClient.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/care-core-service/src/main/java/org/smart_elder_system/careorchestration/feign/HealthClient.java" beforeDir="false" afterPath="$PROJECT_DIR$/care-core-service/src/main/java/org/smart_elder_system/careorchestration/feign/HealthClient.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/care-core-service/src/main/java/org/smart_elder_system/careorchestration/feign/QualityClient.java" beforeDir="false" afterPath="$PROJECT_DIR$/care-core-service/src/main/java/org/smart_elder_system/careorchestration/feign/QualityClient.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/care-core-service/src/main/java/org/smart_elder_system/careorchestration/journey/ServiceJourneyStateMachine.java" beforeDir="false" afterPath="$PROJECT_DIR$/care-core-service/src/main/java/org/smart_elder_system/careorchestration/journey/ServiceJourneyStateMachine.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/care-core-service/src/main/java/org/smart_elder_system/careorchestration/security/JourneyAuthorizationException.java" beforeDir="false" afterPath="$PROJECT_DIR$/care-core-service/src/main/java/org/smart_elder_system/careorchestration/security/JourneyAuthorizationException.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/care-core-service/src/main/java/org/smart_elder_system/careorchestration/service/CareOrchestrationService.java" beforeDir="false" afterPath="$PROJECT_DIR$/care-core-service/src/main/java/org/smart_elder_system/careorchestration/service/CareOrchestrationService.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/care-core-service/src/main/java/org/smart_elder_system/careorchestration/service/ServiceJourneyTaskService.java" beforeDir="false" afterPath="$PROJECT_DIR$/care-core-service/src/main/java/org/smart_elder_system/careorchestration/service/ServiceJourneyTaskService.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/care-core-service/src/main/java/org/smart_elder_system/careorchestration/service/ServiceJourneyTransitionLogService.java" beforeDir="false" afterPath="$PROJECT_DIR$/care-core-service/src/main/java/org/smart_elder_system/careorchestration/service/ServiceJourneyTransitionLogService.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/care-core-service/src/main/java/org/smart_elder_system/contract/controller/ContractController.java" beforeDir="false" afterPath="$PROJECT_DIR$/care-core-service/src/main/java/org/smart_elder_system/contract/controller/ContractController.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/care-core-service/src/main/java/org/smart_elder_system/contract/model/ServiceAgreement.java" beforeDir="false" afterPath="$PROJECT_DIR$/care-core-service/src/main/java/org/smart_elder_system/contract/vo/ServiceAgreement.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/care-core-service/src/main/java/org/smart_elder_system/contract/repository/ServiceAgreementRepository.java" beforeDir="false" afterPath="$PROJECT_DIR$/care-core-service/src/main/java/org/smart_elder_system/contract/repository/ServiceAgreementRepository.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/care-core-service/src/main/java/org/smart_elder_system/contract/service/ContractService.java" beforeDir="false" afterPath="$PROJECT_DIR$/care-core-service/src/main/java/org/smart_elder_system/contract/service/ContractService.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/care-core-service/src/main/java/org/smart_elder_system/exception/GlobalExceptionHandler.java" beforeDir="false" afterPath="$PROJECT_DIR$/care-core-service/src/main/java/org/smart_elder_system/exception/GlobalExceptionHandler.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/care-core-service/src/main/java/org/smart_elder_system/health/HealthAuthorizationException.java" beforeDir="false" afterPath="$PROJECT_DIR$/care-core-service/src/main/java/org/smart_elder_system/health/HealthAuthorizationException.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/care-core-service/src/main/java/org/smart_elder_system/health/HealthAuthorizationPolicy.java" beforeDir="false" afterPath="$PROJECT_DIR$/care-core-service/src/main/java/org/smart_elder_system/health/HealthAuthorizationPolicy.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/care-core-service/src/main/java/org/smart_elder_system/health/controller/HealthController.java" beforeDir="false" afterPath="$PROJECT_DIR$/care-core-service/src/main/java/org/smart_elder_system/health/controller/HealthController.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/care-core-service/src/main/java/org/smart_elder_system/health/model/HealthAssessmentRecord.java" beforeDir="false" afterPath="$PROJECT_DIR$/care-core-service/src/main/java/org/smart_elder_system/health/vo/HealthAssessmentRecord.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/care-core-service/src/main/java/org/smart_elder_system/health/model/HealthCheckForm.java" beforeDir="false" afterPath="$PROJECT_DIR$/care-core-service/src/main/java/org/smart_elder_system/health/vo/HealthCheckForm.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/care-core-service/src/main/java/org/smart_elder_system/health/model/HealthProfile.java" beforeDir="false" afterPath="$PROJECT_DIR$/care-core-service/src/main/java/org/smart_elder_system/health/vo/HealthProfile.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/care-core-service/src/main/java/org/smart_elder_system/health/service/HealthService.java" beforeDir="false" afterPath="$PROJECT_DIR$/care-core-service/src/main/java/org/smart_elder_system/health/service/HealthService.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/care-core-service/src/main/java/org/smart_elder_system/quality/controller/QualityController.java" beforeDir="false" afterPath="$PROJECT_DIR$/care-core-service/src/main/java/org/smart_elder_system/quality/controller/QualityController.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/care-core-service/src/main/java/org/smart_elder_system/quality/model/ServiceReview.java" beforeDir="false" afterPath="$PROJECT_DIR$/care-core-service/src/main/java/org/smart_elder_system/quality/vo/ServiceReview.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/care-core-service/src/main/java/org/smart_elder_system/quality/service/QualityService.java" beforeDir="false" afterPath="$PROJECT_DIR$/care-core-service/src/main/java/org/smart_elder_system/quality/service/QualityService.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/care-core-service/src/main/resources/data-h2.sql" beforeDir="false" afterPath="$PROJECT_DIR$/care-core-service/src/main/resources/data-h2.sql" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/care-core-service/src/main/resources/schema-h2.sql" beforeDir="false" afterPath="$PROJECT_DIR$/care-core-service/src/main/resources/schema-h2.sql" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/care-core-service/src/test/java/org/smart_elder_system/admission/model/ServiceApplicationTest.java" beforeDir="false" afterPath="$PROJECT_DIR$/care-core-service/src/test/java/org/smart_elder_system/admission/vo/ServiceApplicationTest.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/care-core-service/src/test/java/org/smart_elder_system/admission/service/AdmissionServiceTest.java" beforeDir="false" afterPath="$PROJECT_DIR$/care-core-service/src/test/java/org/smart_elder_system/admission/service/AdmissionServiceTest.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/care-core-service/src/test/java/org/smart_elder_system/caredelivery/service/CareDeliveryServiceTest.java" beforeDir="false" afterPath="$PROJECT_DIR$/care-core-service/src/test/java/org/smart_elder_system/caredelivery/service/CareDeliveryServiceTest.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/care-core-service/src/test/java/org/smart_elder_system/careorchestration/controller/CareOrchestrationControllerTest.java" beforeDir="false" afterPath="$PROJECT_DIR$/care-core-service/src/test/java/org/smart_elder_system/careorchestration/controller/CareOrchestrationControllerTest.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/care-core-service/src/test/java/org/smart_elder_system/careorchestration/journey/ServiceJourneyStateMachineTest.java" beforeDir="false" afterPath="$PROJECT_DIR$/care-core-service/src/test/java/org/smart_elder_system/careorchestration/journey/ServiceJourneyStateMachineTest.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/care-core-service/src/test/java/org/smart_elder_system/careorchestration/service/CareOrchestrationServiceTest.java" beforeDir="false" afterPath="$PROJECT_DIR$/care-core-service/src/test/java/org/smart_elder_system/careorchestration/service/CareOrchestrationServiceTest.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/care-core-service/src/test/java/org/smart_elder_system/contract/service/ContractServiceTest.java" beforeDir="false" afterPath="$PROJECT_DIR$/care-core-service/src/test/java/org/smart_elder_system/contract/service/ContractServiceTest.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/care-core-service/src/test/java/org/smart_elder_system/health/controller/HealthControllerTest.java" beforeDir="false" afterPath="$PROJECT_DIR$/care-core-service/src/test/java/org/smart_elder_system/health/controller/HealthControllerTest.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/care-core-service/src/test/java/org/smart_elder_system/health/service/HealthServiceTest.java" beforeDir="false" afterPath="$PROJECT_DIR$/care-core-service/src/test/java/org/smart_elder_system/health/service/HealthServiceTest.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/care-core-service/src/test/java/org/smart_elder_system/quality/service/QualityServiceTest.java" beforeDir="false" afterPath="$PROJECT_DIR$/care-core-service/src/test/java/org/smart_elder_system/quality/service/QualityServiceTest.java" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/common-lib/pom.xml" beforeDir="false" afterPath="$PROJECT_DIR$/common-lib/pom.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/common-lib/src/main/java/org/smart_elder_system/common/jwt/JwtProperties.java" beforeDir="false" afterPath="$PROJECT_DIR$/common-lib/src/main/java/org/smart_elder_system/common/jwt/JwtProperties.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/common-lib/src/main/java/org/smart_elder_system/common/jwt/JwtTokenUtil.java" beforeDir="false" afterPath="$PROJECT_DIR$/common-lib/src/main/java/org/smart_elder_system/common/jwt/JwtTokenUtil.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/common-lib/src/main/java/org/smart_elder_system/common/jwt/config/JwtAutoConfiguration.java" beforeDir="false" afterPath="$PROJECT_DIR$/common-lib/src/main/java/org/smart_elder_system/common/jwt/config/JwtAutoConfiguration.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/common-lib/src/test/java/org/smart_elder_system/common/util/CookieUtilTest.java" beforeDir="false" afterPath="$PROJECT_DIR$/common-lib/src/test/java/org/smart_elder_system/common/util/CookieUtilTest.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/docker-compose.prd.yml" beforeDir="false" afterPath="$PROJECT_DIR$/docker-compose.prd.yml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/docker-compose.yml" beforeDir="false" afterPath="$PROJECT_DIR$/docker-compose.yml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/common-lib/src/main/java/org/smart_elder_system/common/dto/FaceVerifyDTO.java" beforeDir="false" afterPath="$PROJECT_DIR$/common-lib/src/main/java/org/smart_elder_system/common/dto/FaceVerifyDto.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/common-lib/src/main/java/org/smart_elder_system/common/dto/IdCardVerifyDTO.java" beforeDir="false" afterPath="$PROJECT_DIR$/common-lib/src/main/java/org/smart_elder_system/common/dto/IdCardVerifyDto.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/common-lib/src/main/java/org/smart_elder_system/common/dto/LoginDTO.java" beforeDir="false" afterPath="$PROJECT_DIR$/common-lib/src/main/java/org/smart_elder_system/common/dto/LoginDto.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/common-lib/src/main/java/org/smart_elder_system/common/dto/care/CarePlanDTO.java" beforeDir="false" afterPath="$PROJECT_DIR$/common-lib/src/main/java/org/smart_elder_system/common/dto/caredelivery/CarePlanDto.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/common-lib/src/main/java/org/smart_elder_system/common/dto/care/EligibilityAssessmentDTO.java" beforeDir="false" afterPath="$PROJECT_DIR$/common-lib/src/main/java/org/smart_elder_system/common/dto/admission/EligibilityAssessmentDto.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/common-lib/src/main/java/org/smart_elder_system/common/dto/care/HealthAssessmentDTO.java" beforeDir="false" afterPath="$PROJECT_DIR$/common-lib/src/main/java/org/smart_elder_system/common/dto/health/HealthAssessmentDto.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/common-lib/src/main/java/org/smart_elder_system/common/dto/care/HealthAssessmentRequestDTO.java" beforeDir="false" afterPath="$PROJECT_DIR$/common-lib/src/main/java/org/smart_elder_system/common/dto/health/HealthAssessmentRequestDto.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/common-lib/src/main/java/org/smart_elder_system/common/dto/care/HealthAssessmentSubmitDTO.java" beforeDir="false" afterPath="$PROJECT_DIR$/common-lib/src/main/java/org/smart_elder_system/common/dto/health/HealthAssessmentSubmitDto.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/common-lib/src/main/java/org/smart_elder_system/common/dto/care/HealthCheckFormCreateRequestDTO.java" beforeDir="false" afterPath="$PROJECT_DIR$/common-lib/src/main/java/org/smart_elder_system/common/dto/health/HealthCheckFormCreateRequestDto.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/common-lib/src/main/java/org/smart_elder_system/common/dto/care/HealthCheckFormDTO.java" beforeDir="false" afterPath="$PROJECT_DIR$/common-lib/src/main/java/org/smart_elder_system/common/dto/health/HealthCheckFormDto.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/common-lib/src/main/java/org/smart_elder_system/common/dto/care/HealthProfileDTO.java" beforeDir="false" afterPath="$PROJECT_DIR$/common-lib/src/main/java/org/smart_elder_system/common/dto/health/HealthProfileDto.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/common-lib/src/main/java/org/smart_elder_system/common/dto/care/IntakeRecordDTO.java" beforeDir="false" afterPath="$PROJECT_DIR$/common-lib/src/main/java/org/smart_elder_system/common/dto/admission/IntakeRecordDto.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/common-lib/src/main/java/org/smart_elder_system/common/dto/care/ServiceAgreementDTO.java" beforeDir="false" afterPath="$PROJECT_DIR$/common-lib/src/main/java/org/smart_elder_system/common/dto/contract/ServiceAgreementDto.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/common-lib/src/main/java/org/smart_elder_system/common/dto/care/ServiceApplicationDTO.java" beforeDir="false" afterPath="$PROJECT_DIR$/common-lib/src/main/java/org/smart_elder_system/common/dto/admission/ServiceApplicationDto.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/common-lib/src/main/java/org/smart_elder_system/common/dto/care/ServiceJourneyResultDTO.java" beforeDir="false" afterPath="$PROJECT_DIR$/common-lib/src/main/java/org/smart_elder_system/common/dto/careorchestration/ServiceJourneyResultDto.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/common-lib/src/main/java/org/smart_elder_system/common/dto/care/ServiceReviewDTO.java" beforeDir="false" afterPath="$PROJECT_DIR$/common-lib/src/main/java/org/smart_elder_system/common/dto/quality/ServiceReviewDto.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/iam-service/src/main/java/org/smart_elder_system/auth/client/UserServiceClient.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/iam-service/src/main/java/org/smart_elder_system/auth/controller/AuthController.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/iam-service/src/main/java/org/smart_elder_system/auth/dto/AuthUserInfoDTO.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/iam-service/src/main/java/org/smart_elder_system/auth/dto/AuthenticationRequestDTO.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/iam-service/src/main/java/org/smart_elder_system/auth/dto/ErrorResponseDTO.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/iam-service/src/main/java/org/smart_elder_system/auth/dto/MessageResponseDTO.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/iam-service/src/main/java/org/smart_elder_system/auth/dto/TokenValidationResponseDTO.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/iam-service/src/main/java/org/smart_elder_system/auth/exception/AuthExceptionHandler.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/iam-service/src/main/java/org/smart_elder_system/auth/filter/JwtAuthenticationFilter.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/iam-service/src/main/java/org/smart_elder_system/auth/service/JwtUserDetailsService.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/iam-service/src/main/java/org/smart_elder_system/auth/util/JwtTokenUtil.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/iam-service/src/main/java/org/smart_elder_system/auth/util/PasswordTest.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/iam-service/src/main/java/org/smart_elder_system/iam/IamServiceApplication.java" beforeDir="false" afterPath="$PROJECT_DIR$/iam-service/src/main/java/org/smart_elder_system/iam/IamServiceApplication.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/iam-service/src/main/java/org/smart_elder_system/user/config/DataInitializer.java" beforeDir="false" afterPath="$PROJECT_DIR$/iam-service/src/main/java/org/smart_elder_system/user/config/DataInitializer.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/iam-service/src/main/java/org/smart_elder_system/user/config/JwtAuthenticationEntryPoint.java" beforeDir="false" afterPath="$PROJECT_DIR$/iam-service/src/main/java/org/smart_elder_system/user/config/JwtAuthenticationEntryPoint.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/iam-service/src/main/java/org/smart_elder_system/user/constant/UserConstants.java" beforeDir="false" afterPath="$PROJECT_DIR$/iam-service/src/main/java/org/smart_elder_system/user/constant/UserConstants.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/iam-service/src/main/java/org/smart_elder_system/user/controller/AuthController.java" beforeDir="false" afterPath="$PROJECT_DIR$/iam-service/src/main/java/org/smart_elder_system/user/controller/AuthController.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/iam-service/src/main/java/org/smart_elder_system/user/controller/PermissionController.java" beforeDir="false" afterPath="$PROJECT_DIR$/iam-service/src/main/java/org/smart_elder_system/user/controller/PermissionController.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/iam-service/src/main/java/org/smart_elder_system/user/controller/UserController.java" beforeDir="false" afterPath="$PROJECT_DIR$/iam-service/src/main/java/org/smart_elder_system/user/controller/UserController.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/iam-service/src/main/java/org/smart_elder_system/user/dto/ChangePasswordDTO.java" beforeDir="false" afterPath="$PROJECT_DIR$/iam-service/src/main/java/org/smart_elder_system/user/dto/ChangePasswordDto.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/iam-service/src/main/java/org/smart_elder_system/user/dto/PermissionDTO.java" beforeDir="false" afterPath="$PROJECT_DIR$/iam-service/src/main/java/org/smart_elder_system/user/dto/PermissionDto.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/iam-service/src/main/java/org/smart_elder_system/user/dto/RegisterDTO.java" beforeDir="false" afterPath="$PROJECT_DIR$/iam-service/src/main/java/org/smart_elder_system/user/dto/RegisterDto.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/iam-service/src/main/java/org/smart_elder_system/user/dto/ResetPasswordDTO.java" beforeDir="false" afterPath="$PROJECT_DIR$/iam-service/src/main/java/org/smart_elder_system/user/dto/ResetPasswordDto.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/iam-service/src/main/java/org/smart_elder_system/user/dto/UpdateUserDTO.java" beforeDir="false" afterPath="$PROJECT_DIR$/iam-service/src/main/java/org/smart_elder_system/user/dto/UpdateUserDto.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/iam-service/src/main/java/org/smart_elder_system/user/dto/UserAnalyticsOverviewDTO.java" beforeDir="false" afterPath="$PROJECT_DIR$/iam-service/src/main/java/org/smart_elder_system/user/dto/UserAnalyticsOverviewDto.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/iam-service/src/main/java/org/smart_elder_system/user/dto/UserDTO.java" beforeDir="false" afterPath="$PROJECT_DIR$/iam-service/src/main/java/org/smart_elder_system/user/dto/UserDto.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/iam-service/src/main/java/org/smart_elder_system/user/po/PermissionPo.java" beforeDir="false" afterPath="$PROJECT_DIR$/iam-service/src/main/java/org/smart_elder_system/user/po/PermissionPo.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/iam-service/src/main/java/org/smart_elder_system/user/po/RolePo.java" beforeDir="false" afterPath="$PROJECT_DIR$/iam-service/src/main/java/org/smart_elder_system/user/po/RolePo.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/iam-service/src/main/java/org/smart_elder_system/user/po/UserPo.java" beforeDir="false" afterPath="$PROJECT_DIR$/iam-service/src/main/java/org/smart_elder_system/user/po/UserPo.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/iam-service/src/main/java/org/smart_elder_system/user/service/AuthService.java" beforeDir="false" afterPath="$PROJECT_DIR$/iam-service/src/main/java/org/smart_elder_system/user/service/AuthService.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/iam-service/src/main/java/org/smart_elder_system/user/service/FaceVerifyService.java" beforeDir="false" afterPath="$PROJECT_DIR$/iam-service/src/main/java/org/smart_elder_system/user/service/FaceVerifyService.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/iam-service/src/main/java/org/smart_elder_system/user/service/IdCardVerifyService.java" beforeDir="false" afterPath="$PROJECT_DIR$/iam-service/src/main/java/org/smart_elder_system/user/service/IdCardVerifyService.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/iam-service/src/main/java/org/smart_elder_system/user/service/PermissionService.java" beforeDir="false" afterPath="$PROJECT_DIR$/iam-service/src/main/java/org/smart_elder_system/user/service/PermissionService.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/iam-service/src/main/java/org/smart_elder_system/user/service/UserService.java" beforeDir="false" afterPath="$PROJECT_DIR$/iam-service/src/main/java/org/smart_elder_system/user/service/UserService.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/iam-service/src/main/java/org/smart_elder_system/user/service/impl/TestTokenBlacklistServiceImpl.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/iam-service/src/main/java/org/smart_elder_system/user/service/impl/TokenBlacklistServiceImpl.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/iam-service/src/main/java/org/smart_elder_system/user/service/impl/UserDetailsServiceImpl.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/iam-service/src/main/java/org/smart_elder_system/user/util/IdCardUtil.java" beforeDir="false" afterPath="$PROJECT_DIR$/iam-service/src/main/java/org/smart_elder_system/user/util/IdCardUtil.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/iam-service/src/main/java/org/smart_elder_system/user/vo/User.java" beforeDir="false" afterPath="$PROJECT_DIR$/iam-service/src/main/java/org/smart_elder_system/user/vo/User.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/iam-service/src/main/resources/application.yaml" beforeDir="false" afterPath="$PROJECT_DIR$/iam-service/src/main/resources/application.yaml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/iam-service/src/main/resources/data-h2-user.sql" beforeDir="false" afterPath="$PROJECT_DIR$/iam-service/src/main/resources/data-h2-user.sql" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/iam-service/src/main/resources/sql/data.sql" beforeDir="false" afterPath="$PROJECT_DIR$/iam-service/src/main/resources/sql/data.sql" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/iam-service/src/main/resources/sql/schema-h2.sql" beforeDir="false" afterPath="$PROJECT_DIR$/iam-service/src/main/resources/sql/schema-h2.sql" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/iam-service/src/main/resources/sql/schema.sql" beforeDir="false" afterPath="$PROJECT_DIR$/iam-service/src/main/resources/sql/schema.sql" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/iam-service/src/test/java/org/smart_elder_system/auth/controller/AuthControllerTest.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/iam-service/src/test/java/org/smart_elder_system/auth/exception/AuthExceptionHandlerTest.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/iam-service/src/test/java/org/smart_elder_system/user/controller/UserControllerTest.java" beforeDir="false" afterPath="$PROJECT_DIR$/iam-service/src/test/java/org/smart_elder_system/user/controller/UserControllerTest.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/iam-service/src/test/java/org/smart_elder_system/user/service/AuthServiceTest.java" beforeDir="false" afterPath="$PROJECT_DIR$/iam-service/src/test/java/org/smart_elder_system/user/service/AuthServiceTest.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/iam-service/src/test/java/org/smart_elder_system/user/service/PermissionServiceTest.java" beforeDir="false" afterPath="$PROJECT_DIR$/iam-service/src/test/java/org/smart_elder_system/user/service/PermissionServiceTest.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/iam-service/src/test/java/org/smart_elder_system/user/service/UserServiceTest.java" beforeDir="false" afterPath="$PROJECT_DIR$/iam-service/src/test/java/org/smart_elder_system/user/service/UserServiceTest.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/ops-service/src/main/java/org/smart_elder_system/business/controller/BusinessController.java" beforeDir="false" afterPath="$PROJECT_DIR$/ops-service/src/main/java/org/smart_elder_system/business/controller/BusinessController.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/ops-service/src/main/java/org/smart_elder_system/business/dto/AuthValidationResultDTO.java" beforeDir="false" afterPath="$PROJECT_DIR$/ops-service/src/main/java/org/smart_elder_system/business/dto/AuthValidationResultDto.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/ops-service/src/main/java/org/smart_elder_system/business/dto/BusinessUserInfoDTO.java" beforeDir="false" afterPath="$PROJECT_DIR$/ops-service/src/main/java/org/smart_elder_system/business/dto/BusinessUserInfoDto.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/ops-service/src/main/java/org/smart_elder_system/business/dto/MessageResponseDTO.java" beforeDir="false" afterPath="$PROJECT_DIR$/ops-service/src/main/java/org/smart_elder_system/business/dto/MessageResponseDto.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/ops-service/src/main/java/org/smart_elder_system/business/feign/AuthServiceClient.java" beforeDir="false" afterPath="$PROJECT_DIR$/ops-service/src/main/java/org/smart_elder_system/business/feign/AuthServiceClient.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/ops-service/src/test/java/org/smart_elder_system/business/controller/BusinessControllerTest.java" beforeDir="false" afterPath="$PROJECT_DIR$/ops-service/src/test/java/org/smart_elder_system/business/controller/BusinessControllerTest.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/packages/common-react/package.json" beforeDir="false" afterPath="$PROJECT_DIR$/packages/common-react/package.json" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/packages/common-react/src/components/health/HealthCheckFormDetailModal.tsx" beforeDir="false" afterPath="$PROJECT_DIR$/packages/common-react/src/components/health/HealthCheckFormDetailModal.tsx" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/packages/common-react/src/index.ts" beforeDir="false" afterPath="$PROJECT_DIR$/packages/common-react/src/index.ts" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/pom.xml" beforeDir="false" afterPath="$PROJECT_DIR$/pom.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/run-auth-service.bat" beforeDir="false" afterPath="$PROJECT_DIR$/run-auth-service.bat" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/user/API_TEST_GUIDE.md" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/user/H2_DATABASE_TEST_GUIDE.md" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/user/README.md" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/user/pom.xml" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/user/src/main/java/org/smart_elder_system/user/UserApplication.java" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/user/src/main/java/org/smart_elder_system/user/aop/OperationLog.java" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/user/src/main/java/org/smart_elder_system/user/aop/OperationLogAspect.java" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/user/src/main/java/org/smart_elder_system/user/config/DataInitializer.java" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/user/src/main/java/org/smart_elder_system/user/config/JwtAuthenticationEntryPoint.java" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/user/src/main/java/org/smart_elder_system/user/config/RedisConfig.java" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/user/src/main/java/org/smart_elder_system/user/config/SecurityConfig.java" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/user/src/main/java/org/smart_elder_system/user/constant/UserConstants.java" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/user/src/main/java/org/smart_elder_system/user/controller/AuthController.java" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/user/src/main/java/org/smart_elder_system/user/controller/PermissionController.java" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/user/src/main/java/org/smart_elder_system/user/controller/RoleController.java" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/user/src/main/java/org/smart_elder_system/user/controller/UserController.java" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/user/src/main/java/org/smart_elder_system/user/dto/ChangePasswordDTO.java" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/user/src/main/java/org/smart_elder_system/user/dto/FaceVerifyDTO.java" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/user/src/main/java/org/smart_elder_system/user/dto/IdCardVerifyDTO.java" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/user/src/main/java/org/smart_elder_system/user/dto/LoginDTO.java" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/user/src/main/java/org/smart_elder_system/user/dto/RegisterDTO.java" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/user/src/main/java/org/smart_elder_system/user/dto/ResetPasswordDTO.java" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/user/src/main/java/org/smart_elder_system/user/dto/UpdateUserDTO.java" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/user/src/main/java/org/smart_elder_system/user/dto/UserDTO.java" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/user/src/main/java/org/smart_elder_system/user/entity/FaceVerifyRecord.java" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/user/src/main/java/org/smart_elder_system/user/entity/IdCardVerifyRecord.java" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/user/src/main/java/org/smart_elder_system/user/entity/Permission.java" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/user/src/main/java/org/smart_elder_system/user/entity/Role.java" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/user/src/main/java/org/smart_elder_system/user/entity/RolePermission.java" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/user/src/main/java/org/smart_elder_system/user/entity/RolePermissionId.java" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/user/src/main/java/org/smart_elder_system/user/entity/User.java" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/user/src/main/java/org/smart_elder_system/user/entity/UserOperationLog.java" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/user/src/main/java/org/smart_elder_system/user/entity/UserRole.java" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/user/src/main/java/org/smart_elder_system/user/entity/UserRoleId.java" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/user/src/main/java/org/smart_elder_system/user/exception/BusinessException.java" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/user/src/main/java/org/smart_elder_system/user/exception/GlobalExceptionHandler.java" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/user/src/main/java/org/smart_elder_system/user/feign/BusinessServiceClient.java" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/user/src/main/java/org/smart_elder_system/user/filter/JwtAuthenticationFilter.java" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/user/src/main/java/org/smart_elder_system/user/repository/FaceVerifyRecordRepository.java" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/user/src/main/java/org/smart_elder_system/user/repository/IdCardVerifyRecordRepository.java" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/user/src/main/java/org/smart_elder_system/user/repository/PermissionRepository.java" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/user/src/main/java/org/smart_elder_system/user/repository/RolePermissionRepository.java" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/user/src/main/java/org/smart_elder_system/user/repository/RoleRepository.java" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/user/src/main/java/org/smart_elder_system/user/repository/UserOperationLogRepository.java" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/user/src/main/java/org/smart_elder_system/user/repository/UserRepository.java" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/user/src/main/java/org/smart_elder_system/user/repository/UserRoleRepository.java" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/user/src/main/java/org/smart_elder_system/user/service/AuthService.java" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/user/src/main/java/org/smart_elder_system/user/service/FaceVerifyService.java" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/user/src/main/java/org/smart_elder_system/user/service/IdCardVerifyService.java" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/user/src/main/java/org/smart_elder_system/user/service/PermissionService.java" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/user/src/main/java/org/smart_elder_system/user/service/RoleService.java" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/user/src/main/java/org/smart_elder_system/user/service/TokenBlacklistService.java" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/user/src/main/java/org/smart_elder_system/user/service/UserService.java" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/user/src/main/java/org/smart_elder_system/user/service/impl/AuthServiceImpl.java" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/user/src/main/java/org/smart_elder_system/user/service/impl/FaceVerifyServiceImpl.java" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/user/src/main/java/org/smart_elder_system/user/service/impl/IdCardVerifyServiceImpl.java" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/user/src/main/java/org/smart_elder_system/user/service/impl/PermissionServiceImpl.java" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/user/src/main/java/org/smart_elder_system/user/service/impl/RoleServiceImpl.java" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/user/src/main/java/org/smart_elder_system/user/service/impl/TestTokenBlacklistServiceImpl.java" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/user/src/main/java/org/smart_elder_system/user/service/impl/TokenBlacklistServiceImpl.java" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/user/src/main/java/org/smart_elder_system/user/service/impl/UserDetailsServiceImpl.java" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/user/src/main/java/org/smart_elder_system/user/service/impl/UserServiceImpl.java" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/user/src/main/java/org/smart_elder_system/user/util/IdCardUtil.java" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/user/src/main/java/org/smart_elder_system/user/vo/LoginVO.java" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/user/src/main/java/org/smart_elder_system/user/vo/UserVO.java" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/user/src/main/java/org/smart_elder_system/user/vo/VerifyResultVO.java" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/user/src/main/resources/application-dev.yml" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/user/src/main/resources/application-prd.yml" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/user/src/main/resources/application-test.yml" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/user/src/main/resources/application.yml" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/user/src/main/resources/data-h2.sql" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/user/src/main/resources/sql/data.sql" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/user/src/main/resources/sql/schema-h2.sql" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/user/src/main/resources/sql/schema.sql" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/user/src/test/java/org/smart_elder_system/user/JPATest.java" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/user/src/test/java/org/smart_elder_system/user/UserApplicationTests.java" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/user/src/test/java/org/smart_elder_system/user/repository/RoleRepositoryTest.java" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/user/src/test/java/org/smart_elder_system/user/repository/UserRepositoryTest.java" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/user/src/test/java/org/smart_elder_system/user/service/UserServiceTest.java" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/user/test_run_instructions.md" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/smart-nursing-home-demo/src/App.tsx" beforeDir="false" afterPath="$PROJECT_DIR$/smart-nursing-home-demo/src/App.tsx" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/smart-nursing-home-demo/src/api/admissionApi.ts" beforeDir="false" afterPath="$PROJECT_DIR$/smart-nursing-home-demo/src/api/admissionApi.ts" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/smart-nursing-home-demo/src/api/authApi.ts" beforeDir="false" afterPath="$PROJECT_DIR$/smart-nursing-home-demo/src/api/authApi.ts" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/smart-nursing-home-demo/src/api/client.ts" beforeDir="false" afterPath="$PROJECT_DIR$/smart-nursing-home-demo/src/api/client.ts" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/smart-nursing-home-demo/src/api/endpoints.ts" beforeDir="false" afterPath="$PROJECT_DIR$/smart-nursing-home-demo/src/api/endpoints.ts" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/smart-nursing-home-demo/src/api/healthApi.ts" beforeDir="false" afterPath="$PROJECT_DIR$/smart-nursing-home-demo/src/api/healthApi.ts" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/smart-nursing-home-demo/src/components/AdminLayout.tsx" beforeDir="false" afterPath="$PROJECT_DIR$/smart-nursing-home-demo/src/components/AdminLayout.tsx" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/smart-nursing-home-demo/src/constants/routes.ts" beforeDir="false" afterPath="$PROJECT_DIR$/smart-nursing-home-demo/src/constants/routes.ts" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/smart-nursing-home-demo/src/pages/admin/AdmissionProcessingPage.tsx" beforeDir="false" afterPath="$PROJECT_DIR$/smart-nursing-home-demo/src/pages/admin/AdmissionProcessingPage.tsx" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/smart-nursing-home-demo/src/pages/admin/AlertsPage.tsx" beforeDir="false" afterPath="$PROJECT_DIR$/smart-nursing-home-demo/src/pages/admin/AlertsPage.tsx" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/smart-nursing-home-demo/src/pages/admin/HealthAssessmentPage.tsx" beforeDir="false" afterPath="$PROJECT_DIR$/smart-nursing-home-demo/src/pages/admin/HealthAssessmentPage.tsx" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/smart-nursing-home-demo/src/pages/admin/HealthCheckFormEntryPage.tsx" beforeDir="false" afterPath="$PROJECT_DIR$/smart-nursing-home-demo/src/pages/admin/HealthCheckFormEntryPage.tsx" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/smart-nursing-home-demo/src/pages/admin/JourneyTaskBoardPage.tsx" beforeDir="false" afterPath="$PROJECT_DIR$/smart-nursing-home-demo/src/pages/admin/JourneyTaskBoardPage.tsx" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/smart-nursing-home-demo/src/pages/admin/NeedsAssessmentPage.tsx" beforeDir="false" afterPath="$PROJECT_DIR$/smart-nursing-home-demo/src/pages/admin/NeedsAssessmentPage.tsx" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/smart-nursing-home-demo/src/pages/admin/PermissionManagementPage.tsx" beforeDir="false" afterPath="$PROJECT_DIR$/smart-nursing-home-demo/src/pages/admin/PermissionManagementPage.tsx" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/smart-nursing-home-demo/src/pages/admin/RoleManagementPage.tsx" beforeDir="false" afterPath="$PROJECT_DIR$/smart-nursing-home-demo/src/pages/admin/RoleManagementPage.tsx" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/smart-nursing-home-demo/src/pages/admin/UserManagementPage.tsx" beforeDir="false" afterPath="$PROJECT_DIR$/smart-nursing-home-demo/src/pages/admin/UserManagementPage.tsx" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/smart-nursing-home-demo/src/types/admin.ts" beforeDir="false" afterPath="$PROJECT_DIR$/smart-nursing-home-demo/src/types/admin.ts" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/smart-nursing-home-demo/src/types/care.ts" beforeDir="false" afterPath="$PROJECT_DIR$/smart-nursing-home-demo/src/types/care.ts" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/smart-nursing-home-demo/vite.config.js" beforeDir="false" afterPath="$PROJECT_DIR$/smart-nursing-home-demo/vite.config.js" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/smart-nursing-home-demo/vite.config.ts" beforeDir="false" afterPath="$PROJECT_DIR$/smart-nursing-home-demo/vite.config.ts" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/smart-nursing-home-service-portal/src/App.tsx" beforeDir="false" afterPath="$PROJECT_DIR$/smart-nursing-home-service-portal/src/App.tsx" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/smart-nursing-home-service-portal/src/api/authApi.ts" beforeDir="false" afterPath="$PROJECT_DIR$/smart-nursing-home-service-portal/src/api/authApi.ts" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/smart-nursing-home-service-portal/src/api/client.ts" beforeDir="false" afterPath="$PROJECT_DIR$/smart-nursing-home-service-portal/src/api/client.ts" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/smart-nursing-home-service-portal/src/api/currentUserApi.ts" beforeDir="false" afterPath="$PROJECT_DIR$/smart-nursing-home-service-portal/src/api/currentUserApi.ts" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/smart-nursing-home-service-portal/src/api/endpoints.ts" beforeDir="false" afterPath="$PROJECT_DIR$/smart-nursing-home-service-portal/src/api/endpoints.ts" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/smart-nursing-home-service-portal/src/api/healthApi.ts" beforeDir="false" afterPath="$PROJECT_DIR$/smart-nursing-home-service-portal/src/api/healthApi.ts" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/smart-nursing-home-service-portal/src/components/JourneyLayout.tsx" beforeDir="false" afterPath="$PROJECT_DIR$/smart-nursing-home-service-portal/src/components/JourneyLayout.tsx" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/smart-nursing-home-service-portal/src/constants/routes.ts" beforeDir="false" afterPath="$PROJECT_DIR$/smart-nursing-home-service-portal/src/constants/routes.ts" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/smart-nursing-home-service-portal/src/pages/HealthCheckFormPage.tsx" beforeDir="false" afterPath="$PROJECT_DIR$/smart-nursing-home-service-portal/src/pages/HealthCheckFormPage.tsx" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/smart-nursing-home-service-portal/src/pages/JourneyOverviewPage.tsx" beforeDir="false" afterPath="$PROJECT_DIR$/smart-nursing-home-service-portal/src/pages/JourneyOverviewPage.tsx" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/smart-nursing-home-service-portal/src/pages/JourneyRenewalPage.tsx" beforeDir="false" afterPath="$PROJECT_DIR$/smart-nursing-home-service-portal/src/pages/JourneyRenewalPage.tsx" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/smart-nursing-home-service-portal/src/pages/JourneyResultPage.tsx" beforeDir="false" afterPath="$PROJECT_DIR$/smart-nursing-home-service-portal/src/pages/JourneyResultPage.tsx" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/smart-nursing-home-service-portal/src/pages/JourneyReviewPage.tsx" beforeDir="false" afterPath="$PROJECT_DIR$/smart-nursing-home-service-portal/src/pages/JourneyReviewPage.tsx" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/smart-nursing-home-service-portal/src/pages/JourneyStartPage.tsx" beforeDir="false" afterPath="$PROJECT_DIR$/smart-nursing-home-service-portal/src/pages/JourneyStartPage.tsx" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/smart-nursing-home-service-portal/src/pages/JourneyTaskBoardPage.tsx" beforeDir="false" afterPath="$PROJECT_DIR$/smart-nursing-home-service-portal/src/pages/JourneyTaskBoardPage.tsx" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/smart-nursing-home-service-portal/src/stores/userStore.ts" beforeDir="false" afterPath="$PROJECT_DIR$/smart-nursing-home-service-portal/src/stores/userStore.ts" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/smart-nursing-home-service-portal/src/styles.css" beforeDir="false" afterPath="$PROJECT_DIR$/smart-nursing-home-service-portal/src/styles.css" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/smart-nursing-home-service-portal/src/types/admin.ts" beforeDir="false" afterPath="$PROJECT_DIR$/smart-nursing-home-service-portal/src/types/admin.ts" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/smart-nursing-home-service-portal/src/types/care.ts" beforeDir="false" afterPath="$PROJECT_DIR$/smart-nursing-home-service-portal/src/types/care.ts" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/smart-nursing-home-service-portal/vite.config.js" beforeDir="false" afterPath="$PROJECT_DIR$/smart-nursing-home-service-portal/vite.config.js" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/smart-nursing-home-service-portal/vite.config.ts" beforeDir="false" afterPath="$PROJECT_DIR$/smart-nursing-home-service-portal/vite.config.ts" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -179,52 +334,52 @@
     <option name="hideEmptyMiddlePackages" value="true" />
     <option name="showLibraryContents" value="true" />
   </component>
-  <component name="PropertiesComponent"><![CDATA[{
-  "keyToString": {
-    "ASKED_SHARE_PROJECT_CONFIGURATION_FILES": "true",
-    "JUnit.auth中的所有.executor": "Run",
-    "Maven. [org.apache.maven.plugins:maven-archetype-plugin:RELEASE:generate].executor": "Run",
-    "Maven.auth [install].executor": "Run",
-    "Maven.common-lib [install].executor": "Run",
-    "Maven.user-module [clean].executor": "Run",
-    "Maven.user-module [install].executor": "Run",
-    "ModuleVcsDetector.initialDetectionPerformed": "true",
-    "RequestMappingsPanelOrder0": "0",
-    "RequestMappingsPanelOrder1": "1",
-    "RequestMappingsPanelWidth0": "75",
-    "RequestMappingsPanelWidth1": "75",
-    "RunOnceActivity.MCP Project settings loaded": "true",
-    "RunOnceActivity.ShowReadmeOnStart": "true",
-    "RunOnceActivity.TerminalTabsStorage.copyFrom.TerminalArrangementManager.252": "true",
-    "RunOnceActivity.git.unshallow": "true",
-    "RunOnceActivity.go.formatter.settings.were.checked": "true",
-    "RunOnceActivity.typescript.service.memoryLimit.init": "true",
-    "SHARE_PROJECT_CONFIGURATION_FILES": "true",
-    "Spring Boot.ApiGatewayApplication.executor": "Run",
-    "Spring Boot.AuthServiceApplication.executor": "Run",
-    "Spring Boot.BusinessServiceApplication.executor": "Run",
-    "Spring Boot.CareCoreServiceApplication.executor": "Run",
-    "Spring Boot.IamServiceApplication.executor": "Run",
-    "Spring Boot.NacosServiceApplication.executor": "Run",
-    "Spring Boot.OpsServiceApplication.executor": "Run",
-    "Spring Boot.UserApplication.executor": "Run",
-    "codeWithMe.voiceChat.enabledByDefault": "false",
-    "git-widget-placeholder": "master",
-    "kotlin-language-version-configured": "true",
-    "node.js.detected.package.eslint": "true",
-    "node.js.detected.package.tslint": "true",
-    "node.js.selected.package.eslint": "(autodetect)",
-    "node.js.selected.package.tslint": "(autodetect)",
-    "nodejs_package_manager_path": "npm",
-    "project.structure.last.edited": "模块",
-    "project.structure.proportion": "0.15",
-    "project.structure.side.proportion": "0.2",
-    "run.configurations.included.in.services": "true",
-    "settings.editor.selected.configurable": "MavenSettings",
-    "ts.external.directory.path": "D:\\Project\\elder_system\\smart-nursing-home-demo\\node_modules\\typescript\\lib",
-    "vue.rearranger.settings.migration": "true"
+  <component name="PropertiesComponent">{
+  &quot;keyToString&quot;: {
+    &quot;ASKED_SHARE_PROJECT_CONFIGURATION_FILES&quot;: &quot;true&quot;,
+    &quot;JUnit.auth中的所有.executor&quot;: &quot;Run&quot;,
+    &quot;Maven. [org.apache.maven.plugins:maven-archetype-plugin:RELEASE:generate].executor&quot;: &quot;Run&quot;,
+    &quot;Maven.auth [install].executor&quot;: &quot;Run&quot;,
+    &quot;Maven.common-lib [install].executor&quot;: &quot;Run&quot;,
+    &quot;Maven.user-module [clean].executor&quot;: &quot;Run&quot;,
+    &quot;Maven.user-module [install].executor&quot;: &quot;Run&quot;,
+    &quot;ModuleVcsDetector.initialDetectionPerformed&quot;: &quot;true&quot;,
+    &quot;RequestMappingsPanelOrder0&quot;: &quot;0&quot;,
+    &quot;RequestMappingsPanelOrder1&quot;: &quot;1&quot;,
+    &quot;RequestMappingsPanelWidth0&quot;: &quot;75&quot;,
+    &quot;RequestMappingsPanelWidth1&quot;: &quot;75&quot;,
+    &quot;RunOnceActivity.MCP Project settings loaded&quot;: &quot;true&quot;,
+    &quot;RunOnceActivity.ShowReadmeOnStart&quot;: &quot;true&quot;,
+    &quot;RunOnceActivity.TerminalTabsStorage.copyFrom.TerminalArrangementManager.252&quot;: &quot;true&quot;,
+    &quot;RunOnceActivity.git.unshallow&quot;: &quot;true&quot;,
+    &quot;RunOnceActivity.go.formatter.settings.were.checked&quot;: &quot;true&quot;,
+    &quot;RunOnceActivity.typescript.service.memoryLimit.init&quot;: &quot;true&quot;,
+    &quot;SHARE_PROJECT_CONFIGURATION_FILES&quot;: &quot;true&quot;,
+    &quot;Spring Boot.ApiGatewayApplication.executor&quot;: &quot;Run&quot;,
+    &quot;Spring Boot.AuthServiceApplication.executor&quot;: &quot;Run&quot;,
+    &quot;Spring Boot.BusinessServiceApplication.executor&quot;: &quot;Run&quot;,
+    &quot;Spring Boot.CareCoreServiceApplication.executor&quot;: &quot;Run&quot;,
+    &quot;Spring Boot.IamServiceApplication.executor&quot;: &quot;Run&quot;,
+    &quot;Spring Boot.NacosServiceApplication.executor&quot;: &quot;Run&quot;,
+    &quot;Spring Boot.OpsServiceApplication.executor&quot;: &quot;Run&quot;,
+    &quot;Spring Boot.UserApplication.executor&quot;: &quot;Run&quot;,
+    &quot;codeWithMe.voiceChat.enabledByDefault&quot;: &quot;false&quot;,
+    &quot;git-widget-placeholder&quot;: &quot;master&quot;,
+    &quot;kotlin-language-version-configured&quot;: &quot;true&quot;,
+    &quot;node.js.detected.package.eslint&quot;: &quot;true&quot;,
+    &quot;node.js.detected.package.tslint&quot;: &quot;true&quot;,
+    &quot;node.js.selected.package.eslint&quot;: &quot;(autodetect)&quot;,
+    &quot;node.js.selected.package.tslint&quot;: &quot;(autodetect)&quot;,
+    &quot;nodejs_package_manager_path&quot;: &quot;npm&quot;,
+    &quot;project.structure.last.edited&quot;: &quot;模块&quot;,
+    &quot;project.structure.proportion&quot;: &quot;0.15&quot;,
+    &quot;project.structure.side.proportion&quot;: &quot;0.2&quot;,
+    &quot;run.configurations.included.in.services&quot;: &quot;true&quot;,
+    &quot;settings.editor.selected.configurable&quot;: &quot;MavenSettings&quot;,
+    &quot;ts.external.directory.path&quot;: &quot;D:\\Project\\elder_system\\smart-nursing-home-demo\\node_modules\\typescript\\lib&quot;,
+    &quot;vue.rearranger.settings.migration&quot;: &quot;true&quot;
   }
-}]]></component>
+}</component>
   <component name="RunDashboard">
     <option name="configurationTypes">
       <set>
@@ -290,9 +445,9 @@
     <list>
       <item itemvalue="JUnit.auth中的所有" />
       <item itemvalue="Spring Boot.CareCoreServiceApplication" />
-      <item itemvalue="Spring Boot.IamServiceApplication" />
       <item itemvalue="Spring Boot.OpsServiceApplication" />
       <item itemvalue="Spring Boot.ApiGatewayApplication" />
+      <item itemvalue="Spring Boot.IamServiceApplication" />
     </list>
     <recent_temporary>
       <list>
@@ -319,6 +474,7 @@
       <workItem from="1776574606338" duration="6551000" />
       <workItem from="1776770029099" duration="15782000" />
       <workItem from="1776941558061" duration="28487000" />
+      <workItem from="1777816518418" duration="708000" />
     </task>
     <servers />
   </component>
@@ -331,6 +487,17 @@
         <option value="$PROJECT_DIR$/smart-nursing-home-service-portal/vite.config.js" />
         <option value="$PROJECT_DIR$/smart-nursing-home-service-portal/vite.config.d.ts" />
       </list>
+    </option>
+  </component>
+  <component name="Vcs.Log.Tabs.Properties">
+    <option name="TAB_STATES">
+      <map>
+        <entry key="MAIN">
+          <value>
+            <State />
+          </value>
+        </entry>
+      </map>
     </option>
   </component>
   <component name="XDebuggerManager">

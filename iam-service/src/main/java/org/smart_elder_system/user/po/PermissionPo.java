@@ -1,5 +1,6 @@
 package org.smart_elder_system.user.po;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.*;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
@@ -35,6 +36,7 @@ public class PermissionPo extends JpaUserAuditablePo {
     @Column(name = "delete_flag")
     private Integer deleteFlag;
 
+    @JsonIgnore
     @ManyToMany(mappedBy = "permissions")
     private List<RolePo> roles;
 }

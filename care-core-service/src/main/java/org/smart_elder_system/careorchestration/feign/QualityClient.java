@@ -1,6 +1,6 @@
 package org.smart_elder_system.careorchestration.feign;
 
-import org.smart_elder_system.common.dto.care.ServiceReviewDTO;
+import org.smart_elder_system.common.dto.quality.ServiceReviewDto;
 import org.springframework.cloud.openfeign.FeignClient;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -9,5 +9,5 @@ import org.springframework.web.bind.annotation.RequestBody;
 public interface QualityClient {
 
     @PostMapping("/reviews")
-    ServiceReviewDTO reviewService(@RequestBody ServiceReviewDTO reviewDTO);
+    ServiceReviewDto reviewService(@RequestBody ServiceReviewDto reviewDto);
 }

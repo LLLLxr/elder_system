@@ -10,14 +10,13 @@ import org.springframework.security.core.AuthenticationException;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.stereotype.Service;
-import org.smart_elder_system.common.dto.FaceVerifyDTO;
-import org.smart_elder_system.common.dto.IdCardVerifyDTO;
-import org.smart_elder_system.common.dto.LoginDTO;
+import org.smart_elder_system.common.dto.FaceVerifyDto;
+import org.smart_elder_system.common.dto.IdCardVerifyDto;
+import org.smart_elder_system.common.dto.LoginDto;
 import org.smart_elder_system.common.jwt.JwtTokenUtil;
 import org.smart_elder_system.user.exception.BusinessException;
 import org.smart_elder_system.user.po.UserPo;
 import org.smart_elder_system.user.repository.UserRepository;
-import org.smart_elder_system.user.service.impl.UserDetailsServiceImpl;
 import org.smart_elder_system.user.constant.UserConstants;
 import org.smart_elder_system.user.vo.Login;
 import org.smart_elder_system.user.vo.VerifyResult;
@@ -40,13 +39,13 @@ public class AuthService {
     private final IdCardVerifyService idCardVerifyService;
     private final TokenBlacklistService tokenBlacklistService;
 
-    public Login login(LoginDTO loginDTO) {
+    public Login login(LoginDto loginDto) {
         Authentication authentication;
         try {
             authentication = authenticationManager.authenticate(
-                    new UsernamePasswordAuthenticationToken(loginDTO.getUsername(), loginDTO.getPassword()));
+                    new UsernamePasswordAuthenticationToken(loginDto.getUsername(), loginDto.getPassword()));
         } catch (AuthenticationException e) {
-            log.warn("登录失败: 用户名或密码错误, username={}", loginDTO.getUsername());
+            log.warn("登录失败: 用户名或密码错误, username={}", loginDto.getUsername());
             throw new BadCredentialsException("用户名或密码错误", e);
         }
 
@@ -79,6 +78,14 @@ public class AuthService {
         log.info("用户 {} 退出登录成功，令牌已加入黑名单", username);
     }
 
+    public boolean isTokenValid(String token) {
+        return jwtTokenUtil.validateToken(token) && !tokenBlacklistService.isBlacklisted(token);
+    }
+
+    public String getUsernameFromToken(String token) {
+        return jwtTokenUtil.getUsernameFromToken(token);
+    }
+
     public Login refreshToken(String refreshToken) {
         if (!jwtTokenUtil.validateToken(refreshToken)) {
             throw new BusinessException("无效的刷新令牌");
@@ -103,12 +110,12 @@ public class AuthService {
         return buildLogin(newAccessToken, user, userDetails.getRoles(), userDetails.getPermissions());
     }
 
-    public VerifyResult verifyIdCard(IdCardVerifyDTO verifyDTO) {
-        return idCardVerifyService.verifyIdCard(verifyDTO);
+    public VerifyResult verifyIdCard(IdCardVerifyDto verifyDto) {
+        return idCardVerifyService.verifyIdCard(verifyDto);
     }
 
-    public VerifyResult verifyFace(FaceVerifyDTO verifyDTO) {
-        return faceVerifyService.verifyFace(verifyDTO);
+    public VerifyResult verifyFace(FaceVerifyDto verifyDto) {
+        return faceVerifyService.verifyFace(verifyDto);
     }
 
     public boolean hasPermission(String permission) {

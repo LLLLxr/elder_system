@@ -1,3 +1,9 @@
+export { createApiClient, createTokenManager, unwrapApiData, extractApiErrorMessage } from './api/client';
+export type { ApiClientConfig } from './api/client';
+export * from './types/admin';
+export * from './types/analytics';
+export * from './types/auth';
+export * from './types/care';
 export { default as HealthCheckFormDetailModal } from './components/health/HealthCheckFormDetailModal';
 export type { HealthCheckFormDetail, HealthCheckFormDetailModalProps } from './components/health/HealthCheckFormDetailModal';
 export { getJourneyStatusMeta } from './components/journey/journeyStatus';

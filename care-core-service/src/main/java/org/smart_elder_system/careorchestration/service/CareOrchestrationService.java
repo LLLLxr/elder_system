@@ -3,19 +3,18 @@ package org.smart_elder_system.careorchestration.service;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-import org.smart_elder_system.admission.model.ServiceApplication;
+import org.smart_elder_system.admission.vo.ServiceApplication;
 import org.smart_elder_system.admission.po.ServiceApplicationPo;
 import org.smart_elder_system.admission.repository.ServiceApplicationRepository;
 import org.smart_elder_system.admission.service.AdmissionService;
-import org.smart_elder_system.caredelivery.model.CarePlan;
-import org.smart_elder_system.caredelivery.po.CarePlanPo;
+import org.smart_elder_system.caredelivery.vo.CarePlan;
 import org.smart_elder_system.caredelivery.repository.CarePlanRepository;
 import org.smart_elder_system.caredelivery.service.CareDeliveryService;
-import org.smart_elder_system.careorchestration.dto.CareAnalyticsOverviewDTO;
-import org.smart_elder_system.careorchestration.dto.CareAnalyticsTrendsDTO;
-import org.smart_elder_system.careorchestration.dto.ServiceJourneyTaskItemDTO;
-import org.smart_elder_system.careorchestration.dto.ServiceJourneyTaskOverviewDTO;
-import org.smart_elder_system.careorchestration.dto.ServiceJourneyTransitionLogItemDTO;
+import org.smart_elder_system.careorchestration.dto.CareAnalyticsOverviewDto;
+import org.smart_elder_system.careorchestration.dto.CareAnalyticsTrendsDto;
+import org.smart_elder_system.careorchestration.dto.ServiceJourneyTaskItemDto;
+import org.smart_elder_system.careorchestration.dto.ServiceJourneyTaskOverviewDto;
+import org.smart_elder_system.careorchestration.dto.ServiceJourneyTransitionLogItemDto;
 import org.smart_elder_system.careorchestration.feign.AdmissionClient;
 import org.smart_elder_system.careorchestration.feign.CareDeliveryClient;
 import org.smart_elder_system.careorchestration.feign.ContractClient;
@@ -28,30 +27,29 @@ import org.smart_elder_system.careorchestration.journey.ServiceJourneyStateMachi
 import org.smart_elder_system.careorchestration.journey.ServiceJourneyTransitionContext;
 import org.smart_elder_system.careorchestration.journey.ServiceJourneyTransitionResult;
 import org.smart_elder_system.careorchestration.security.ServiceJourneyTransitionPolicy;
-import org.smart_elder_system.common.dto.care.CarePlanDTO;
-import org.smart_elder_system.common.dto.care.HealthAssessmentDTO;
-import org.smart_elder_system.common.dto.care.HealthAssessmentRequestDTO;
-import org.smart_elder_system.common.dto.care.HealthAssessmentSubmitDTO;
-import org.smart_elder_system.common.dto.care.HealthProfileDTO;
-import org.smart_elder_system.common.dto.care.IntakeRecordDTO;
-import org.smart_elder_system.common.dto.care.RenewalContextDTO;
-import org.smart_elder_system.common.dto.care.ServiceAgreementDTO;
-import org.smart_elder_system.common.dto.care.ServiceApplicationDTO;
-import org.smart_elder_system.common.dto.care.ServiceJourneyResultDTO;
-import org.smart_elder_system.common.dto.care.ServiceReviewDTO;
-import org.smart_elder_system.common.dto.care.EligibilityAssessmentDTO;
-import org.smart_elder_system.contract.model.ServiceAgreement;
+import org.smart_elder_system.common.dto.caredelivery.CarePlanDto;
+import org.smart_elder_system.common.dto.health.HealthAssessmentDto;
+import org.smart_elder_system.common.dto.health.HealthAssessmentRequestDto;
+import org.smart_elder_system.common.dto.health.HealthAssessmentSubmitDto;
+import org.smart_elder_system.common.dto.health.HealthProfileDto;
+import org.smart_elder_system.common.dto.admission.IntakeRecordDto;
+import org.smart_elder_system.common.dto.contract.RenewalContextDto;
+import org.smart_elder_system.common.dto.contract.ServiceAgreementDto;
+import org.smart_elder_system.common.dto.admission.ServiceApplicationDto;
+import org.smart_elder_system.common.dto.careorchestration.ServiceJourneyResultDto;
+import org.smart_elder_system.common.dto.quality.ServiceReviewDto;
+import org.smart_elder_system.common.dto.admission.EligibilityAssessmentDto;
+import org.smart_elder_system.contract.vo.ServiceAgreement;
 import org.smart_elder_system.contract.po.ServiceAgreementPo;
 import org.smart_elder_system.contract.repository.ServiceAgreementRepository;
 import org.smart_elder_system.contract.service.ContractService;
-import org.smart_elder_system.health.model.HealthAssessmentRecord;
-import org.smart_elder_system.health.model.HealthProfile;
+import org.smart_elder_system.health.vo.HealthAssessmentRecord;
+import org.smart_elder_system.health.vo.HealthProfile;
 import org.smart_elder_system.health.po.HealthAssessmentRecordPo;
-import org.smart_elder_system.health.po.HealthProfilePo;
 import org.smart_elder_system.health.repository.HealthAssessmentRecordRepository;
 import org.smart_elder_system.health.repository.HealthProfileRepository;
 import org.smart_elder_system.health.service.HealthService;
-import org.smart_elder_system.quality.model.ServiceReview;
+import org.smart_elder_system.quality.vo.ServiceReview;
 import org.smart_elder_system.quality.po.ServiceReviewPo;
 import org.smart_elder_system.quality.repository.ServiceReviewRepository;
 import org.smart_elder_system.quality.service.QualityService;
@@ -102,7 +100,7 @@ public class CareOrchestrationService {
     }
 
     @Transactional(rollbackFor = Exception.class)
-    public ServiceJourneyResultDTO startServiceJourney(
+    public ServiceJourneyResultDto startServiceJourney(
             Long elderId,
             Long guardianId,
             String applicantName,
@@ -118,7 +116,7 @@ public class CareOrchestrationService {
             throw new IllegalArgumentException("该老人存在进行中的受理记录，不可重复发起申请");
         }
 
-        ServiceApplicationDTO application = new ServiceApplicationDTO();
+        ServiceApplicationDto application = new ServiceApplicationDto();
         application.setElderId(elderId);
         application.setGuardianId(guardianId);
         application.setApplicantName(applicantName);
@@ -126,7 +124,7 @@ public class CareOrchestrationService {
         application.setServiceScene(serviceScene);
         application.setServiceRequest(serviceRequest);
 
-        ServiceApplicationDTO submittedApplication = admissionService.submitApplication(application);
+        ServiceApplicationDto submittedApplication = admissionService.submitApplication(application);
 
         ServiceJourneyState currentState = serviceJourneyStateMachine.initialState(ServiceJourneyEvent.APPLICATION_SUBMITTED);
 
@@ -157,7 +155,7 @@ public class CareOrchestrationService {
     }
 
     @Transactional(rollbackFor = Exception.class)
-    public ServiceJourneyResultDTO continueAfterAssessment(Long applicationId) {
+    public ServiceJourneyResultDto continueAfterAssessment(Long applicationId) {
         JourneyContext context = loadJourneyContextForUpdate(applicationId);
 
         return switch (context.currentState()) {
@@ -181,7 +179,7 @@ public class CareOrchestrationService {
     }
 
     @Transactional(rollbackFor = Exception.class)
-    public ServiceJourneyResultDTO rejectAdmissionJourney(Long applicationId, String assessmentConclusion, String assessor) {
+    public ServiceJourneyResultDto rejectAdmissionJourney(Long applicationId, String assessmentConclusion, String assessor) {
         ServiceApplicationPo application = serviceApplicationRepository.findByIdForUpdate(applicationId)
                 .orElseThrow(() -> new IllegalArgumentException("未找到服务申请"));
         if (ServiceApplication.STATUS_FAILED.equals(application.getStatus())) {
@@ -196,12 +194,12 @@ public class CareOrchestrationService {
                 assessmentConclusion);
         serviceJourneyTransitionPolicy.requireAuthority(transition.requiredAuthority());
 
-        EligibilityAssessmentDTO assessment = new EligibilityAssessmentDTO();
+        EligibilityAssessmentDto assessment = new EligibilityAssessmentDto();
         assessment.setApplicationId(applicationId);
         assessment.setEligible(false);
         assessment.setAssessmentConclusion(assessmentConclusion);
         assessment.setAssessor(assessor);
-        ServiceApplicationDTO rejectedApplication = admissionService.assessEligibility(assessment);
+        ServiceApplicationDto rejectedApplication = admissionService.assessEligibility(assessment);
 
         if (!serviceJourneyTransitionLogService.hasTransition(applicationId, ServiceJourneyEvent.ADMISSION_REJECTED, ServiceJourneyState.TERMINATED)) {
             serviceJourneyTransitionLogService.logTransition(
@@ -227,7 +225,7 @@ public class CareOrchestrationService {
     }
 
     @Transactional(rollbackFor = Exception.class)
-    public ServiceJourneyResultDTO rejectHealthJourney(
+    public ServiceJourneyResultDto rejectHealthJourney(
             Long applicationId,
             String assessmentConclusion,
             String assessor,
@@ -261,7 +259,7 @@ public class CareOrchestrationService {
     }
 
     @Transactional(rollbackFor = Exception.class)
-    public ServiceJourneyResultDTO withdrawServiceJourney(Long applicationId, String reason) {
+    public ServiceJourneyResultDto withdrawServiceJourney(Long applicationId, String reason) {
         JourneyContext context = loadJourneyContextForUpdate(applicationId);
         if (ServiceApplication.STATUS_WITHDRAWN.equals(context.application().getStatus())) {
             return buildJourneyResult(
@@ -287,7 +285,7 @@ public class CareOrchestrationService {
     }
 
     @Transactional(rollbackFor = Exception.class)
-    public ServiceJourneyResultDTO reviewAndFinalize(Long agreementId, Long elderId, Integer satisfactionScore, String reviewComment) {
+    public ServiceJourneyResultDto reviewAndFinalize(Long agreementId, Long elderId, Integer satisfactionScore, String reviewComment) {
         ReviewContext context = loadReviewContextForUpdate(agreementId);
         ReviewDecision decision = buildReviewDecision(agreementId, elderId, satisfactionScore, reviewComment);
         if (context.currentState() == decision.requestedState()) {
@@ -312,7 +310,7 @@ public class CareOrchestrationService {
                 transition);
     }
 
-    public Page<ServiceJourneyTaskItemDTO> listJourneyTasks(
+    public Page<ServiceJourneyTaskItemDto> listJourneyTasks(
             Long applicationId,
             Long elderId,
             Long agreementId,
@@ -336,11 +334,11 @@ public class CareOrchestrationService {
                 sortOrder);
     }
 
-    public List<ServiceJourneyTaskItemDTO> listJourneyTaskTimeline(Long applicationId) {
+    public List<ServiceJourneyTaskItemDto> listJourneyTaskTimeline(Long applicationId) {
         return serviceJourneyTaskService.listTaskTimeline(applicationId);
     }
 
-    public ServiceJourneyTaskOverviewDTO getJourneyTaskOverview(
+    public ServiceJourneyTaskOverviewDto getJourneyTaskOverview(
             Long applicationId,
             Long elderId,
             Long agreementId,
@@ -356,16 +354,16 @@ public class CareOrchestrationService {
                 assigneeRole);
     }
 
-    public List<ServiceJourneyTransitionLogItemDTO> listJourneyTransitionLogsByApplication(Long applicationId) {
+    public List<ServiceJourneyTransitionLogItemDto> listJourneyTransitionLogsByApplication(Long applicationId) {
         return serviceJourneyTransitionLogService.listByApplicationId(applicationId);
     }
 
-    public List<ServiceJourneyTransitionLogItemDTO> listJourneyTransitionLogsByAgreement(Long agreementId) {
+    public List<ServiceJourneyTransitionLogItemDto> listJourneyTransitionLogsByAgreement(Long agreementId) {
         return serviceJourneyTransitionLogService.listByAgreementId(agreementId);
     }
 
     @Transactional(rollbackFor = Exception.class)
-    public ServiceJourneyResultDTO returnJourneyStep(Long applicationId, ServiceJourneyState targetState, String reason) {
+    public ServiceJourneyResultDto returnJourneyStep(Long applicationId, ServiceJourneyState targetState, String reason) {
         JourneyContext context = loadJourneyContextForUpdate(applicationId);
 
         if (context.currentState() == targetState) {
@@ -389,22 +387,22 @@ public class CareOrchestrationService {
                 reason);
     }
 
-    public List<IntakeRecordDTO> listIntakeRecords(Long elderId) {
+    public List<IntakeRecordDto> listIntakeRecords(Long elderId) {
         List<ServiceApplicationPo> applications = serviceApplicationRepository.findByElderIdOrderBySubmittedAtDesc(elderId);
         return toIntakeRecords(applications);
     }
 
-    public List<IntakeRecordDTO> listIntakeRecordsByApplicant(String applicantName) {
+    public List<IntakeRecordDto> listIntakeRecordsByApplicant(String applicantName) {
         List<ServiceApplicationPo> applications = serviceApplicationRepository.findByApplicantNameOrderBySubmittedAtDesc(applicantName);
         return toIntakeRecords(applications);
     }
 
-    public ServiceJourneyResultDTO getLatestJourneyResultByApplicant(String applicantName) {
+    public ServiceJourneyResultDto getLatestJourneyResultByApplicant(String applicantName) {
         Optional<ServiceApplicationPo> latestApplication = serviceApplicationRepository
                 .findTopByApplicantNameOrderBySubmittedAtDescIdDesc(applicantName);
 
         if (latestApplication.isEmpty()) {
-            return new ServiceJourneyResultDTO();
+            return new ServiceJourneyResultDto();
         }
 
         ServiceApplicationPo application = latestApplication.get();
@@ -413,7 +411,7 @@ public class CareOrchestrationService {
                 .orElse(null);
         JourneyQuerySummary summary = buildJourneyQuerySummary(application, agreement);
 
-        ServiceJourneyResultDTO result = new ServiceJourneyResultDTO();
+        ServiceJourneyResultDto result = new ServiceJourneyResultDto();
         result.setApplicationId(application.getId());
         result.setElderId(application.getElderId());
         if (agreement != null) {
@@ -424,11 +422,11 @@ public class CareOrchestrationService {
         return result;
     }
 
-    public RenewalContextDTO getLatestRenewalContextByApplicant(String applicantName) {
+    public RenewalContextDto getLatestRenewalContextByApplicant(String applicantName) {
         Optional<ServiceApplicationPo> latestApplication = serviceApplicationRepository
                 .findTopByApplicantNameOrderBySubmittedAtDescIdDesc(applicantName);
         if (latestApplication.isEmpty()) {
-            return RenewalContextDTO.builder()
+            return RenewalContextDto.builder()
                     .message("当前登录用户名下暂无申请记录")
                     .build();
         }
@@ -438,7 +436,7 @@ public class CareOrchestrationService {
                 .findTopByApplicationIdOrderByIdDesc(application.getId())
                 .orElse(null);
         if (agreement == null) {
-            return RenewalContextDTO.builder()
+            return RenewalContextDto.builder()
                     .applicationId(application.getId())
                     .elderId(application.getElderId())
                     .message("当前申请暂无服务协议")
@@ -452,25 +450,25 @@ public class CareOrchestrationService {
     }
 
     @Transactional(rollbackFor = Exception.class)
-    public RenewalContextDTO submitRenewalReview(Long agreementId, Long elderId, Integer satisfactionScore, String reviewComment) {
+    public RenewalContextDto submitRenewalReview(Long agreementId, Long elderId, Integer satisfactionScore, String reviewComment) {
         RenewalOperationContext context = loadRenewalOperationContextForUpdate(agreementId);
         validateRenewalAgreement(context.agreement());
         if (hasCurrentCycleReview(context.agreement(), context.latestReview())) {
             return buildRenewalContext(context.agreement(), context.latestReview());
         }
 
-        ServiceReviewDTO review = new ServiceReviewDTO();
+        ServiceReviewDto review = new ServiceReviewDto();
         review.setAgreementId(agreementId);
         review.setElderId(elderId);
         review.setSatisfactionScore(satisfactionScore);
         review.setReviewComment(reviewComment);
 
-        ServiceReviewDTO savedReview = qualityService.reviewService(review);
-        return buildRenewalContext(context.agreement(), ServiceReview.fromDTO(savedReview).toPo());
+        ServiceReviewDto savedReview = qualityService.reviewService(review);
+        return buildRenewalContext(context.agreement(), ServiceReview.fromDto(savedReview).toPo());
     }
 
     @Transactional(rollbackFor = Exception.class)
-    public RenewalContextDTO confirmRenewal(Long agreementId, Integer renewMonths) {
+    public RenewalContextDto confirmRenewal(Long agreementId, Integer renewMonths) {
         RenewalOperationContext context = loadRenewalOperationContextForUpdate(agreementId);
         validateRenewalAgreement(context.agreement());
         if (renewMonths == null || renewMonths < 1 || renewMonths > 12) {
@@ -478,10 +476,10 @@ public class CareOrchestrationService {
         }
 
         serviceJourneyTransitionPolicy.requireAuthority("journey:review:renew");
-        ServiceAgreementDTO renewalRequest = new ServiceAgreementDTO();
+        ServiceAgreementDto renewalRequest = new ServiceAgreementDto();
         renewalRequest.setExpiryDate(context.agreement().getExpiryDate().plusMonths(renewMonths));
-        ServiceAgreementDTO renewedAgreement = contractService.renewAgreement(agreementId, renewalRequest);
-        RenewalContextDTO result = buildRenewalContext(ServiceAgreement.fromDTO(renewedAgreement).toPo(), context.latestReview());
+        ServiceAgreementDto renewedAgreement = contractService.renewAgreement(agreementId, renewalRequest);
+        RenewalContextDto result = buildRenewalContext(ServiceAgreement.fromDto(renewedAgreement).toPo(), context.latestReview());
         result.setRenewalStage("RENEWED");
         result.setReviewSubmitted(false);
         result.setCanReview(false);
@@ -492,13 +490,13 @@ public class CareOrchestrationService {
     }
 
     @Transactional(rollbackFor = Exception.class)
-    public RenewalContextDTO declineRenewal(Long agreementId, String reason) {
+    public RenewalContextDto declineRenewal(Long agreementId, String reason) {
         RenewalOperationContext context = loadRenewalOperationContextForUpdate(agreementId);
         validateRenewalAgreement(context.agreement());
 
         serviceJourneyTransitionPolicy.requireAuthority("journey:review:terminate");
-        ServiceAgreementDTO terminatedAgreement = contractService.terminateAgreement(agreementId);
-        RenewalContextDTO result = buildRenewalContext(ServiceAgreement.fromDTO(terminatedAgreement).toPo(), context.latestReview());
+        ServiceAgreementDto terminatedAgreement = contractService.terminateAgreement(agreementId);
+        RenewalContextDto result = buildRenewalContext(ServiceAgreement.fromDto(terminatedAgreement).toPo(), context.latestReview());
         result.setRenewalStage("TERMINATED");
         result.setReviewSubmitted(true);
         result.setCanReview(false);
@@ -508,7 +506,7 @@ public class CareOrchestrationService {
         return result;
     }
 
-    public CareAnalyticsOverviewDTO getAnalyticsOverview() {
+    public CareAnalyticsOverviewDto getAnalyticsOverview() {
         int applicationsTotal = (int) serviceApplicationRepository.count();
         int agreementsActive = (int) serviceAgreementRepository.countByStatus(ServiceAgreement.STATUS_ACTIVE);
         int plansInProgress = (int) carePlanRepository.countByStatus(CarePlan.STATUS_IN_PROGRESS);
@@ -516,14 +514,14 @@ public class CareOrchestrationService {
         Double avg = serviceReviewRepository.averageSatisfaction();
         int averageSatisfaction = avg == null ? 0 : (int) Math.round(avg);
 
-        List<CareAnalyticsOverviewDTO.StagePoint> stages = new ArrayList<>();
+        List<CareAnalyticsOverviewDto.StagePoint> stages = new ArrayList<>();
         stages.add(stage("申请受理", applicationsTotal));
         stages.add(stage("健康评估", (int) serviceApplicationRepository.countByStatus(ServiceApplication.STATUS_ASSESSED)));
         stages.add(stage("签约", (int) serviceAgreementRepository.countByStatus(ServiceAgreement.STATUS_ACTIVE)));
         stages.add(stage("照护执行", (int) carePlanRepository.countByStatus(CarePlan.STATUS_IN_PROGRESS)));
         stages.add(stage("质量回访", (int) serviceReviewRepository.count()));
 
-        CareAnalyticsOverviewDTO dto = new CareAnalyticsOverviewDTO();
+        CareAnalyticsOverviewDto dto = new CareAnalyticsOverviewDto();
         dto.setApplicationsTotal(applicationsTotal);
         dto.setAgreementsActive(agreementsActive);
         dto.setPlansInProgress(plansInProgress);
@@ -532,7 +530,7 @@ public class CareOrchestrationService {
         return dto;
     }
 
-    public CareAnalyticsTrendsDTO getAnalyticsTrends(Integer days) {
+    public CareAnalyticsTrendsDto getAnalyticsTrends(Integer days) {
         int actualDays = days == null ? 30 : Math.max(7, Math.min(days, 90));
         LocalDate startDate = LocalDate.now().minusDays(actualDays - 1L);
         LocalDateTime startTime = startDate.atStartOfDay();
@@ -545,14 +543,14 @@ public class CareOrchestrationService {
         fillMapFromRows(agreementMap, serviceAgreementRepository.countEffectiveDaily(startDate));
         fillMapFromRows(reviewMap, serviceReviewRepository.countReviewedDaily(startTime));
 
-        CareAnalyticsTrendsDTO dto = new CareAnalyticsTrendsDTO();
+        CareAnalyticsTrendsDto dto = new CareAnalyticsTrendsDto();
         dto.setApplicationTrend(toTrendPoints(applicationMap));
         dto.setAgreementTrend(toTrendPoints(agreementMap));
         dto.setReviewTrend(toTrendPoints(reviewMap));
         return dto;
     }
 
-    private ServiceJourneyResultDTO rejectHealthJourneyWithSideEffects(
+    private ServiceJourneyResultDto rejectHealthJourneyWithSideEffects(
             ServiceApplicationPo application,
             ServiceAgreementPo agreement,
             ServiceJourneyTransitionResult transition,
@@ -561,14 +559,14 @@ public class CareOrchestrationService {
             String assessor,
             String responsibleDoctor,
             Integer score) {
-        HealthAssessmentSubmitDTO submitDTO = new HealthAssessmentSubmitDTO();
-        submitDTO.setApplicationId(applicationId);
-        submitDTO.setPassed(false);
-        submitDTO.setAssessmentConclusion(assessmentConclusion);
-        submitDTO.setAssessor(assessor);
-        submitDTO.setResponsibleDoctor(responsibleDoctor);
-        submitDTO.setScore(score);
-        HealthAssessmentRequestDTO rejectedHealthAssessment = healthService.submitPreSignAssessment(submitDTO);
+        HealthAssessmentSubmitDto submitDto = new HealthAssessmentSubmitDto();
+        submitDto.setApplicationId(applicationId);
+        submitDto.setPassed(false);
+        submitDto.setAssessmentConclusion(assessmentConclusion);
+        submitDto.setAssessor(assessor);
+        submitDto.setResponsibleDoctor(responsibleDoctor);
+        submitDto.setScore(score);
+        HealthAssessmentRequestDto rejectedHealthAssessment = healthService.submitPreSignAssessment(submitDto);
 
         if (!serviceJourneyTransitionLogService.hasTransition(applicationId, transition.event(), transition.toState())) {
             serviceJourneyTransitionLogService.logTransition(
@@ -593,13 +591,13 @@ public class CareOrchestrationService {
                 serviceJourneyStateMachine.getHealthFailureMessage());
     }
 
-    private ServiceJourneyResultDTO withdrawServiceJourneyWithSideEffects(
+    private ServiceJourneyResultDto withdrawServiceJourneyWithSideEffects(
             ServiceApplicationPo application,
             ServiceAgreementPo agreement,
             ServiceJourneyTransitionResult transition,
             Long applicationId,
             String reason) {
-        ServiceApplicationDTO withdrawnApplication = admissionService.withdrawApplication(applicationId, reason);
+        ServiceApplicationDto withdrawnApplication = admissionService.withdrawApplication(applicationId, reason);
         if (!serviceJourneyTransitionLogService.hasTransition(applicationId, transition.event(), transition.toState())) {
             serviceJourneyTransitionLogService.logTransition(
                     withdrawnApplication.getApplicationId(),
@@ -626,7 +624,7 @@ public class CareOrchestrationService {
                 serviceJourneyStateMachine.getWithdrawnMessage());
     }
 
-    private ServiceJourneyResultDTO returnJourneyStepWithSideEffects(
+    private ServiceJourneyResultDto returnJourneyStepWithSideEffects(
             ServiceApplicationPo application,
             ServiceAgreementPo agreement,
             ServiceJourneyTransitionResult transition,
@@ -634,7 +632,7 @@ public class CareOrchestrationService {
             String reason) {
         ServiceJourneyState targetState = transition.toState();
         if (transition.event() == ServiceJourneyEvent.RETURN_TO_ASSESSMENT) {
-            ServiceApplicationDTO returnedApplication = admissionService.revertToAssessment(applicationId, reason);
+            ServiceApplicationDto returnedApplication = admissionService.revertToAssessment(applicationId, reason);
             if (!serviceJourneyTransitionLogService.hasTransition(applicationId, transition.event(), targetState)) {
                 serviceJourneyTransitionLogService.logTransition(
                         returnedApplication.getApplicationId(),
@@ -660,7 +658,7 @@ public class CareOrchestrationService {
             throw new IllegalStateException("当前旅程不存在可退回的服务协议");
         }
 
-        ServiceAgreementDTO returnedAgreement = contractService.revertToDraftAgreement(agreement.getId(), reason);
+        ServiceAgreementDto returnedAgreement = contractService.revertToDraftAgreement(agreement.getId(), reason);
         if (!serviceJourneyTransitionLogService.hasTransition(applicationId, transition.event(), targetState)) {
             serviceJourneyTransitionLogService.logTransition(
                     applicationId,
@@ -699,9 +697,9 @@ public class CareOrchestrationService {
         pendingReview.setSatisfactionScore(satisfactionScore);
         pendingReview.setReviewComment(reviewComment);
         pendingReview.review();
-        String reviewConclusion = pendingReview.toDTO().getReviewConclusion();
+        String reviewConclusion = pendingReview.toDto().getReviewConclusion();
 
-        ServiceReviewDTO review = new ServiceReviewDTO();
+        ServiceReviewDto review = new ServiceReviewDto();
         review.setAgreementId(agreementId);
         review.setElderId(elderId);
         review.setSatisfactionScore(satisfactionScore);
@@ -713,9 +711,9 @@ public class CareOrchestrationService {
         return new ReviewDecision(review, reviewConclusion, reviewEvent, requestedState);
     }
 
-    private ServiceJourneyResultDTO reviewAndFinalizeWithSideEffects(
+    private ServiceJourneyResultDto reviewAndFinalizeWithSideEffects(
             ServiceAgreementPo agreement,
-            ServiceReviewDTO review,
+            ServiceReviewDto review,
             ServiceJourneyTransitionResult transition) {
         qualityService.reviewService(review);
         ServiceJourneyState finalState = transition.toState();
@@ -727,7 +725,7 @@ public class CareOrchestrationService {
         if (finalState == ServiceJourneyState.TERMINATED) {
             contractService.terminateAgreement(agreement.getId());
         } else if (finalState == ServiceJourneyState.RENEWED) {
-            ServiceAgreementDTO renewAgreement = new ServiceAgreementDTO();
+            ServiceAgreementDto renewAgreement = new ServiceAgreementDto();
             renewAgreement.setExpiryDate(LocalDate.now().plusYears(1));
             contractService.renewAgreement(agreement.getId(), renewAgreement);
         }
@@ -749,7 +747,7 @@ public class CareOrchestrationService {
                 message);
     }
 
-    private ServiceJourneyResultDTO continueTerminatedJourney(
+    private ServiceJourneyResultDto continueTerminatedJourney(
             ServiceApplicationPo application,
             ServiceAgreementPo agreement,
             String healthAssessmentStatus) {
@@ -787,7 +785,7 @@ public class CareOrchestrationService {
                 terminalMessage);
     }
 
-    private ServiceJourneyResultDTO continueToPendingHealthAssessment(
+    private ServiceJourneyResultDto continueToPendingHealthAssessment(
             ServiceApplicationPo application,
             ServiceAgreementPo agreement,
             String healthAssessmentStatus) {
@@ -824,7 +822,7 @@ public class CareOrchestrationService {
                 message);
     }
 
-    private ServiceJourneyResultDTO continueToPendingAgreement(
+    private ServiceJourneyResultDto continueToPendingAgreement(
             ServiceApplicationPo application,
             ServiceAgreementPo agreement,
             HealthAssessmentRecordPo preSignAssessment) {
@@ -837,7 +835,7 @@ public class CareOrchestrationService {
                 application.getId(),
                 ServiceJourneyTaskService.TASK_TYPE_HEALTH_ASSESSMENT);
 
-        ServiceAgreementDTO draftAgreement = ensureDraftAgreement(application, agreement);
+        ServiceAgreementDto draftAgreement = ensureDraftAgreement(application, agreement);
         if (!serviceJourneyTransitionLogService.hasTransition(application.getId(), transition.event(), transition.toState())) {
             serviceJourneyTransitionLogService.logTransition(
                     application.getId(),
@@ -858,13 +856,13 @@ public class CareOrchestrationService {
                 serviceJourneyStateMachine.getDefaultMessage(ServiceJourneyState.PENDING_AGREEMENT));
     }
 
-    private ServiceJourneyResultDTO continueToInService(
+    private ServiceJourneyResultDto continueToInService(
             ServiceApplicationPo application,
             ServiceAgreementPo agreement) {
-        ServiceAgreementDTO activeAgreement = ensureActiveAgreement(application, agreement);
-        CarePlanDTO createdCarePlan = ensureCarePlan(activeAgreement);
-        HealthProfileDTO createdHealthProfile = ensureHealthProfile(activeAgreement);
-        HealthAssessmentDTO assessedHealth = ensureIntakeAssessment(activeAgreement);
+        ServiceAgreementDto activeAgreement = ensureActiveAgreement(application, agreement);
+        CarePlanDto createdCarePlan = ensureCarePlan(activeAgreement);
+        HealthProfileDto createdHealthProfile = ensureHealthProfile(activeAgreement);
+        HealthAssessmentDto assessedHealth = ensureIntakeAssessment(activeAgreement);
 
         if (!serviceJourneyTransitionLogService.hasTransition(application.getId(), ServiceJourneyEvent.AGREEMENT_SIGNED, ServiceJourneyState.IN_SERVICE)) {
             serviceJourneyTransitionLogService.logTransition(
@@ -878,7 +876,7 @@ public class CareOrchestrationService {
                     activeAgreement);
         }
 
-        ServiceJourneyResultDTO result = new ServiceJourneyResultDTO();
+        ServiceJourneyResultDto result = new ServiceJourneyResultDto();
         result.setApplicationId(application.getId());
         result.setElderId(application.getElderId());
         result.setAgreementId(activeAgreement.getAgreementId());
@@ -890,25 +888,25 @@ public class CareOrchestrationService {
         return result;
     }
 
-    private ServiceAgreementDTO ensureDraftAgreement(ServiceApplicationPo application, ServiceAgreementPo agreement) {
+    private ServiceAgreementDto ensureDraftAgreement(ServiceApplicationPo application, ServiceAgreementPo agreement) {
         if (agreement != null) {
-            return ServiceAgreement.fromPo(agreement).toDTO();
+            return ServiceAgreement.fromPo(agreement).toDto();
         }
 
-        ServiceAgreementDTO draftAgreement = new ServiceAgreementDTO();
+        ServiceAgreementDto draftAgreement = new ServiceAgreementDto();
         draftAgreement.setApplicationId(application.getId());
         draftAgreement.setElderId(application.getElderId());
         draftAgreement.setServiceScene(application.getServiceScene());
         return contractService.createDraftAgreement(draftAgreement);
     }
 
-    private ServiceAgreementDTO ensureActiveAgreement(ServiceApplicationPo application, ServiceAgreementPo agreement) {
+    private ServiceAgreementDto ensureActiveAgreement(ServiceApplicationPo application, ServiceAgreementPo agreement) {
         if (agreement != null && ServiceAgreement.STATUS_ACTIVE.equals(agreement.getStatus())) {
-            return ServiceAgreement.fromPo(agreement).toDTO();
+            return ServiceAgreement.fromPo(agreement).toDto();
         }
 
-        ServiceAgreementDTO agreementToSign = ensureDraftAgreement(application, agreement);
-        ServiceAgreementDTO signAgreement = new ServiceAgreementDTO();
+        ServiceAgreementDto agreementToSign = ensureDraftAgreement(application, agreement);
+        ServiceAgreementDto signAgreement = new ServiceAgreementDto();
         signAgreement.setAgreementId(agreementToSign.getAgreementId());
         signAgreement.setSignedBy(application.getApplicantName());
         signAgreement.setEffectiveDate(LocalDate.now());
@@ -916,12 +914,12 @@ public class CareOrchestrationService {
         return contractService.signAgreement(signAgreement);
     }
 
-    private CarePlanDTO ensureCarePlan(ServiceAgreementDTO activeAgreement) {
+    private CarePlanDto ensureCarePlan(ServiceAgreementDto activeAgreement) {
         return carePlanRepository.findTopByAgreementIdOrderByPlanDateDescIdDesc(activeAgreement.getAgreementId())
                 .map(CarePlan::fromPo)
-                .map(CarePlan::toDTO)
+                .map(CarePlan::toDto)
                 .orElseGet(() -> {
-                    CarePlanDTO carePlan = new CarePlanDTO();
+                    CarePlanDto carePlan = new CarePlanDto();
                     carePlan.setAgreementId(activeAgreement.getAgreementId());
                     carePlan.setElderId(activeAgreement.getElderId());
                     carePlan.setPlanName("标准护理计划");
@@ -931,13 +929,13 @@ public class CareOrchestrationService {
                 });
     }
 
-    private HealthProfileDTO ensureHealthProfile(ServiceAgreementDTO activeAgreement) {
+    private HealthProfileDto ensureHealthProfile(ServiceAgreementDto activeAgreement) {
         return healthProfileRepository
                 .findTopByElderIdAndAgreementIdOrderByProfileDateDescIdDesc(activeAgreement.getElderId(), activeAgreement.getAgreementId())
                 .map(HealthProfile::fromPo)
-                .map(HealthProfile::toDTO)
+                .map(HealthProfile::toDto)
                 .orElseGet(() -> {
-                    HealthProfileDTO healthProfile = new HealthProfileDTO();
+                    HealthProfileDto healthProfile = new HealthProfileDto();
                     healthProfile.setAgreementId(activeAgreement.getAgreementId());
                     healthProfile.setElderId(activeAgreement.getElderId());
                     healthProfile.setRiskLevel("MEDIUM");
@@ -945,13 +943,13 @@ public class CareOrchestrationService {
                 });
     }
 
-    private HealthAssessmentDTO ensureIntakeAssessment(ServiceAgreementDTO activeAgreement) {
+    private HealthAssessmentDto ensureIntakeAssessment(ServiceAgreementDto activeAgreement) {
         return healthAssessmentRecordRepository
                 .findTopByAgreementIdAndAssessmentTypeOrderByAssessedAtDescIdDesc(activeAgreement.getAgreementId(), ASSESSMENT_TYPE_INTAKE)
                 .map(HealthAssessmentRecord::fromPo)
-                .map(HealthAssessmentRecord::toDTO)
+                .map(HealthAssessmentRecord::toDto)
                 .orElseGet(() -> {
-                    HealthAssessmentDTO initialAssessment = new HealthAssessmentDTO();
+                    HealthAssessmentDto initialAssessment = new HealthAssessmentDto();
                     initialAssessment.setElderId(activeAgreement.getElderId());
                     initialAssessment.setAgreementId(activeAgreement.getAgreementId());
                     initialAssessment.setAssessmentType(ASSESSMENT_TYPE_INTAKE);
@@ -991,11 +989,11 @@ public class CareOrchestrationService {
         throw new IllegalStateException("当前旅程状态不允许继续推进");
     }
 
-    private List<IntakeRecordDTO> toIntakeRecords(List<ServiceApplicationPo> applications) {
-        List<IntakeRecordDTO> records = new ArrayList<>();
+    private List<IntakeRecordDto> toIntakeRecords(List<ServiceApplicationPo> applications) {
+        List<IntakeRecordDto> records = new ArrayList<>();
 
         for (ServiceApplicationPo application : applications) {
-            IntakeRecordDTO record = new IntakeRecordDTO();
+            IntakeRecordDto record = new IntakeRecordDto();
             record.setApplicationId(application.getId());
             record.setElderId(application.getElderId());
             record.setApplicantName(application.getApplicantName());
@@ -1021,7 +1019,7 @@ public class CareOrchestrationService {
             return ServiceJourneyStateMachine.HEALTH_ASSESSMENT_PENDING;
         }
 
-        HealthAssessmentRequestDTO assessment = healthClient.listAssessmentHistory().stream()
+        HealthAssessmentRequestDto assessment = healthClient.listAssessmentHistory().stream()
                 .filter(item -> applicationId.equals(item.getApplicationId()))
                 .findFirst()
                 .orElse(null);
@@ -1134,13 +1132,13 @@ public class CareOrchestrationService {
         }
     }
 
-    private ServiceJourneyResultDTO buildJourneyResult(
+    private ServiceJourneyResultDto buildJourneyResult(
             Long applicationId,
             Long elderId,
             Long agreementId,
             ServiceJourneyState state,
             String message) {
-        ServiceJourneyResultDTO result = new ServiceJourneyResultDTO();
+        ServiceJourneyResultDto result = new ServiceJourneyResultDto();
         result.setApplicationId(applicationId);
         result.setElderId(elderId);
         result.setAgreementId(agreementId);
@@ -1207,7 +1205,7 @@ public class CareOrchestrationService {
                 && !reviewDate.isBefore(agreement.getExpiryDate().minusMonths(1));
     }
 
-    private RenewalContextDTO buildRenewalContext(ServiceAgreementPo agreement, ServiceReviewPo latestReview) {
+    private RenewalContextDto buildRenewalContext(ServiceAgreementPo agreement, ServiceReviewPo latestReview) {
         LocalDate today = LocalDate.now();
         LocalDate expiryDate = agreement.getExpiryDate();
         long daysUntilExpiry = expiryDate == null ? 0L : ChronoUnit.DAYS.between(today, expiryDate);
@@ -1215,7 +1213,7 @@ public class CareOrchestrationService {
         String reviewConclusion = latestReview == null ? null : latestReview.getReviewConclusion();
         String renewalStage = resolveRenewalStage(agreement, latestReview, reviewSubmitted, daysUntilExpiry);
 
-        return RenewalContextDTO.builder()
+        return RenewalContextDto.builder()
                 .agreementId(agreement.getId())
                 .applicationId(agreement.getApplicationId())
                 .elderId(agreement.getElderId())
@@ -1268,8 +1266,8 @@ public class CareOrchestrationService {
         };
     }
 
-    private CareAnalyticsOverviewDTO.StagePoint stage(String name, int value) {
-        CareAnalyticsOverviewDTO.StagePoint point = new CareAnalyticsOverviewDTO.StagePoint();
+    private CareAnalyticsOverviewDto.StagePoint stage(String name, int value) {
+        CareAnalyticsOverviewDto.StagePoint point = new CareAnalyticsOverviewDto.StagePoint();
         point.setName(name);
         point.setValue(value);
         return point;
@@ -1295,12 +1293,12 @@ public class CareOrchestrationService {
         }
     }
 
-    private List<CareAnalyticsTrendsDTO.TrendPoint> toTrendPoints(Map<String, Integer> map) {
-        List<CareAnalyticsTrendsDTO.TrendPoint> points = new ArrayList<>();
+    private List<CareAnalyticsTrendsDto.TrendPoint> toTrendPoints(Map<String, Integer> map) {
+        List<CareAnalyticsTrendsDto.TrendPoint> points = new ArrayList<>();
         DateTimeFormatter keyFormatter = DateTimeFormatter.ofPattern("yyyy-MM-dd");
         DateTimeFormatter labelFormatter = DateTimeFormatter.ofPattern("M/d");
         for (Map.Entry<String, Integer> entry : map.entrySet()) {
-            CareAnalyticsTrendsDTO.TrendPoint point = new CareAnalyticsTrendsDTO.TrendPoint();
+            CareAnalyticsTrendsDto.TrendPoint point = new CareAnalyticsTrendsDto.TrendPoint();
             point.setLabel(LocalDate.parse(entry.getKey(), keyFormatter).format(labelFormatter));
             point.setValue(entry.getValue());
             points.add(point);
@@ -1328,7 +1326,7 @@ public class CareOrchestrationService {
     }
 
     private record ReviewDecision(
-            ServiceReviewDTO review,
+            ServiceReviewDto review,
             String reviewConclusion,
             ServiceJourneyEvent reviewEvent,
             ServiceJourneyState requestedState) {
